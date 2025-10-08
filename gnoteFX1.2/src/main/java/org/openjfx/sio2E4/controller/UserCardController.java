@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.openjfx.sio2E4.model.Note;
 import org.openjfx.sio2E4.model.User;
-import org.openjfx.sio2E4.service.AuthService;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +20,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import org.openjfx.sio2E4.service.AuthService;
 
 public class UserCardController {
 

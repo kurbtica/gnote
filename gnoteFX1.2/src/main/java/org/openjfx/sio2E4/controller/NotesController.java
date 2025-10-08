@@ -23,7 +23,6 @@ import org.openjfx.sio2E4.model.Matiere;
 import org.openjfx.sio2E4.model.Note;
 import org.openjfx.sio2E4.model.NoteType;
 import org.openjfx.sio2E4.model.User;
-import org.openjfx.sio2E4.service.AuthService;
 
 import java.io.IOException;
 import java.net.URI;
@@ -32,21 +31,19 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javafx.scene.control.ListCell;
-import java.time.LocalDateTime;
+import org.openjfx.sio2E4.service.AuthService;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-
-import javafx.application.Platform;
 
 public class NotesController {
 

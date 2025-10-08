@@ -1,0 +1,12 @@
+{
+  "token": "offline_token_12345",
+  "id": 1,
+  "nom": "nom",
+  "prenom": "prenom",
+  "email": "admin@lycee.local",
+  "role": {
+    "libelle": "ADMIN"
+  },
+  "adresse": "16 Pl. Saint-Sauveur, 35600 Redon",
+  "telephone": "01 23 45 67 89"
+}

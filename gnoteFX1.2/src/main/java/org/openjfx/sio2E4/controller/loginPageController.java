@@ -9,11 +9,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.openjfx.sio2E4.service.AuthService;
 import org.openjfx.sio2E4.model.LocalUser;
-import javafx.geometry.Rectangle2D;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
+import org.openjfx.sio2E4.service.AuthService;
 
 public class loginPageController {
 

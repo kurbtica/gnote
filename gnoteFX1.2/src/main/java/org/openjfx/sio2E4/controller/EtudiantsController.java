@@ -12,12 +12,10 @@ import java.io.IOException;
 import java.net.URI;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openjfx.sio2E4.model.Etudiant;
-import org.openjfx.sio2E4.service.AuthService;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
-
-
+import org.openjfx.sio2E4.service.AuthService;
 
 
 public class EtudiantsController {

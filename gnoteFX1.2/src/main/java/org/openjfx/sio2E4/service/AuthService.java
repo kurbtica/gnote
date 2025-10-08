@@ -4,10 +4,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openjfx.sio2E4.model.LocalUser;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class AuthService {
 
@@ -16,44 +20,96 @@ public class AuthService {
 
 	// Méthode de login qui récupère toutes les informations de l'utilisateur
 	public static boolean login(String email, String password) {
-		try {
-			// Construire la requête HTTP
-			HttpClient client = HttpClient.newHttpClient();
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/api/auth/login"))
-					.header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers
-							.ofString("{\"email\":\"" + email + "\", \"password\":\"" + password + "\"}"))
-					.build();
+        if (NetworkService.isOnline()) {
+            try {
+                // Construire la requête HTTP
+                HttpClient client = HttpClient.newHttpClient();
+                HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/api/auth/login"))
+                        .header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers
+                                .ofString("{\"email\":\"" + email + "\", \"password\":\"" + password + "\"}"))
+                        .build();
 
-			// Envoyer la requête et obtenir la réponse
-			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                // Envoyer la requête et obtenir la réponse
+                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-			if (response.statusCode() == 200) {
-				// Si la réponse est correcte, traiter le JSON
-				String userJson = response.body();
-				ObjectMapper objectMapper = new ObjectMapper();
-				JsonNode rootNode = objectMapper.readTree(userJson);
+                if (response.statusCode() == 200) {
+                    // Si la réponse est correcte, traiter le JSON
+                    String userJson = response.body();
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode rootNode = objectMapper.readTree(userJson);
 
-				// Extraire les informations
-				String token = rootNode.path("token").asText();
-				int id = rootNode.path("id").asInt();
-				String nom = rootNode.path("nom").asText();
-				String prenom = rootNode.path("prenom").asText();
-				String emailResponse = rootNode.path("email").asText();
-				String role = rootNode.path("role").path("libelle").asText();
-				String adresse = rootNode.path("adresse").asText();
-				String telephone = rootNode.path("telephone").asText();
+                    // Extraire les informations
+                    String token = rootNode.path("token").asText();
+                    int id = rootNode.path("id").asInt();
+                    String nom = rootNode.path("nom").asText();
+                    String prenom = rootNode.path("prenom").asText();
+                    String emailResponse = rootNode.path("email").asText();
+                    String role = rootNode.path("role").path("libelle").asText();
+                    String adresse = rootNode.path("adresse").asText();
+                    String telephone = rootNode.path("telephone").asText();
 
-				// Crée un objet User avec toutes les données reçues
-				currentUser = new LocalUser(token, id, nom, prenom, emailResponse, role, adresse, telephone);
-				sessionToken = token; // Sauvegarde le token pour utilisation future
-				return true; // Authentification réussie
-			} else {
-				return false; // Erreur dans la réponse
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false; // En cas d'erreur
-		}
+                    // Crée un objet User avec toutes les données reçues
+                    currentUser = new LocalUser(token, id, nom, prenom, emailResponse, role, adresse, telephone);
+                    sessionToken = token; // Sauvegarde le token pour utilisation future
+                    return true; // Authentification réussie
+                } else {
+                    return false; // Erreur dans la réponse
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false; // En cas d'erreur
+            }
+        } else {
+            // Mode hors ligne : tenter de lire les informations depuis un fichier local
+            try {
+                // Définir le chemin vers le fichier JSON local
+                Path filePath = Paths.get("user_data.json");
+
+                if (Files.exists(filePath)) {
+                    // --- Le fichier existe : on tente la connexion ---
+
+                    // Lire tout le contenu du fichier dans une chaîne de caractères
+                    String userJson = Files.readString(filePath);
+
+                    // Utiliser ObjectMapper pour parser le JSON
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode rootNode = objectMapper.readTree(userJson);
+
+                    // Pour une authentification hors ligne basique, on vérifie si l'email correspond
+                    String storedEmail = rootNode.path("email").asText();
+                    if (email.equals(storedEmail)) {
+                        // Si l'email correspond, extraire toutes les informations
+                        String token = rootNode.path("token").asText();
+                        int id = rootNode.path("id").asInt();
+                        String nom = rootNode.path("nom").asText();
+                        String prenom = rootNode.path("prenom").asText();
+                        String emailResponse = rootNode.path("email").asText();
+                        String role = rootNode.path("role").path("libelle").asText();
+                        String adresse = rootNode.path("adresse").asText();
+                        String telephone = rootNode.path("telephone").asText();
+
+                        // Créer l'objet LocalUser avec les données du fichier
+                        currentUser = new LocalUser(token, id, nom, prenom, emailResponse, role, adresse, telephone);
+                        sessionToken = token;
+                        return true; // "Authentification" hors ligne réussie
+                    }
+                } else {
+                    // --- Le fichier n'existe pas : on le crée ---
+
+                    // Crée le fichier vide. On y écrit un objet JSON "{}" pour qu'il soit valide.
+                    Files.writeString(filePath, "{}");
+                    System.out.println("Fichier 'user_data.json' créé car il n'existait pas.");
+                }
+
+                // Si on arrive ici, c'est que le fichier n'existait pas ou que l'email ne correspondait pas.
+                return false;
+
+            } catch (IOException e) {
+                // En cas d'erreur de lecture/écriture du fichier ou de parsing JSON
+                e.printStackTrace();
+                return false;
+            }
+        }
 	}
 
 	public static void logout() {
