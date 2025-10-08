@@ -1,1 +1,1 @@
-gnote
+gnote gnote
