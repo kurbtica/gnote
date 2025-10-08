@@ -1,0 +1,12 @@
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="path.to.EditNoteController">
+    <ComboBox fx:id="eleveComboBox" />
+    <ComboBox fx:id="enseignantComboBox" />
+    <ComboBox fx:id="matiereComboBox" />
+    <ComboBox fx:id="noteTypeComboBox" />
+    <TextField fx:id="valeurField" />
+    <TextField fx:id="coefficientField" />
+    <DatePicker fx:id="datePicker" />
+    <TextArea fx:id="commentaireField" />
+    <Button text="Mettre à jour" onAction="#handleUpdateNote"/>
+    <Button text="Annuler" onAction="#closeDialog"/>
+</AnchorPane>

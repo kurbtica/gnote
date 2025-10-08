@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+    xmlns="http://javafx.com/javafx"
+    fx:controller="org.openjfx.sio2E4.controller.MainLayoutController"
+    stylesheets="@../css/AppLayout.css">
+
+    <!-- Top Bar -->
+    <top>
+        <HBox spacing="20"
+            style="-fx-background-color: #82263c; -fx-padding: 10; -fx-alignment: center-left;">
+            <Label fx:id="usernameLabel" text="Bienvenue, ..."
+                style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" />
+
+            <Region fx:id="spacer" HBox.hgrow="ALWAYS" />
+
+            <Button fx:id="logoutButton"
+                text="Déconnexion"
+                onMouseEntered="#onLogoutHover"
+                onMouseExited="#onLogoutExit"
+                onAction="#handleLogout"
+                style="-fx-background-color: #f4f4f4; -fx-text-fill: #82263c;">
+            </Button>
+        </HBox>
+    </top>
+
+
+    <!-- Sidebar Navigation -->
+    <left>
+        <VBox fx:id="leftSidebar" spacing="10" styleClass="left" prefWidth="200">
+            <Button text="Accueil" onAction="#showDashboard" maxWidth="Infinity" />
+            <Button text="Utilisateurs" onAction="#showUsers" maxWidth="Infinity" />
+            <Button text="Matières" onAction="#showMatieres" maxWidth="Infinity" />
+            <Button text="Évaluations" onAction="#showNotes" maxWidth="Infinity" />
+        </VBox>
+    </left>
+
+
+    <!-- Contenu principal -->
+    <center>
+        <StackPane fx:id="contentArea" />
+    </center>
+
+</BorderPane>

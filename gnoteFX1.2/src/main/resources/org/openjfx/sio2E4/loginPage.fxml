@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.sio2E4.controller.loginPageController">
+   <children>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <AnchorPane prefHeight="400.0" prefWidth="300.0">
+               <children>
+                  <PasswordField fx:id="passwordField" layoutX="75.0" layoutY="225.0" promptText="Mot de passe" style="-fx-background-color: #EBEBEB; -fx-border-color: #B53654; -fx-border-width: 0px 0px 0px 3px;" />
+                  <Label layoutX="102.0" layoutY="141.0" text="Se connecter" textFill="#b53654">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="usernameField" layoutX="75.0" layoutY="179.0" promptText="Nom d'utilisateur" style="-fx-background-color: #EBEBEB; -fx-border-color: #B53654; -fx-border-width: 0px 0px 0px 3px;" />
+                  <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="130.0" layoutY="101.0">
+                     <image>
+                        <Image url="@logo.png" />
+                     </image>
+                  </ImageView>
+                  <Button fx:id="loginButton" onAction="#GoToHome" layoutX="107.0" layoutY="268.0" mnemonicParsing="false" style="-fx-background-color: #b53654;" text="Se connecter" textFill="WHITE" />
+                  <Label fx:id="errorLabel" layoutX="75.0" layoutY="310.0" prefWidth="200" text="" textFill="RED" />
+               </children>
+            </AnchorPane>
+            <AnchorPane layoutX="300.0" prefHeight="400.0" prefWidth="300.0">
+               <children>
+                  <ImageView fitHeight="400.0" fitWidth="300.0">
+                     <image>
+                        <Image url="@image-background.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </AnchorPane>
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>

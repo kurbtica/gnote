@@ -1,0 +1,164 @@
+/* Style global pour la sidebar */
+.left {
+    -fx-background-color: #82263c;
+    -fx-padding: 15px;
+}
+
+
+/* Style des boutons dans la sidebar */
+.left Button {
+    -fx-background-color: #f4f4f4; /* Couleur de fond des boutons */
+    -fx-text-fill: #82263c; /* Couleur du texte des boutons */
+    -fx-font-size: 16px; /* Taille du texte */
+    -fx-font-weight: bold; /* Texte en gras */
+    -fx-alignment: center-left; /* Aligner le texte à gauche */
+    -fx-pref-width: 100%; /* Faire en sorte que les boutons prennent la largeur totale de la VBox */
+    -fx-padding: 10px; /* Espacement intérieur des boutons */
+    -fx-background-radius: 5px; /* Coins arrondis des boutons */
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0.0, 1, 1); /* Ombre intérieure */
+}
+
+.left Button {
+    -fx-pref-width: 100%; /* Important pour que le bouton remplisse la VBox */
+    -fx-max-width: Infinity; /* Optionnel, mais utile si conflit */
+}
+
+/* Style au survol des boutons */
+.left Button:hover {
+    -fx-background-color: #d4c0c0; /* Couleur de fond au survol */
+    -fx-cursor: hand; /* Changer le curseur en main */
+}
+
+/* Style au clic des boutons */
+.left Button:pressed {
+    -fx-background-color: #a61f29; /* Couleur de fond au clic */
+    -fx-text-fill: white; /* Changer la couleur du texte au clic */
+}
+
+
+
+.table-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #82263c;
+    -fx-border-radius: 8px;
+    -fx-padding: 5px;
+    -fx-table-cell-border-color: #ddd;
+    -fx-font-size: 14px;
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #82263c;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: transparent;
+}
+
+.table-view .table-column {
+    -fx-alignment: CENTER_LEFT;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 4px;
+}
+
+.table-row-cell {
+    -fx-cell-size: 36px;
+}
+
+.table-row-cell:filled:selected {
+    -fx-background-color: #d4c0c0;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #f6eaea;
+}
+
+
+
+
+
+
+
+
+
+/* Style pour les boutons */
+.button-simple {
+    -fx-background-color: #f4f4f4;
+    -fx-text-fill: #82263c;
+    -fx-padding: 10px 20px;
+    -fx-font-size: 14px;
+    -fx-border-radius: 5px;
+    -fx-border-color: #d1d1d1;
+    -fx-border-width: 1px;
+    -fx-cursor: hand;
+    -fx-transition: background-color 0.3s ease;
+    -fx-pref-width: 150px;
+}
+
+/* Effet au survol du bouton */
+.button-simple:hover {
+    -fx-background-color: #e0e0e0; /* Légère couleur de survol */
+    -fx-text-fill: #5a1e2b; /* Légère modification de la couleur du texte */
+}
+
+
+/* Style pour les labels */
+.label-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+/* Style pour les champs de texte (formulaire) */
+.form-field {
+    -fx-border-radius: 5px;
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: #ccc;
+    -fx-padding: 10px;
+    -fx-font-size: 14px;
+    -fx-pref-width: 200px;
+}
+
+/* Style pour le tableau */
+.table-view {
+    -fx-background-color: #fff;
+    -fx-border-color: #ddd;
+    -fx-border-width: 1px;
+    -fx-font-size: 14px;
+}
+
+.table-view .table-cell {
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Applique un style de fond gris au tableau quand on survole une ligne */
+.table-view .table-row-cell:hover {
+    -fx-background-color: #f0f0f0;
+}
+
+
+
+
+/* Assurer que le texte dans l'en-tête soit visible */
+.table-view .column-header {
+    -fx-text-fill: #333;        /* Couleur sombre pour le texte */
+    -fx-font-size: 16px;        /* Taille du texte */
+    -fx-font-weight: bold;      /* Gras */
+    -fx-alignment: center;      /* Centrage du texte */
+    -fx-padding: 10px;          /* Padding pour un peu d'espace */
+}
+
+/* Appliquer un défilement horizontal pour l'en-tête si nécessaire */
+.table-view .column-header-background {
+    -fx-background-color: #6a0606;  /* Couleur de fond claire */
+}
+
+/* Pour un texte dans les cellules de la colonne qui ne doit pas se couper */
+.table-view .table-cell {
+    -fx-wrap-text: true; /* Le texte se brise sur plusieurs lignes */
+    -fx-max-width: 300px;  /* Max largeur de la cellule */
+    -fx-min-width: 100px;  /* Largeur minimale */
+}

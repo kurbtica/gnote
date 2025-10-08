@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.Label?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+            fx:controller="org.openjfx.sio2E4.controller.HomeViewController">
+
+    <Label fx:id="welcomeLabel" style="-fx-font-size: 18px; -fx-padding: 20;" />
+</AnchorPane>

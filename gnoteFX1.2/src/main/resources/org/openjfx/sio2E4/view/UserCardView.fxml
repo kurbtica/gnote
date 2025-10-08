@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Pos?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.openjfx.sio2E4.controller.UserCardController"
+      spacing="15" alignment="TOP_CENTER" style="-fx-padding: 20; -fx-background-color: #f4f4f9;">
+
+    <!-- Titre de la vue utilisateur -->
+    <Label text="Informations de l'utilisateur" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+
+    <!-- Affichage des détails de l'utilisateur -->
+    <GridPane hgap="15" vgap="10">
+        <Label text="Nom:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+        <Label fx:id="nomLabel" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+        <Label text="Prénom:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+        <Label fx:id="prenomLabel" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+        <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+        <Label fx:id="emailLabel" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+
+        <Label text="Téléphone:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+        <Label fx:id="telephoneLabel" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+
+        <Label text="Adresse:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+        <Label fx:id="adresseLabel" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+
+        <Label text="Rôle:" GridPane.rowIndex="5" GridPane.columnIndex="0" />
+        <Label fx:id="roleLabel" GridPane.rowIndex="5" GridPane.columnIndex="1" />
+    </GridPane>
+
+    <!-- Tableau des notes -->
+    <TableView fx:id="notesTable" prefWidth="600">
+        <columns>
+            <TableColumn fx:id="matiereColumn" text="Matière" prefWidth="150"/>
+            <TableColumn fx:id="valeurColumn" text="Note" prefWidth="100"/>
+            <TableColumn fx:id="dateColumn" text="Date" prefWidth="150"/>
+            <TableColumn fx:id="coefficientColumn" text="Coefficient" prefWidth="100"/>
+            <TableColumn fx:id="noteTypeColumn" text="Type de Note" prefWidth="150"/>
+        </columns>
+    </TableView>
+    <Label fx:id="moyenneLabel" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+</VBox>

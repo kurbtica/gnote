@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.sio2E4.controller.EtudiantsController" spacing="10" alignment="TOP_CENTER" style="-fx-padding: 20;">
+    <!-- Titre de la page -->
+    <Label text="Liste des Étudiants" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-alignment: top-left;" />
+    <TableView fx:id="etudiantsTable" prefWidth="800">
+        <columns>
+            <TableColumn fx:id="nomColumn" text="Nom" prefWidth="100"/>
+            <TableColumn fx:id="prenomColumn" text="Prénom" prefWidth="100"/>
+            <TableColumn fx:id="emailColumn" text="Email" prefWidth="200"/>
+            <TableColumn fx:id="telephoneColumn" text="Téléphone" prefWidth="120"/>
+            <TableColumn fx:id="adresseColumn" text="Adresse" prefWidth="200"/>
+            <TableColumn fx:id="roleColumn" text="Rôle" prefWidth="80"/>
+        </columns>
+    </TableView>
+</VBox>

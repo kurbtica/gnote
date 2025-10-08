@@ -1,0 +1,56 @@
+2025-05-04 22:57:58,283 [Worker-5: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is out-of-date. Trying to update.
+2025-05-04 23:00:07,707 [Worker-24: Importing Maven projects] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: org.openjfx:sio2E4:0.0.1-SNAPSHOT @ D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\pom.xml.
+2025-05-04 23:00:07,728 [Worker-24: Importing Maven projects] WARN  o.a.m.r.i.DefaultArtifactDescriptorReader - 6 problems were encountered while building the effective model for org.openjfx:javafx-controls:jar:21 during dependency collection step for project (use -X to see details)
+2025-05-04 23:00:08,814 [Worker-24: Importing Maven projects] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /gnoteFX1.2/src/main/java
+2025-05-04 23:00:08,817 [Worker-24: Importing Maven projects] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /gnoteFX1.2/src/main/resources
+2025-05-04 23:00:08,818 [Worker-24: Importing Maven projects] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding source folder /gnoteFX1.2/src/test/java
+2025-05-04 23:00:08,820 [Worker-24: Importing Maven projects] INFO  o.e.m.j.i.AbstractJavaProjectConfigurator - Adding resource folder /gnoteFX1.2/src/test/resources
+2025-05-04 23:00:08,935 [Worker-24: Importing Maven projects] INFO  o.e.m.c.i.p.ProjectConfigurationManager - Imported and configured 1 project(s) in 2 sec
+2025-05-04 23:00:10,654 [Worker-23: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-04 23:00:10,700 [Worker-23: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-05 13:36:49,434 [Worker-5: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is up-to-date. Trying to read.
+2025-05-05 15:35:19,959 [Worker-47: Launching App] WARN  o.a.m.r.i.DefaultArtifactDescriptorReader - 6 problems were encountered while building the effective model for org.openjfx:javafx-controls:jar:21 during dependency collection step for project (use -X to see details)
+2025-05-05 15:35:20,425 [Worker-47: Launching App] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-05 15:35:20,466 [Worker-47: Launching App] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-23 00:40:05,805 [Worker-7: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is out-of-date. Trying to update.
+2025-05-23 00:40:19,974 [Worker-20: Launching App] WARN  o.a.m.r.i.DefaultArtifactDescriptorReader - 6 problems were encountered while building the effective model for org.openjfx:javafx-controls:jar:21 during dependency collection step for project (use -X to see details)
+2025-05-23 11:37:52,430 [Worker-7: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is up-to-date. Trying to read.
+2025-05-23 11:42:21,183 [Worker-21: Launching App] WARN  o.a.m.r.i.DefaultArtifactDescriptorReader - 6 problems were encountered while building the effective model for org.openjfx:javafx-controls:jar:21 during dependency collection step for project (use -X to see details)
+2025-05-23 13:24:17,670 [Worker-5: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is up-to-date. Trying to read.
+2025-05-23 13:25:06,271 [Worker-4: Launching App] WARN  o.a.m.r.i.DefaultArtifactDescriptorReader - 6 problems were encountered while building the effective model for org.openjfx:javafx-controls:jar:21 during dependency collection step for project (use -X to see details)
+2025-05-23 14:28:49,228 [Worker-37: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-23 14:28:49,274 [Worker-37: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-23 14:28:52,738 [Worker-11: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-23 14:28:52,768 [Worker-11: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-23 14:37:07,519 [Worker-37: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-23 14:37:07,552 [Worker-37: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-23 14:37:10,249 [Worker-38: Launching App] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-23 14:37:10,255 [Worker-38: Launching App] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-23 14:38:59,102 [Worker-40: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-23 14:38:59,134 [Worker-40: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-23 14:45:29,460 [Worker-42: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-23 14:45:29,466 [Worker-42: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-23 14:45:41,678 [Worker-40: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-23 14:45:41,715 [Worker-40: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-23 14:47:59,609 [Worker-43: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-23 14:47:59,614 [Worker-43: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-23 14:48:07,205 [Worker-37: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-23 14:48:07,235 [Worker-37: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-23 14:53:06,302 [Worker-37: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-23 14:53:06,308 [Worker-37: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-23 14:53:12,019 [Worker-44: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-23 14:53:12,050 [Worker-44: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-23 14:54:42,731 [Worker-43: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-23 14:54:42,737 [Worker-43: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-23 14:58:18,982 [Worker-37: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-23 14:58:18,987 [Worker-37: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-23 14:58:44,591 [Worker-44: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-23 14:58:44,624 [Worker-44: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-23 14:59:39,232 [Worker-43: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-23 14:59:39,236 [Worker-43: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-23 14:59:44,353 [Worker-37: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-23 14:59:44,381 [Worker-37: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-23 15:02:47,907 [Worker-44: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-23 15:02:47,912 [Worker-44: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
+2025-05-23 15:02:52,118 [Worker-47: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - Copying 15 resources from src\main\resources to target\classes
+2025-05-23 15:02:52,148 [Worker-47: Building] INFO  o.a.m.s.f.DefaultMavenResourcesFiltering - skip non existing resourceDirectory D:\Gnote-Gnote_3.6\JFX\gnoteFX1.2\src\test\resources
