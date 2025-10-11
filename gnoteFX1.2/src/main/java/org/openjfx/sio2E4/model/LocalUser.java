@@ -23,6 +23,8 @@ public class LocalUser {
         this.telephone = telephone;
     }
 
+    public LocalUser() {}
+
     // Getters and Setters
     public String getToken() {
         return token;
