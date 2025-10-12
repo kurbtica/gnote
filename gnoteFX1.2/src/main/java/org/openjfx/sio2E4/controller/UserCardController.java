@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.openjfx.sio2E4.model.Note;
 import org.openjfx.sio2E4.model.User;
+import org.openjfx.sio2E4.service.AuthService;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +21,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import org.openjfx.sio2E4.service.AuthService;
+import org.openjfx.sio2E4.service.LocalStorageService;
+import org.openjfx.sio2E4.service.NetworkService;
 
 public class UserCardController {
 
@@ -43,22 +45,39 @@ public class UserCardController {
     private final String BEARER_TOKEN = "Bearer "+ AuthService.getToken();
     
     public void loadUser(int userId) {
-        HttpClient client = HttpClient.newHttpClient();
-        String urlString = "http://localhost:8080/api/users/" + userId;
+        if (NetworkService.isOnline()) {
+            HttpClient client = HttpClient.newHttpClient();
+            String urlString = "http://localhost:8080/api/users/" + userId;
 
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(urlString))
-            .header("Authorization", BEARER_TOKEN)
-            .GET()
-            .build();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(urlString))
+                    .header("Authorization", BEARER_TOKEN)
+                    .GET()
+                    .build();
 
-        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-            .thenApply(HttpResponse::body)
-            .thenAccept(this::parseUserResponse)
-            .exceptionally(e -> {
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenApply(HttpResponse::body)
+                    .thenAccept(this::parseUserResponse)
+                    .exceptionally(e -> {
+                        e.printStackTrace();
+                        return null;
+                    });
+        } else {
+            User user = LocalStorageService.findUserById(userId);
+            try {
+                Platform.runLater(() -> {
+                    // Affichage des informations utilisateur dans les labels
+                    nomLabel.setText(user.getNom());
+                    prenomLabel.setText(user.getPrenom());
+                    emailLabel.setText(user.getEmail());
+                    telephoneLabel.setText(user.getTelephone());
+                    adresseLabel.setText(user.getAdresse());
+                    roleLabel.setText(user.getRole().getLibelle());
+                });
+            } catch (NullPointerException e) {
                 e.printStackTrace();
-                return null;
-            });
+            }
+        }
     }
 
     private void parseUserResponse(String response) {
@@ -149,7 +168,7 @@ public class UserCardController {
     // Initialiser les colonnes de la TableView
     @FXML
     private void initialize() {
-        matiereColumn.setCellValueFactory(cellData -> cellData.getValue().getMatiere() != null ? 
+        matiereColumn.setCellValueFactory(cellData -> cellData.getValue().getMatiere() != null ?
                 new SimpleStringProperty(cellData.getValue().getMatiere().getLibelle()) : null);
 
         valeurColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getValeur()).asObject());

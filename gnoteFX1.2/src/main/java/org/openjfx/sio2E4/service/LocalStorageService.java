@@ -91,8 +91,66 @@ public class LocalStorageService {
     }
 
     /*
-    *   Méthodes pour charger les objets sauvegardés en mode hors ligne
-    */
+     *   Méthodes pour rechercher un objet par ID
+     */
+
+    private static <T> T findObjectById(Number id, String key, Class<T> clazz) {
+        try {
+            JsonNode root = mapper.readTree(Files.readString(filePath));
+            JsonNode arrayNode = root.get(key);
+
+            if (arrayNode != null && arrayNode.isArray()) {
+                for (JsonNode node : arrayNode) {
+                    JsonNode idNode = node.get("id");
+
+                    if (idNode != null) {
+                        long nodeId = idNode.asLong();
+                        long searchId = id.longValue();
+
+                        if (nodeId == searchId) {
+                            return mapper.treeToValue(node, clazz);
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Méthodes spécifiques pour rechercher par ID
+    public static Etudiant findEtudiantById(int id) {
+        return findObjectById(id, "Etudiant", Etudiant.class);
+    }
+
+    public static LocalUser findLocalUserById(int id) {
+        return findObjectById(id, "LocalUser", LocalUser.class);
+    }
+
+    public static Matiere findMatiereById(int id) {
+        return findObjectById(id, "Matiere", Matiere.class);
+    }
+
+    public static Note findNoteById(int id) {
+        return findObjectById(id, "Note", Note.class);
+    }
+
+    public static NoteType findNoteTypeById(int id) {
+        return findObjectById(id, "NoteType", NoteType.class);
+    }
+
+    public static Role findRoleById(int id) {
+        return findObjectById(id, "Role", Role.class);
+    }
+
+    public static User findUserById(int id) {
+        return findObjectById(id, "User", User.class);
+    }
+
+    /*
+     *   Méthodes pour charger les objets sauvegardés en mode hors ligne
+     */
 
     private static <T> ArrayList<T> loadObjects(String key, Class<T> clazz) {
         ArrayList<T> result = new ArrayList<>();
@@ -145,57 +203,124 @@ public class LocalStorageService {
      *   Méthodes pour supprimer des objets sauvegardés en mode hors ligne
      */
 
-    private static <T> void removeObject(T obj, String key) {
+    private static <T> void removeObject(Number id, String key) {
         try {
-            // Lire le JSON existant
             ObjectNode root = (ObjectNode) mapper.readTree(Files.readString(filePath));
             ArrayNode array = (ArrayNode) root.get(key);
+            if (array == null) return;
 
-            if (array != null) {
-                // On parcourt les éléments pour trouver l'objet à supprimer
-                for (int i = 0; i < array.size(); i++) {
-                    T current = mapper.treeToValue(array.get(i), (Class<T>) obj.getClass());
-                    if (current.equals(obj)) { // <- Il faut que equals() soit bien implémenté
-                        array.remove(i);
-                        break;
-                    }
+            for (int i = 0; i < array.size(); i++) {
+                JsonNode node = array.get(i);
+                JsonNode idNode = node.get("id");
+
+                if (idNode != null && idNode.isNumber() && idNode.asLong() == id.longValue()) {
+                    array.remove(i);
+                    break;
                 }
             }
 
-            // Réécrire le JSON
             mapper.writerWithDefaultPrettyPrinter().writeValue(filePath.toFile(), root);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
     // Méthodes spécifiques pour la supprimer des objets
     public static void remove(Etudiant etudiant) {
-        removeObject(etudiant, "Etudiant");
+        removeObject(etudiant.getId(), "Etudiant");
     }
 
     public static void remove(LocalUser localUser) {
-        removeObject(localUser, "LocalUser");
+        removeObject(localUser.getId(), "LocalUser");
     }
 
     public static void remove(Matiere matiere) {
-        removeObject(matiere, "Matiere");
+        removeObject(matiere.getId(), "Matiere");
     }
 
     public static void remove(Note note) {
-        removeObject(note, "Note");
+        removeObject(note.getId(), "Note");
     }
 
     public static void remove(NoteType noteType) {
-        removeObject(noteType, "NoteType");
+        removeObject(noteType.getId(), "NoteType");
     }
 
     public static void remove(Role role) {
-        removeObject(role, "Role");
+        removeObject(role.getId(), "Role");
     }
 
     public static void remove(User user) {
-        removeObject(user, "User");
+        removeObject(user.getId(), "User");
+    }
+
+    /*
+     *   Méthodes pour modifier des objets sauvegardés en mode hors ligne
+     */
+
+    private static <T> void updateObject(T obj, Number id, String key) {
+        try {
+            // Lire le JSON existant
+            ObjectNode root = (ObjectNode) mapper.readTree(Files.readString(filePath));
+            ArrayNode array = (ArrayNode) root.get(key);
+            if (array == null) return;
+
+            boolean updated = false;
+
+            // Parcourir le tableau et remplacer l'objet correspondant
+            for (int i = 0; i < array.size(); i++) {
+                JsonNode node = array.get(i);
+                JsonNode idNode = node.get("id");
+
+                if (idNode != null && idNode.isNumber() && idNode.asLong() == id.longValue()) {
+                    // Remplacement : on sérialise l'objet et on écrase l'ancien
+                    JsonNode newNode = mapper.valueToTree(obj);
+                    array.set(i, newNode);
+                    updated = true;
+                    break;
+                }
+            }
+
+            if (updated) {
+                mapper.writerWithDefaultPrettyPrinter().writeValue(filePath.toFile(), root);
+            } else {
+                System.out.println("⚠️ Aucun objet trouvé avec l'ID " + id + " dans " + key);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Méthodes spécifiques pour la modifer des objets
+    public static void update(Etudiant etudiant) {
+        updateObject(etudiant, etudiant.getId(), "Etudiant");
+    }
+
+    public static void update(LocalUser localUser) {
+        updateObject(localUser, localUser.getId(), "LocalUser");
+    }
+
+    public static void update(Matiere matiere) {
+        updateObject(matiere, matiere.getId(), "Matiere");
+    }
+
+    public static void update(Note note) {
+        updateObject(note, note.getId(), "Note");
+    }
+
+    public static void update(NoteType noteType) {
+        updateObject(noteType, noteType.getId(), "NoteType");
+    }
+
+    public static void update(Role role) {
+        updateObject(role, role.getId(), "Role");
+    }
+
+    public static void update(User user) {
+        updateObject(user, user.getId(), "User");
     }
 
     // Getter / Setter filePath

@@ -10,8 +10,10 @@ import javafx.geometry.Insets;
 
 import org.openjfx.sio2E4.model.Role;
 import org.openjfx.sio2E4.model.User;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openjfx.sio2E4.service.AuthService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.openjfx.sio2E4.service.LocalStorageService;
+import org.openjfx.sio2E4.service.NetworkService;
 
 import java.io.IOException;
 import java.net.URI;
@@ -19,8 +21,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class UsersController {
 
@@ -46,7 +50,7 @@ public class UsersController {
 	@FXML
 	private ComboBox<String> roleComboBox;
 
-	
+
 	private void showAlert(AlertType type, String message) {
 		Alert alert = new Alert(type);
 		alert.setTitle("Information");
@@ -64,8 +68,8 @@ public class UsersController {
 		passwordField.clear();
 		roleComboBox.getSelectionModel().selectFirst();
 	}
-	
-	
+
+
 	@FXML
 	public void initialize() {
 		roleComboBox.getItems().addAll("ADMIN", "ENSEIGNANT", "ETUDIANT");
@@ -77,21 +81,33 @@ public class UsersController {
 		adresseColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getAdresse()));
 		roleColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getRole().getLibelle()));
 
-		
+
 		fetchUsers();
 	}
 
 	private void fetchUsers() {
-		HttpClient client = HttpClient.newHttpClient();
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL)).header("Authorization", BEARER_TOKEN)
-				.GET().build();
+		if (NetworkService.isOnline()) {
+			HttpClient client = HttpClient.newHttpClient();
+			HttpRequest request = HttpRequest.newBuilder()
+					.uri(URI.create(API_URL))
+					.header("Authorization", BEARER_TOKEN)
+					.GET()
+					.build();
 
-		client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
-				.thenAccept(this::parseUsers).exceptionally(e -> {
-					e.printStackTrace();
-					return null;
-				});
+			client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+					.thenApply(HttpResponse::body)
+					.thenAccept(this::parseUsers)
+					.exceptionally(e -> {
+						e.printStackTrace();
+						return null;
+					});
+		} else {
+			System.out.println("Mode hors ligne activé — chargement local");
+			ArrayList<User> localUsers = LocalStorageService.loadUsers();
+			Platform.runLater(() -> usersTable.getItems().setAll(localUsers));
+		}
 	}
+
 
 	private void parseUsers(String responseBody) {
 		ObjectMapper mapper = new ObjectMapper();
@@ -105,24 +121,24 @@ public class UsersController {
 		}
 	}
 
-// -------------------- user Card --------------------
+	// -------------------- user Card --------------------
 	private MainLayoutController mainLayoutController;
 
 	public void setMainLayoutController(MainLayoutController controller) {
-	    this.mainLayoutController = controller;
+		this.mainLayoutController = controller;
 	}
 	@FXML
 	private void handleShowUserCard() {
-	    User selectedUser = usersTable.getSelectionModel().getSelectedItem();
-	    if (selectedUser != null && mainLayoutController != null) {
-	        mainLayoutController.showUserCard(selectedUser.getId());
-	    }
+		User selectedUser = usersTable.getSelectionModel().getSelectedItem();
+		if (selectedUser != null && mainLayoutController != null) {
+			mainLayoutController.showUserCard(selectedUser.getId());
+		}
 	}
 
-	
-	
-	
-	
+
+
+
+
 	// Info de formulaire
 	@FXML
 	private TextField nomField;
@@ -143,62 +159,81 @@ public class UsersController {
 
 	@FXML
 	private void ajouterUtilisateur() {
-		try {
-			String nom = nomField.getText().trim();
-			String prenom = prenomField.getText().trim();
-			String email = emailField.getText().trim();
-			String adresse = adresseField.getText().trim();
-			String telephone = telephoneField.getText().trim();
-			String password = passwordField.getText();
-			String selectedRole = roleComboBox.getValue();
-			int roleId = getRoleId(selectedRole);
+		String nom = nomField.getText().trim();
+		String prenom = prenomField.getText().trim();
+		String email = emailField.getText().trim();
+		String adresse = adresseField.getText().trim();
+		String telephone = telephoneField.getText().trim();
+		String password = passwordField.getText();
+		String selectedRole = roleComboBox.getValue();
+		int roleId = getRoleId(selectedRole);
 
-			if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || password.isEmpty()) {
-				showAlert(AlertType.WARNING, "Veuillez remplir tous les champs obligatoires.");
-				return;
-			}
+		if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || password.isEmpty()) {
+			showAlert(AlertType.WARNING, "Veuillez remplir tous les champs obligatoires.");
+			return;
+		}
+		if (NetworkService.isOnline()) {
+			try {
+				// Construction du JSON
+				String json = String.format(
+						"{\"nom\":\"%s\",\"prenom\":\"%s\",\"email\":\"%s\",\"adresse\":\"%s\",\"telephone\":\"%s\",\"passwordHash\":\"%s\",\"role\":{\"id\":%d,\"libelle\":\"%s\"}}",
+						nom, prenom, email, adresse, telephone, password, roleId, selectedRole);
 
-			// Construction du JSON
-			String json = String.format(
-					"{\"nom\":\"%s\",\"prenom\":\"%s\",\"email\":\"%s\",\"adresse\":\"%s\",\"telephone\":\"%s\",\"passwordHash\":\"%s\",\"role\":{\"id\":%d,\"libelle\":\"%s\"}}",
-					nom, prenom, email, adresse, telephone, password, roleId, selectedRole);
+				HttpClient client = HttpClient.newHttpClient();
+				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL))
+						.header("Authorization", BEARER_TOKEN).header("Content-Type", "application/json")
+						.POST(BodyPublishers.ofString(json)).build();
 
-			HttpClient client = HttpClient.newHttpClient();
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL))
-					.header("Authorization", BEARER_TOKEN).header("Content-Type", "application/json")
-					.POST(BodyPublishers.ofString(json)).build();
+				client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
+					if (response.statusCode() == 201 || response.statusCode() == 200) {
+						Platform.runLater(() -> showAlert(AlertType.INFORMATION, "Utilisateur ajouté avec succès !"));
+						clearForm();
+						Platform.runLater(this::fetchUsers);
+						// Optionnel : refreshTable(); si tu veux actualiser la liste
+					} else {
+						Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur lors de l'ajout : " + response.body()));
+					}
+				}).exceptionally(e -> {
+					e.printStackTrace();
+					Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur réseau : " + e.getMessage()));
+					return null;
+				});
 
-			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
-				if (response.statusCode() == 201 || response.statusCode() == 200) {
-					Platform.runLater(() -> showAlert(AlertType.INFORMATION, "Utilisateur ajouté avec succès !"));
-					clearForm();
-					Platform.runLater(this::fetchUsers);
-					// Optionnel : refreshTable(); si tu veux actualiser la liste
-				} else {
-					Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur lors de l'ajout : " + response.body()));
-				}
-			}).exceptionally(e -> {
+			} catch (Exception e) {
 				e.printStackTrace();
-				Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur réseau : " + e.getMessage()));
-				return null;
-			});
+				showAlert(AlertType.ERROR, "Erreur interne : " + e.getMessage());
+			}
+		} else {
+			// === Mode hors ligne ===
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			showAlert(AlertType.ERROR, "Erreur interne : " + e.getMessage());
+			User newUser = new User();
+			newUser.setNom(nom);
+			newUser.setPrenom(prenom);
+			newUser.setEmail(email);
+			newUser.setAdresse(adresse);
+			newUser.setTelephone(telephone);
+			newUser.setRole(new Role(getRoleId(selectedRole), selectedRole));
+
+			LocalStorageService.save(newUser);
+
+			Platform.runLater(() -> {
+				usersTable.getItems().add(newUser);
+				showAlert(AlertType.INFORMATION, "Utilisateur ajouté en local (mode hors ligne).");
+				clearForm();
+			});
 		}
 	}
 
 	private int getRoleId(String roleName) {
 		switch (roleName) {
-		case "ADMIN":
-			return 1;
-		case "ENSEIGNANT":
-			return 2;
-		case "ETUDIANT":
-			return 3;
-		default:
-			return 3;
+			case "ADMIN":
+				return 1;
+			case "ENSEIGNANT":
+				return 2;
+			case "ETUDIANT":
+				return 3;
+			default:
+				return 3;
 		}
 	}
 
@@ -219,24 +254,39 @@ public class UsersController {
 	}
 
 	private void deleteUser(int userId) {
-		HttpClient client = HttpClient.newHttpClient();
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL + "/" + userId))
-				.header("Authorization", BEARER_TOKEN).DELETE().build();
+		if (NetworkService.isOnline()) {
+			HttpClient client = HttpClient.newHttpClient();
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL + "/" + userId))
+					.header("Authorization", BEARER_TOKEN).DELETE().build();
 
-		client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
-			if (response.statusCode() == 204) { // 204 No Content signifie que la suppression a réussi
+			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
+				if (response.statusCode() == 204) { // 204 No Content signifie que la suppression a réussi
+					Platform.runLater(() -> {
+						showAlert(AlertType.INFORMATION, "Utilisateur supprimé avec succès.");
+						fetchUsers(); // Rafraîchit la liste des utilisateurs
+					});
+				} else {
+					Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur lors de la suppression de l'utilisateur."));
+				}
+			}).exceptionally(e -> {
+				e.printStackTrace();
+				Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur réseau : " + e.getMessage()));
+				return null;
+			});
+		} else {
+			ArrayList<User> users = LocalStorageService.loadUsers();
+			Optional<User> offlineUser = users.stream()
+					.filter(u -> u.getId()==userId)
+					.findFirst();
+			if (offlineUser.isPresent()) {
+				LocalStorageService.remove(offlineUser.get());
+
 				Platform.runLater(() -> {
-					showAlert(AlertType.INFORMATION, "Utilisateur supprimé avec succès.");
+					showAlert(AlertType.INFORMATION, "Utilisateur supprimé en local (mode hors ligne).");
 					fetchUsers(); // Rafraîchit la liste des utilisateurs
 				});
-			} else {
-				Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur lors de la suppression de l'utilisateur."));
 			}
-		}).exceptionally(e -> {
-			e.printStackTrace();
-			Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur réseau : " + e.getMessage()));
-			return null;
-		});
+		}
 	}
 
 	// --------------------------Modification de l'utilisateur par boite de dialogue
@@ -252,32 +302,47 @@ public class UsersController {
 	}
 
 	private void updateUser(User user) {
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			String json = mapper.writeValueAsString(user);
+		if (NetworkService.isOnline()) {
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+				String json = mapper.writeValueAsString(user);
 
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL + "/" + user.getId()))
-					.header("Authorization", BEARER_TOKEN).header("Content-Type", "application/json")
-					.PUT(HttpRequest.BodyPublishers.ofString(json)).build();
+				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL + "/" + user.getId()))
+						.header("Authorization", BEARER_TOKEN).header("Content-Type", "application/json")
+						.PUT(HttpRequest.BodyPublishers.ofString(json)).build();
 
-			HttpClient client = HttpClient.newHttpClient();
-			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
-				if (response.statusCode() == 200) {
-					Platform.runLater(() -> {
-						showAlert(AlertType.INFORMATION, "Utilisateur modifié avec succès !");
-						fetchUsers();
-					});
-				} else {
-					Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur de modification : " + response.body()));
-				}
-			}).exceptionally(e -> {
+				HttpClient client = HttpClient.newHttpClient();
+				client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
+					if (response.statusCode() == 200) {
+						Platform.runLater(() -> {
+							showAlert(AlertType.INFORMATION, "Utilisateur modifié avec succès !");
+							fetchUsers();
+						});
+					} else {
+						Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur de modification : " + response.body()));
+					}
+				}).exceptionally(e -> {
+					e.printStackTrace();
+					Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur réseau : " + e.getMessage()));
+					return null;
+				});
+			} catch (Exception e) {
 				e.printStackTrace();
-				Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur réseau : " + e.getMessage()));
-				return null;
-			});
-		} catch (Exception e) {
-			e.printStackTrace();
-			showAlert(AlertType.ERROR, "Erreur lors de la mise à jour.");
+				showAlert(AlertType.ERROR, "Erreur lors de la mise à jour.");
+			}
+		} else {
+			ArrayList<User> users = LocalStorageService.loadUsers();
+			Optional<User> offlineUser = users.stream()
+					.filter(u -> u.getId()==user.getId())
+					.findFirst();
+			if (offlineUser.isPresent()) {
+				LocalStorageService.update(user);
+
+				Platform.runLater(() -> {
+					showAlert(AlertType.INFORMATION, "Utilisateur mis a jour en local (mode hors ligne).");
+					fetchUsers(); // Rafraîchit la liste des utilisateurs
+				});
+			}
 		}
 	}
 

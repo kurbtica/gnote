@@ -1,4 +1,5 @@
 {
+  "Etudiant" : [ ],
   "LocalUser" : [ {
     "token" : "abc",
     "id" : 0,
@@ -8,5 +9,10 @@
     "role" : "ADMIN",
     "adresse" : "16 Pl. Saint-Sauveur, 35600 Redon",
     "telephone" : "06 00 00 00 00"
-  } ]
+  } ],
+  "Matiere" : [ ],
+  "Note" : [ ],
+  "NoteType" : [ ],
+  "Role" : [ ],
+  "User" : [ ]
 }
