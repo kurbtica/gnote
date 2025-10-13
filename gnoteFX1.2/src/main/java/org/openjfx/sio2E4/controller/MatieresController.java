@@ -1,24 +1,27 @@
 package org.openjfx.sio2E4.controller;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.application.Platform;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Button;
 import javafx.scene.control.cell.TextFieldTableCell;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openjfx.sio2E4.model.Matiere;
+import org.openjfx.sio2E4.model.Role;
+import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.service.AuthService;
+import org.openjfx.sio2E4.service.LocalStorageService;
+import org.openjfx.sio2E4.service.NetworkService;
 
 public class MatieresController {
 
@@ -36,6 +39,18 @@ public class MatieresController {
 
     private final String API_URL = "http://localhost:8080/api/matieres";
     private final String BEARER_TOKEN = "Bearer " + AuthService.getToken();
+
+    // TODO déplacé toutes les méthodes showAlert, clearForm, ... dans un autre fichier
+
+    private void showAlert(Alert.AlertType type, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle("Information");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+
 
     @FXML
     private void initialize() {
@@ -71,6 +86,7 @@ public class MatieresController {
 
 
     private void fetchMatieres() {
+        if (NetworkService.isOnline()) {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(API_URL))
@@ -85,6 +101,11 @@ public class MatieresController {
                     e.printStackTrace();
                     return null;
                 });
+        } else {
+            System.out.println("Mode hors ligne activé — chargement local");
+            ArrayList<Matiere> localMatieres = LocalStorageService.loadMatieres();
+            Platform.runLater(() -> matieresTable.getItems().setAll(localMatieres));
+        }
     }
 
     private void parseMatieres(String responseBody) {
@@ -102,25 +123,39 @@ public class MatieresController {
         String libelle = libelleField.getText();
 
         if (!libelle.isEmpty()) {
-            // Envoi de la requête POST pour ajouter une nouvelle matière
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(API_URL))
-                    .header("Authorization", BEARER_TOKEN)
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString("{\"libelle\": \"" + libelle + "\"}"))
-                    .build();
+            if (NetworkService.isOnline()) {
+                // Envoi de la requête POST pour ajouter une nouvelle matière
+                HttpClient client = HttpClient.newHttpClient();
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(API_URL))
+                        .header("Authorization", BEARER_TOKEN)
+                        .header("Content-Type", "application/json")
+                        .POST(HttpRequest.BodyPublishers.ofString("{\"libelle\": \"" + libelle + "\"}"))
+                        .build();
 
-            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenAccept(response -> {
-                        if (response.statusCode() == 201) {
-                            fetchMatieres();  // Rafraîchit la liste des matières après l'ajout
-                        }
-                    })
-                    .exceptionally(e -> {
-                        e.printStackTrace();
-                        return null;
-                    });
+                client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                        .thenAccept(response -> {
+                            if (response.statusCode() == 201) {
+                                fetchMatieres();  // Rafraîchit la liste des matières après l'ajout
+                            }
+                        })
+                        .exceptionally(e -> {
+                            e.printStackTrace();
+                            return null;
+                        });
+            } else {
+                // === Mode hors ligne ===
+
+                Matiere newMatiere = new Matiere();
+                newMatiere.setLibelle(libelle);
+
+                LocalStorageService.save(newMatiere);
+
+                Platform.runLater(() -> {
+                    matieresTable.getItems().add(newMatiere);
+                    showAlert(Alert.AlertType.INFORMATION, "Matière ajouté en local (mode hors ligne).");
+                });
+            }
 
             libelleField.clear();  // Vide le champ de texte après l'ajout
         }
@@ -159,25 +194,40 @@ public class MatieresController {
         Matiere selectedMatiere = matieresTable.getSelectionModel().getSelectedItem();
         if (selectedMatiere != null) {
             int matiereId = selectedMatiere.getId(); // Assure-toi que la classe Matiere a un champ "id"
-            
-            // Envoyer la requête DELETE pour supprimer la matière
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(API_URL + "/" + matiereId))
-                    .header("Authorization", BEARER_TOKEN)
-                    .DELETE()
-                    .build();
+            if (NetworkService.isOnline()) {
 
-            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenAccept(response -> {
-                        if (response.statusCode() == 204) {
-                            fetchMatieres();  // Rafraîchit la liste après suppression
-                        }
-                    })
-                    .exceptionally(e -> {
-                        e.printStackTrace();
-                        return null;
+                // Envoyer la requête DELETE pour supprimer la matière
+                HttpClient client = HttpClient.newHttpClient();
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(API_URL + "/" + matiereId))
+                        .header("Authorization", BEARER_TOKEN)
+                        .DELETE()
+                        .build();
+
+                client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                        .thenAccept(response -> {
+                            if (response.statusCode() == 204) {
+                                fetchMatieres();  // Rafraîchit la liste après suppression
+                            }
+                        })
+                        .exceptionally(e -> {
+                            e.printStackTrace();
+                            return null;
+                        });
+            } else {
+                ArrayList<Matiere> matieres = LocalStorageService.loadMatieres();
+                Optional<Matiere> matiere = matieres.stream()
+                        .filter(u -> u.getId()==matiereId)
+                        .findFirst();
+                if (matiere.isPresent()) {
+                    LocalStorageService.remove(matiere.get());
+
+                    Platform.runLater(() -> {
+                        showAlert(Alert.AlertType.INFORMATION, "Matière supprimé en local (mode hors ligne).");
+                        fetchMatieres(); // Rafraîchit la liste des utilisateurs
                     });
+                }
+            }
         }
     }
 
@@ -191,28 +241,43 @@ public class MatieresController {
     }
     
     private void updateMatiere(Matiere matiere) {
-        System.out.println("Mise à jour de la matière: " + matiere.getLibelle()); // Vérifie que la méthode est appelée
+        if (NetworkService.isOnline()) {
+            System.out.println("Mise à jour de la matière: " + matiere.getLibelle()); // Vérifie que la méthode est appelée
 
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(API_URL + "/" + matiere.getId()))
-                .header("Authorization", BEARER_TOKEN)
-                .header("Content-Type", "application/json")
-                .PUT(HttpRequest.BodyPublishers.ofString("{\"libelle\": \"" + matiere.getLibelle() + "\"}"))
-                .build();
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(API_URL + "/" + matiere.getId()))
+                    .header("Authorization", BEARER_TOKEN)
+                    .header("Content-Type", "application/json")
+                    .PUT(HttpRequest.BodyPublishers.ofString("{\"libelle\": \"" + matiere.getLibelle() + "\"}"))
+                    .build();
 
-        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenAccept(response -> {
-                    if (response.statusCode() == 200) {
-                        System.out.println("Matière mise à jour avec succès !");
-                    } else {
-                        System.out.println("Erreur lors de la mise à jour de la matière. Code: " + response.statusCode());
-                    }
-                })
-                .exceptionally(e -> {
-                    e.printStackTrace();
-                    return null;
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenAccept(response -> {
+                        if (response.statusCode() == 200) {
+                            System.out.println("Matière mise à jour avec succès !");
+                        } else {
+                            System.out.println("Erreur lors de la mise à jour de la matière. Code: " + response.statusCode());
+                        }
+                    })
+                    .exceptionally(e -> {
+                        e.printStackTrace();
+                        return null;
+                    });
+        } else {
+            ArrayList<Matiere> matieres = LocalStorageService.loadMatieres();
+            Optional<Matiere> localMatiere = matieres.stream()
+                    .filter(u -> u.getId()==matiere.getId())
+                    .findFirst();
+            if (localMatiere.isPresent()) {
+                LocalStorageService.update(matiere);
+
+                Platform.runLater(() -> {
+                    showAlert(Alert.AlertType.INFORMATION, "Matière mis a jour en local (mode hors ligne).");
+                    fetchMatieres(); // Rafraîchit la liste des utilisateurs
                 });
+            }
+        }
     }
 
 
