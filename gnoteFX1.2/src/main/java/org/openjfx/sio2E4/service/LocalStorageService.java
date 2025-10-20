@@ -18,6 +18,14 @@ public class LocalStorageService {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    private static final ArrayList<Etudiant> etudiants = new ArrayList<Etudiant>();
+    private static final ArrayList<LocalUser> localUsers = new ArrayList<LocalUser>();
+    private static final ArrayList<Matiere> matieres = new ArrayList<Matiere>();
+    private static final ArrayList<Note> notes = new ArrayList<Note>();
+    private static final ArrayList<NoteType> noteTypes = new ArrayList<NoteType>();
+    private static final ArrayList<Role> roles = new ArrayList<Role>();
+    private static final ArrayList<User> users = new ArrayList<User>();
+
     public static void setup() throws IOException {
         if (!Files.exists(filePath)) {
             String initialJson = "{\n" +
@@ -50,7 +58,17 @@ public class LocalStorageService {
                 root.set(key, array);
             }
 
-            // Ajouter l'objet sérialisé
+            int newId = array.size();
+
+            // Modifier l'ID de l'objet en utilisant la réflexion
+            try {
+                java.lang.reflect.Method setIdMethod = obj.getClass().getMethod("setId", int.class);
+                setIdMethod.invoke(obj, newId);
+            } catch (Exception e) {
+                System.err.println("Erreur lors de la modification de l'ID : " + e.getMessage());
+            }
+
+            // Ajouter l'objet sérialisé (avec le nouvel ID)
             array.addPOJO(obj);
 
             // Réécrire le fichier

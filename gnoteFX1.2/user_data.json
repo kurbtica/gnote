@@ -11,7 +11,7 @@
     "telephone" : "06 00 00 00 00"
   }, {
     "token" : "abc",
-    "id" : 0,
+    "id" : 1,
     "nom" : "nom",
     "prenom" : "prenom",
     "email" : "prof@lycee.local",
@@ -23,15 +23,15 @@
     "id" : 0,
     "libelle" : "Math"
   }, {
-    "id" : 0,
+    "id" : 1,
     "libelle" : "Francais"
   } ],
   "Note" : [ {
     "id" : 0,
     "enseignant" : {
-      "id" : 0,
-      "nom" : "prof",
-      "prenom" : "prof",
+      "id" : 1,
+      "nom" : "Enseignant",
+      "prenom" : "Durand",
       "email" : "test",
       "adresse" : "test",
       "telephone" : "test",
@@ -42,8 +42,8 @@
     },
     "eleve" : {
       "id" : 0,
-      "nom" : "etudiant",
-      "prenom" : "etudiant",
+      "nom" : "Etudiant",
+      "prenom" : "John",
       "email" : "test",
       "adresse" : "test",
       "telephone" : "test",
@@ -53,46 +53,7 @@
       }
     },
     "matiere" : {
-      "id" : 0,
-      "libelle" : "Francais"
-    },
-    "coefficient" : 2.0,
-    "valeur" : 20.0,
-    "commentaire" : "test",
-    "date" : "2025-10-25",
-    "modification" : "null",
-    "noteType" : {
-      "id" : 0,
-      "libelle" : "test"
-    }
-  }, {
-    "id" : 0,
-    "enseignant" : {
-      "id" : 0,
-      "nom" : "prof",
-      "prenom" : "prof",
-      "email" : "test",
-      "adresse" : "test",
-      "telephone" : "test",
-      "role" : {
-        "id" : 2,
-        "libelle" : "ENSEIGNANT"
-      }
-    },
-    "eleve" : {
-      "id" : 0,
-      "nom" : "etudiant",
-      "prenom" : "etudiant",
-      "email" : "test",
-      "adresse" : "test",
-      "telephone" : "test",
-      "role" : {
-        "id" : 3,
-        "libelle" : "ETUDIANT"
-      }
-    },
-    "matiere" : {
-      "id" : 0,
+      "id" : 1,
       "libelle" : "Francais"
     },
     "coefficient" : 2.0,
@@ -102,12 +63,60 @@
     "modification" : null,
     "noteType" : {
       "id" : 0,
-      "libelle" : "test"
+      "libelle" : "ECRIT"
+    }
+  }, {
+    "id" : 1,
+    "enseignant" : {
+      "id" : 1,
+      "nom" : "Enseignant",
+      "prenom" : "Durand",
+      "email" : "test",
+      "adresse" : "test",
+      "telephone" : "test",
+      "role" : {
+        "id" : 2,
+        "libelle" : "ENSEIGNANT"
+      }
+    },
+    "eleve" : {
+      "id" : 0,
+      "nom" : "Etudiant",
+      "prenom" : "John",
+      "email" : "test",
+      "adresse" : "test",
+      "telephone" : "test",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      }
+    },
+    "matiere" : {
+      "id" : 0,
+      "libelle" : "Math"
+    },
+    "coefficient" : 3.0,
+    "valeur" : 16.0,
+    "commentaire" : "test",
+    "date" : "2025-10-20",
+    "modification" : null,
+    "noteType" : {
+      "id" : 3,
+      "libelle" : "DS"
     }
   } ],
   "NoteType" : [ {
     "id" : 0,
-    "libelle" : "test"
+    "libelle" : "ECRIT"
+  }, {
+    "id" : 1,
+    "libelle" : "ORAL"
+  }, {
+    "id" : 2,
+    "libelle" : "TP"
+  }, {
+    "id" : 3,
+    "libelle" : "DS"
   } ],
   "Role" : [ ],
   "User" : [ {
@@ -122,7 +131,7 @@
       "libelle" : "ETUDIANT"
     }
   }, {
-    "id" : 0,
+    "id" : 1,
     "nom" : "Enseignant",
     "prenom" : "Durand",
     "email" : "test",

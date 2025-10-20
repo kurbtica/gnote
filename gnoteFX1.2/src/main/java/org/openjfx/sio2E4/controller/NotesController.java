@@ -395,6 +395,7 @@ public class NotesController {
 			Platform.runLater(() -> {
 				showAlert(Alert.AlertType.INFORMATION, "Note ajouté en local (mode hors ligne).");
 				fetchNotes();
+				clearForm();
 			});
 		}
 	}
@@ -772,7 +773,7 @@ public class NotesController {
 				} else {
 					ArrayList<Note> notes = LocalStorageService.loadNotes();
 					Optional<Note> noteOpt  = notes.stream()
-							.filter(u -> u.getId()==eleveBox.getValue().getId())
+							.filter(n -> n.getId()==selectedNote.getId())
 							.findFirst();
 					if (noteOpt.isPresent()) {
 						Note note = noteOpt.get();

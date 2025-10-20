@@ -5,7 +5,10 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.openjfx.sio2E4.model.Note;
 import org.openjfx.sio2E4.model.User;
@@ -74,6 +77,8 @@ public class UserCardController {
                     adresseLabel.setText(user.getAdresse());
                     roleLabel.setText(user.getRole().getLibelle());
                 });
+
+                loadUserNotes(user.getId(), user.getRole().getLibelle());
             } catch (NullPointerException e) {
                 e.printStackTrace();
             }
@@ -107,22 +112,42 @@ public class UserCardController {
     }
 
     private void loadUserNotes(int userId, String role) {
-        HttpClient client = HttpClient.newHttpClient();
-        String urlString = "http://localhost:8080/api/users/" + userId + "/notes";
+        if (NetworkService.isOnline()) {
+            HttpClient client = HttpClient.newHttpClient();
+            String urlString = "http://localhost:8080/api/users/" + userId + "/notes";
 
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create(urlString))
-            .header("Authorization", BEARER_TOKEN)
-            .GET()
-            .build();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(urlString))
+                    .header("Authorization", BEARER_TOKEN)
+                    .GET()
+                    .build();
 
-        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-            .thenApply(HttpResponse::body)
-            .thenAccept(response -> parseNotesResponse(response, role))
-            .exceptionally(e -> {
+            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                    .thenApply(HttpResponse::body)
+                    .thenAccept(response -> parseNotesResponse(response, role))
+                    .exceptionally(e -> {
+                        e.printStackTrace();
+                        return null;
+                    });
+        } else {
+            ArrayList<Note> notes = LocalStorageService.loadNotes();
+            List<Note> noteList  = notes.stream()
+                    .filter(n -> n.getEleve().getId()==userId).collect(Collectors.toList());
+            try {
+                Platform.runLater(() -> {
+                    // Mettre à jour la TableView avec les données
+                    notesTable.getItems().setAll(noteList);
+
+                    // Si l'utilisateur est un étudiant, calculer la moyenne
+                    if ("ETUDIANT".equals(role)) {
+                        double moyenne = calculateMoyenne(noteList);
+                        moyenneLabel.setText("Moyenne: " + moyenne);
+                    }
+                });
+            } catch (NullPointerException e) {
                 e.printStackTrace();
-                return null;
-            });
+            }
+        }
     }
 
     private void parseNotesResponse(String response, String role) {
