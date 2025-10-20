@@ -31,13 +31,12 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import javafx.scene.control.ListCell;
 import org.openjfx.sio2E4.service.AuthService;
+import org.openjfx.sio2E4.service.LocalStorageService;
+import org.openjfx.sio2E4.service.NetworkService;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -131,7 +130,7 @@ public class NotesController {
 		commentaireColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getCommentaire()));
 
 		// Nouvelle colonne pour le type de la note
-		noteTypeColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getNoteType()));
+		noteTypeColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getNoteType().getLibelle()));
 
 		coefficientColumn.setCellValueFactory(
 				data -> new SimpleStringProperty(String.valueOf(data.getValue().getCoefficient())));
@@ -194,15 +193,21 @@ public class NotesController {
 	}
 
 	private void fetchNotes() {
-		HttpClient client = HttpClient.newHttpClient();
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL)).header("Authorization", BEARER_TOKEN)
-				.GET().build();
+		if (NetworkService.isOnline()) {
+			HttpClient client = HttpClient.newHttpClient();
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL)).header("Authorization", BEARER_TOKEN)
+					.GET().build();
 
-		client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
-				.thenAccept(this::parseNotes).exceptionally(e -> {
-					e.printStackTrace();
-					return null;
-				});
+			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
+					.thenAccept(this::parseNotes).exceptionally(e -> {
+						e.printStackTrace();
+						return null;
+					});
+		} else {
+			System.out.println("Mode hors ligne activé — chargement des notes en local");
+			ArrayList<Note> localNotes = LocalStorageService.loadNotes();
+			Platform.runLater(() -> notesTable.getItems().setAll(localNotes));
+		}
 
 	}
 
@@ -332,46 +337,65 @@ public class NotesController {
 
 	@FXML
 	private void ajouterNote() {
-		try {
-			// Récupérer les données du formulaire
-			User eleve = eleveComboBox.getValue();
-			User enseignant = enseignantComboBox.getValue();
-			Matiere matiere = matiereComboBox.getValue();
-			NoteType noteType = noteTypeComboBox.getValue();
+		// Récupérer les données du formulaire
+		User eleve = eleveComboBox.getValue();
+		User enseignant = enseignantComboBox.getValue();
+		Matiere matiere = matiereComboBox.getValue();
+		NoteType noteType = noteTypeComboBox.getValue();
 
-			double valeur = Double.parseDouble(valeurField.getText());
-			double coefficient = Double.parseDouble(coefficientField.getText());
-			String date = datePicker.getValue().toString();
-			String commentaire = commentaireField.getText();
+		double valeur = Double.parseDouble(valeurField.getText());
+		double coefficient = Double.parseDouble(coefficientField.getText());
+		String date = datePicker.getValue().toString();
+		String commentaire = commentaireField.getText();
+		if (NetworkService.isOnline()) {
+			try {
+				String json = String.format(
+						"{" + "\"eleve\": { \"id\": %d }," + "\"enseignant\": { \"id\": %d },"
+								+ "\"matiere\": { \"id\": %d }," + "\"coefficient\": %s," + "\"valeur\": %s,"
+								+ "\"noteType\": { \"id\": %d }," + "\"commentaire\": \"%s\"," + "\"date\": \"%s\"" + "}",
+						eleve.getId(), enseignant.getId(), matiere.getId(), coefficient, valeur, noteType.getId(),
+						commentaire, date);
 
-			String json = String.format(
-					"{" + "\"eleve\": { \"id\": %d }," + "\"enseignant\": { \"id\": %d },"
-							+ "\"matiere\": { \"id\": %d }," + "\"coefficient\": %s," + "\"valeur\": %s,"
-							+ "\"noteType\": { \"id\": %d }," + "\"commentaire\": \"%s\"," + "\"date\": \"%s\"" + "}",
-					eleve.getId(), enseignant.getId(), matiere.getId(), coefficient, valeur, noteType.getId(),
-					commentaire, date);
+				// Préparer et envoyer la requête POST
+				HttpClient client = HttpClient.newHttpClient();
+				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL))
+						.header("Authorization", BEARER_TOKEN).header("Content-Type", "application/json")
+						.POST(HttpRequest.BodyPublishers.ofString(json)).build();
 
-			// Préparer et envoyer la requête POST
-			HttpClient client = HttpClient.newHttpClient();
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL))
-					.header("Authorization", BEARER_TOKEN).header("Content-Type", "application/json")
-					.POST(HttpRequest.BodyPublishers.ofString(json)).build();
+				client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
+					if (response.statusCode() == 201 || response.statusCode() == 200) {
+						// Succès : rafraîchir la liste
+						fetchNotes();
+						clearForm();
+					} else {
+						System.err.println("Erreur à l'ajout : " + response.body());
+					}
+				}).exceptionally(e -> {
+					e.printStackTrace();
+					return null;
+				});
 
-			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
-				if (response.statusCode() == 201 || response.statusCode() == 200) {
-					// Succès : rafraîchir la liste
-					fetchNotes();
-					clearForm();
-				} else {
-					System.err.println("Erreur à l'ajout : " + response.body());
-				}
-			}).exceptionally(e -> {
+			} catch (Exception e) {
 				e.printStackTrace();
-				return null;
-			});
+			}
+		} else {
+			Note newNote = new Note();
+			newNote.setEleve(eleve);
+			newNote.setEnseignant(enseignant);
+			newNote.setMatiere(matiere);
+			newNote.setNoteType(noteType);
 
-		} catch (Exception e) {
-			e.printStackTrace();
+			newNote.setValeur(valeur);
+			newNote.setCoefficient(coefficient);
+			newNote.setDate(date);
+			newNote.setCommentaire(commentaire);
+
+			LocalStorageService.save(newNote);
+
+			Platform.runLater(() -> {
+				showAlert(Alert.AlertType.INFORMATION, "Note ajouté en local (mode hors ligne).");
+				fetchNotes();
+			});
 		}
 	}
 
@@ -388,49 +412,130 @@ public class NotesController {
 	}
 
 	private void deleteNote(int noteId) {
-		HttpClient client = HttpClient.newHttpClient();
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/api/notes/" + noteId))
-				.header("Authorization", "Bearer " + AuthService.getToken()).DELETE().build();
+		if(NetworkService.isOnline()) {
+            try {
+                HttpClient client = HttpClient.newHttpClient();
+                HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/api/notes/" + noteId))
+                        .header("Authorization", "Bearer " + AuthService.getToken()).DELETE().build();
 
-		client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
-			if (response.statusCode() == 204) {
+                client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
+                    if (response.statusCode() == 204) {
+                        Platform.runLater(() -> {
+                            showAlert(AlertType.INFORMATION, "Note supprimée avec succès.");
+                            fetchNotes(); // Méthode pour recharger la liste
+                        });
+                    } else {
+                        Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur lors de la suppression de la note."));
+                    }
+                }).exceptionally(e -> {
+                    e.printStackTrace();
+                    Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur réseau : " + e.getMessage()));
+                    return null;
+                });
+            } catch (Exception e) {
+				e.printStackTrace();
+            }
+        } else {
+			ArrayList<Note> notes = LocalStorageService.loadNotes();
+			Optional<Note> note  = notes.stream()
+					.filter(u -> u.getId()==noteId)
+					.findFirst();
+			if (note.isPresent()) {
+				LocalStorageService.remove(note.get());
+
 				Platform.runLater(() -> {
-					showAlert(Alert.AlertType.INFORMATION, "Note supprimée avec succès.");
-					fetchNotes(); // Méthode pour recharger la liste
+					showAlert(Alert.AlertType.INFORMATION, "Note supprimé en local (mode hors ligne).");
+					fetchNotes();
 				});
-			} else {
-				Platform.runLater(() -> showAlert(Alert.AlertType.ERROR, "Erreur lors de la suppression de la note."));
 			}
-		}).exceptionally(e -> {
-			e.printStackTrace();
-			Platform.runLater(() -> showAlert(Alert.AlertType.ERROR, "Erreur réseau : " + e.getMessage()));
-			return null;
-		});
+		}
 	}
 
 	private void fetchUsers() {
-		HttpClient client = HttpClient.newHttpClient();
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/api/users"))
-				.header("Authorization", BEARER_TOKEN).GET().build();
+		if (NetworkService.isOnline()) {
+			HttpClient client = HttpClient.newHttpClient();
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/api/users"))
+					.header("Authorization", BEARER_TOKEN).GET().build();
 
-		client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
-				.thenAccept(this::parseUsers).exceptionally(e -> {
-					e.printStackTrace();
-					return null;
-				});
+			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
+					.thenAccept(this::parseUsers).exceptionally(e -> {
+						e.printStackTrace();
+						return null;
+					});
+		} else {
+			parseUsers("");
+		}
 	}
 
 	private void parseUsers(String responseBody) {
 		LocalUser user = AuthService.getCurrentUser();
 		ObjectMapper mapper = new ObjectMapper();
-		try {
-			List<User> users = Arrays.asList(mapper.readValue(responseBody, User[].class));
+		if (NetworkService.isOnline()) {
+			try {
+				List<User> users = Arrays.asList(mapper.readValue(responseBody, User[].class));
+
+				// Filtrer les utilisateurs par rôle
+				List<User> eleves = users.stream().filter(u -> "ETUDIANT".equalsIgnoreCase(u.getRole().getLibelle()))
+						.collect(Collectors.toList());
+
+				List<User> enseignants = users.stream().filter(u -> "ENSEIGNANT".equalsIgnoreCase(u.getRole().getLibelle()))
+						.collect(Collectors.toList());
+
+				// Mettre à jour les ComboBox dans le thread JavaFX
+				Platform.runLater(() -> {
+					// Mettre les utilisateurs dans les ComboBox
+					eleveComboBox.getItems().setAll(eleves);
+					enseignantComboBox.getItems().setAll(enseignants);
+
+					// Personnaliser l'affichage des ComboBox pour afficher le nom complet
+					enseignantComboBox.setCellFactory(lv -> new ListCell<User>() {
+						@Override
+						protected void updateItem(User item, boolean empty) {
+							super.updateItem(item, empty);
+							setText(empty || item == null ? null : item.getPrenom() + " " + item.getNom());
+						}
+					});
+
+					eleveComboBox.setCellFactory(lv -> new ListCell<User>() {
+						@Override
+						protected void updateItem(User item, boolean empty) {
+							super.updateItem(item, empty);
+							setText(empty || item == null ? null : item.getPrenom() + " " + item.getNom());
+						}
+					});
+
+					// Rendre l'affichage correct pour le bouton du ComboBox (afficher le nom
+					// complet)
+					enseignantComboBox.setButtonCell(enseignantComboBox.getCellFactory().call(null));
+					eleveComboBox.setButtonCell(eleveComboBox.getCellFactory().call(null));
+
+					// Si l'utilisateur est un enseignant connecté, sélectionner son nom dans le
+					// ComboBox
+					if ("ENSEIGNANT".equalsIgnoreCase(user.getRole())) {
+						// Trouver l'objet User correspondant à l'enseignant
+						User enseignant = enseignants.stream().filter(
+										u -> (u.getPrenom() + " " + u.getNom()).equals(user.getPrenom() + " " + user.getNom()))
+								.findFirst().orElse(null);
+
+						if (enseignant != null) {
+							enseignantComboBox.setValue(enseignant);
+							enseignantComboBox.setDisable(true);
+						}
+					}
+				});
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("Mode hors ligne activé — chargement des utilisateur en local");
+			ArrayList<User> localUsers = LocalStorageService.loadUsers();
 
 			// Filtrer les utilisateurs par rôle
-			List<User> eleves = users.stream().filter(u -> "ETUDIANT".equalsIgnoreCase(u.getRole().getLibelle()))
+			List<User> eleves = localUsers.stream().filter(u -> "ETUDIANT".equalsIgnoreCase(u.getRole().getLibelle()))
 					.collect(Collectors.toList());
 
-			List<User> enseignants = users.stream().filter(u -> "ENSEIGNANT".equalsIgnoreCase(u.getRole().getLibelle()))
+			List<User> enseignants = localUsers.stream().filter(u -> "ENSEIGNANT".equalsIgnoreCase(u.getRole().getLibelle()))
 					.collect(Collectors.toList());
 
 			// Mettre à jour les ComboBox dans le thread JavaFX
@@ -440,7 +545,7 @@ public class NotesController {
 				enseignantComboBox.getItems().setAll(enseignants);
 
 				// Personnaliser l'affichage des ComboBox pour afficher le nom complet
-				enseignantComboBox.setCellFactory(lv -> new ListCell<User>() {
+				/*enseignantComboBox.setCellFactory(lv -> new ListCell<User>() {
 					@Override
 					protected void updateItem(User item, boolean empty) {
 						super.updateItem(item, empty);
@@ -454,7 +559,7 @@ public class NotesController {
 						super.updateItem(item, empty);
 						setText(empty || item == null ? null : item.getPrenom() + " " + item.getNom());
 					}
-				});
+				});*/
 
 				// Rendre l'affichage correct pour le bouton du ComboBox (afficher le nom
 				// complet)
@@ -466,7 +571,7 @@ public class NotesController {
 				if ("ENSEIGNANT".equalsIgnoreCase(user.getRole())) {
 					// Trouver l'objet User correspondant à l'enseignant
 					User enseignant = enseignants.stream().filter(
-							u -> (u.getPrenom() + " " + u.getNom()).equals(user.getPrenom() + " " + user.getNom()))
+									u -> (u.getPrenom() + " " + u.getNom()).equals(user.getPrenom() + " " + user.getNom()))
 							.findFirst().orElse(null);
 
 					if (enseignant != null) {
@@ -475,22 +580,25 @@ public class NotesController {
 					}
 				}
 			});
-
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
 	private void fetchMatieres() {
-		HttpClient client = HttpClient.newHttpClient();
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/api/matieres"))
-				.header("Authorization", BEARER_TOKEN).GET().build();
+		if (NetworkService.isOnline()) {
+			HttpClient client = HttpClient.newHttpClient();
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/api/matieres"))
+					.header("Authorization", BEARER_TOKEN).GET().build();
 
-		client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
-				.thenAccept(this::parseMatieres).exceptionally(e -> {
-					e.printStackTrace();
-					return null;
-				});
+			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
+					.thenAccept(this::parseMatieres).exceptionally(e -> {
+						e.printStackTrace();
+						return null;
+					});
+		} else {
+			System.out.println("Mode hors ligne activé — chargement des matières local");
+			ArrayList<Matiere> localMatieres = LocalStorageService.loadMatieres();
+			Platform.runLater(() -> matiereComboBox.getItems().setAll(localMatieres));
+		}
 	}
 
 	private void parseMatieres(String responseBody) {
@@ -520,15 +628,21 @@ public class NotesController {
 	}
 
 	private void fetchNoteTypes() {
-		HttpClient client = HttpClient.newHttpClient();
-		HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/api/notes/type"))
-				.header("Authorization", BEARER_TOKEN).GET().build();
+		if (NetworkService.isOnline()) {
+			HttpClient client = HttpClient.newHttpClient();
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/api/notes/type"))
+					.header("Authorization", BEARER_TOKEN).GET().build();
 
-		client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
-				.thenAccept(this::parseNoteTypes).exceptionally(e -> {
-					e.printStackTrace();
-					return null;
-				});
+			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
+					.thenAccept(this::parseNoteTypes).exceptionally(e -> {
+						e.printStackTrace();
+						return null;
+					});
+		} else {
+			System.out.println("Mode hors ligne activé — chargement des types de notes en local");
+			ArrayList<NoteType> localNoteType = LocalStorageService.loadNoteTypes();
+			Platform.runLater(() -> noteTypeComboBox.getItems().setAll(localNoteType));
+		}
 	}
 
 	private void parseNoteTypes(String responseBody) {
@@ -604,7 +718,7 @@ public class NotesController {
 
 		// Sélectionner le type de note
 		for (NoteType nt : noteTypeBox.getItems()) {
-			if (nt.getLibelle().equalsIgnoreCase(selectedNote.getNoteType())) {
+			if (nt.getLibelle().equalsIgnoreCase(selectedNote.getNoteType().getLibelle())) {
 				noteTypeBox.setValue(nt);
 				break;
 			}
@@ -621,39 +735,66 @@ public class NotesController {
 
 		dialog.showAndWait().ifPresent(response -> {
 			if (response == ButtonType.OK) {
-				try {
-					String json = String.format("{" + "\"eleve\": { \"id\": %d }," + "\"enseignant\": { \"id\": %d },"
-							+ "\"matiere\": { \"id\": %d }," + "\"coefficient\": %s," + "\"valeur\": %s,"
-							+ "\"noteType\": { \"id\": %d }," + "\"commentaire\": \"%s\"," + "\"date\": \"%s\"" + "}",
-							eleveBox.getValue().getId(), enseignantBox.getValue().getId(),
-							matiereBox.getValue().getId(), Double.parseDouble(coefficientFieldLocal.getText()),
-							Double.parseDouble(valeurFieldLocal.getText()), noteTypeBox.getValue().getId(),
-							commentaireFieldLocal.getText(), datePickerLocal.getValue().toString());
+				if(NetworkService.isOnline()) {
+					try {
+						String json = String.format("{" + "\"eleve\": { \"id\": %d }," + "\"enseignant\": { \"id\": %d },"
+										+ "\"matiere\": { \"id\": %d }," + "\"coefficient\": %s," + "\"valeur\": %s,"
+										+ "\"noteType\": { \"id\": %d }," + "\"commentaire\": \"%s\"," + "\"date\": \"%s\"" + "}",
+								eleveBox.getValue().getId(), enseignantBox.getValue().getId(),
+								matiereBox.getValue().getId(), Double.parseDouble(coefficientFieldLocal.getText()),
+								Double.parseDouble(valeurFieldLocal.getText()), noteTypeBox.getValue().getId(),
+									commentaireFieldLocal.getText(), datePickerLocal.getValue().toString());
 
-					HttpClient client = HttpClient.newHttpClient();
-					HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL + "/" + selectedNote.getId()))
-							.header("Authorization", BEARER_TOKEN).header("Content-Type", "application/json")
-							.PUT(HttpRequest.BodyPublishers.ofString(json)).build();
+						HttpClient client = HttpClient.newHttpClient();
+						HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL + "/" + selectedNote.getId()))
+								.header("Authorization", BEARER_TOKEN).header("Content-Type", "application/json")
+								.PUT(HttpRequest.BodyPublishers.ofString(json)).build();
 
-					client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(resp -> {
-						if (resp.statusCode() == 200) {
-							fetchNotes();
-							Platform.runLater(
-									() -> showAlert(Alert.AlertType.INFORMATION, "Note mise à jour avec succès."));
-						} else {
-							Platform.runLater(
-									() -> showAlert(Alert.AlertType.ERROR, "Erreur de mise à jour : " + resp.body()));
-						}
-					}).exceptionally(e -> {
+						client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(resp -> {
+							if (resp.statusCode() == 200) {
+								fetchNotes();
+								Platform.runLater(
+										() -> showAlert(Alert.AlertType.INFORMATION, "Note mise à jour avec succès."));
+							} else {
+								Platform.runLater(
+										() -> showAlert(Alert.AlertType.ERROR, "Erreur de mise à jour : " + resp.body()));
+							}
+						}).exceptionally(e -> {
+							e.printStackTrace();
+							Platform.runLater(() -> showAlert(Alert.AlertType.ERROR, "Erreur réseau : " + e.getMessage()));
+							return null;
+						});
+
+					} catch (Exception e) {
+						showAlert(Alert.AlertType.ERROR, "Erreur dans le formulaire : " + e.getMessage());
 						e.printStackTrace();
-						Platform.runLater(() -> showAlert(Alert.AlertType.ERROR, "Erreur réseau : " + e.getMessage()));
-						return null;
-					});
+					}
+				} else {
+					ArrayList<Note> notes = LocalStorageService.loadNotes();
+					Optional<Note> noteOpt  = notes.stream()
+							.filter(u -> u.getId()==eleveBox.getValue().getId())
+							.findFirst();
+					if (noteOpt.isPresent()) {
+						Note note = noteOpt.get();
 
-				} catch (Exception e) {
-					showAlert(Alert.AlertType.ERROR, "Erreur dans le formulaire : " + e.getMessage());
-					e.printStackTrace();
+						note.setEleve(eleveBox.getValue());
+						note.setEnseignant(enseignantBox.getValue());
+						note.setMatiere(matiereBox.getValue());
+						note.setNoteType(noteTypeBox.getValue());
+						note.setCoefficient(Double.parseDouble(coefficientFieldLocal.getText()));
+						note.setValeur(Double.parseDouble(valeurFieldLocal.getText()));
+						note.setCommentaire(commentaireFieldLocal.getText());
+						note.setDate(datePickerLocal.getValue().toString());
+
+						LocalStorageService.update(note);
+
+						Platform.runLater(() -> {
+							showAlert(Alert.AlertType.INFORMATION, "Note mis a jour en local (mode hors ligne).");
+							fetchMatieres(); // Rafraîchit la liste des utilisateurs
+						});
+					}
 				}
+				fetchNotes();
 			}
 		});
 	}

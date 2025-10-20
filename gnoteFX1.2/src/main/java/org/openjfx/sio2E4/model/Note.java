@@ -15,7 +15,7 @@ public class Note {
     private String commentaire;
     private String date;
     private String modification; // 🔄 nouveau champ
-    private String noteType;
+    private NoteType noteType;
 
     // GETTERS / SETTERS
 
@@ -46,12 +46,6 @@ public class Note {
     public String getModification() { return modification; }
     public void setModification(String modification) { this.modification = modification; }
 
-    public String getNoteType() { return noteType; }
-    public void setNoteType(String noteType) { this.noteType = noteType; }
-
-    // JSON NESTED OBJECT (noteType.libelle)
-    @JsonProperty("noteType")
-    public void unpackNoteTypeFromNestedObject(Map<String, Object> noteType) {
-        this.noteType = (String) noteType.get("libelle");
-    }
+    public NoteType getNoteType() { return noteType; }
+    public void setNoteType(NoteType noteType) { this.noteType = noteType; }
 }

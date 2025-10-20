@@ -177,6 +177,6 @@ public class UserCardController {
 
         coefficientColumn.setCellValueFactory(cellData -> new SimpleDoubleProperty(cellData.getValue().getCoefficient()).asObject());
 
-        noteTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNoteType()));
+        noteTypeColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNoteType().getLibelle()));
     }
 }

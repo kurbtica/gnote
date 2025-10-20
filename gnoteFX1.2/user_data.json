@@ -9,10 +9,128 @@
     "role" : "ADMIN",
     "adresse" : "16 Pl. Saint-Sauveur, 35600 Redon",
     "telephone" : "06 00 00 00 00"
+  }, {
+    "token" : "abc",
+    "id" : 0,
+    "nom" : "nom",
+    "prenom" : "prenom",
+    "email" : "prof@lycee.local",
+    "role" : "ENSEIGNANT",
+    "adresse" : "16 Pl. Saint-Sauveur, 35600 Redon",
+    "telephone" : "06 00 00 00 00"
   } ],
-  "Matiere" : [ ],
-  "Note" : [ ],
-  "NoteType" : [ ],
+  "Matiere" : [ {
+    "id" : 0,
+    "libelle" : "Math"
+  }, {
+    "id" : 0,
+    "libelle" : "Francais"
+  } ],
+  "Note" : [ {
+    "id" : 0,
+    "enseignant" : {
+      "id" : 0,
+      "nom" : "prof",
+      "prenom" : "prof",
+      "email" : "test",
+      "adresse" : "test",
+      "telephone" : "test",
+      "role" : {
+        "id" : 2,
+        "libelle" : "ENSEIGNANT"
+      }
+    },
+    "eleve" : {
+      "id" : 0,
+      "nom" : "etudiant",
+      "prenom" : "etudiant",
+      "email" : "test",
+      "adresse" : "test",
+      "telephone" : "test",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      }
+    },
+    "matiere" : {
+      "id" : 0,
+      "libelle" : "Francais"
+    },
+    "coefficient" : 2.0,
+    "valeur" : 20.0,
+    "commentaire" : "test",
+    "date" : "2025-10-25",
+    "modification" : "null",
+    "noteType" : {
+      "id" : 0,
+      "libelle" : "test"
+    }
+  }, {
+    "id" : 0,
+    "enseignant" : {
+      "id" : 0,
+      "nom" : "prof",
+      "prenom" : "prof",
+      "email" : "test",
+      "adresse" : "test",
+      "telephone" : "test",
+      "role" : {
+        "id" : 2,
+        "libelle" : "ENSEIGNANT"
+      }
+    },
+    "eleve" : {
+      "id" : 0,
+      "nom" : "etudiant",
+      "prenom" : "etudiant",
+      "email" : "test",
+      "adresse" : "test",
+      "telephone" : "test",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      }
+    },
+    "matiere" : {
+      "id" : 0,
+      "libelle" : "Francais"
+    },
+    "coefficient" : 2.0,
+    "valeur" : 20.0,
+    "commentaire" : "test",
+    "date" : "2025-10-25",
+    "modification" : null,
+    "noteType" : {
+      "id" : 0,
+      "libelle" : "test"
+    }
+  } ],
+  "NoteType" : [ {
+    "id" : 0,
+    "libelle" : "test"
+  } ],
   "Role" : [ ],
-  "User" : [ ]
+  "User" : [ {
+    "id" : 0,
+    "nom" : "Etudiant",
+    "prenom" : "John",
+    "email" : "test",
+    "adresse" : "test",
+    "telephone" : "test",
+    "role" : {
+      "id" : 3,
+      "libelle" : "ETUDIANT"
+    }
+  }, {
+    "id" : 0,
+    "nom" : "Enseignant",
+    "prenom" : "Durand",
+    "email" : "test",
+    "adresse" : "test",
+    "telephone" : "test",
+    "role" : {
+      "id" : 2,
+      "libelle" : "ENSEIGNANT"
+    }
+  } ]
 }
