@@ -23,13 +23,22 @@
                      </font>
                   </Label>
                   <TextField fx:id="usernameField" layoutX="75.0" layoutY="179.0" promptText="Nom d'utilisateur" style="-fx-background-color: #EBEBEB; -fx-border-color: #B53654; -fx-border-width: 0px 0px 0px 3px;" />
-                  <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="130.0" layoutY="101.0">
+                  <ImageView fitHeight="80.0" fitWidth="80.0" layoutX="110.0" layoutY="61.0">
                      <image>
                         <Image url="@logo.png" />
                      </image>
                   </ImageView>
                   <Button fx:id="loginButton" onAction="#GoToHome" layoutX="107.0" layoutY="268.0" mnemonicParsing="false" style="-fx-background-color: #b53654;" text="Se connecter" textFill="WHITE" />
-                  <Label fx:id="errorLabel" layoutX="75.0" layoutY="310.0" prefWidth="200" text="" textFill="RED" />
+                  <Label fx:id="errorLabel"
+                         layoutX="50.0"
+                         layoutY="310.0"
+                         prefWidth="200.0"
+                         wrapText="true"
+                         textAlignment="CENTER"
+                         alignment="CENTER"
+                         text=""
+                         textFill="RED"
+                  />
                </children>
             </AnchorPane>
             <AnchorPane layoutX="300.0" prefHeight="400.0" prefWidth="300.0">

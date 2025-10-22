@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.openjfx.sio2E4.service.LocalStorageService;
 
@@ -22,6 +23,7 @@ public class App extends Application {
 
         stage.setTitle("Gnotes");
         stage.setScene(scene);
+        stage.getIcons().add(new Image(App.class.getResourceAsStream("logo.png")));
         stage.setResizable(false);
         stage.show();
     }
