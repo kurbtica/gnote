@@ -59,6 +59,7 @@ public class AuthService {
 			}
 		} else {
 			ArrayList<LocalUser> localUsers = LocalStorageService.loadLocalUsers();
+			if(currentUser != null) localUsers.add(currentUser);
             if (localUsers.isEmpty()) {
 				// Création d'un user hors connexion pour le test TODO a supprimer
 				System.out.println("Création d'un user hors connexion pour le test");
@@ -114,6 +115,10 @@ public class AuthService {
 	// Méthode pour récupérer les informations de l'utilisateur courant
 	public static LocalUser getCurrentUser() {
 		return currentUser;
+	}
+
+	public static void setCurrentUser(LocalUser currentUser) {
+		AuthService.currentUser = currentUser;
 	}
 
 	// Méthode pour récupérer le token

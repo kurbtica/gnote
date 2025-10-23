@@ -10,19 +10,20 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.sio2E4.controller.loginPageController">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0"
+           xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.sio2E4.controller.loginPageController">
    <children>
       <AnchorPane prefHeight="200.0" prefWidth="200.0">
          <children>
             <AnchorPane prefHeight="400.0" prefWidth="300.0">
                <children>
-                  <PasswordField fx:id="passwordField" layoutX="75.0" layoutY="225.0" promptText="Mot de passe" style="-fx-background-color: #EBEBEB; -fx-border-color: #B53654; -fx-border-width: 0px 0px 0px 3px;" />
                   <Label layoutX="102.0" layoutY="141.0" text="Se connecter" textFill="#b53654">
                      <font>
                         <Font name="System Bold" size="16.0" />
                      </font>
                   </Label>
                   <TextField fx:id="usernameField" layoutX="75.0" layoutY="179.0" promptText="Nom d'utilisateur" style="-fx-background-color: #EBEBEB; -fx-border-color: #B53654; -fx-border-width: 0px 0px 0px 3px;" />
+                  <PasswordField fx:id="passwordField" layoutX="75.0" layoutY="225.0" promptText="Mot de passe" style="-fx-background-color: #EBEBEB; -fx-border-color: #B53654; -fx-border-width: 0px 0px 0px 3px;" />
                   <ImageView fitHeight="80.0" fitWidth="80.0" layoutX="110.0" layoutY="61.0">
                      <image>
                         <Image url="@logo.png" />

@@ -1,0 +1,57 @@
+package org.openjfx.sio2E4;
+
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
+import org.openjfx.sio2E4.model.LocalUser;
+import org.openjfx.sio2E4.service.AuthService;
+import org.testfx.api.FxToolkit;
+import org.testfx.framework.junit5.ApplicationTest;
+
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+
+/**
+ * Classe abstraite de base pour les tests d'interface graphique en mode administrateur.
+ *
+ * Lors du démarrage du test :
+ *  - Un utilisateur "test.admin@lycee.local" (rôle ADMIN) est automatiquement injecté
+ *    dans le service d'authentification via {@link AuthService#setCurrentUser(LocalUser)}.
+ *  - La vue "Admin.fxml" est directement chargée dans la scène principale.
+ *
+ * Les classes de test qui étendent {@code BaseUiAsAdminTest}
+ * peuvent donc interagir immédiatement avec l'interface administrateur,
+ * sans devoir passer par la page de connexion.
+ */
+public abstract class BaseUiAsAdminTest extends ApplicationTest {
+
+    public void start(Stage stage) throws IOException, TimeoutException {
+        FxToolkit.registerPrimaryStage(); // assure isolation de chaque test
+
+        // Simule un admin connecté
+        LocalUser testUser = new LocalUser(
+                "abc",
+                0,
+                "Test",
+                "Admin",
+                "test.admin@lycee.local",
+                "ADMIN",
+                "",
+                ""
+        );
+        AuthService.setCurrentUser(testUser);
+
+        Parent root = FXMLLoader.load(getClass().getResource("/org/openjfx/sio2E4/layout/Admin.fxml"));
+
+        Scene scene = new Scene(root);
+
+        stage.setTitle("Gnotes");
+        stage.setScene(scene);
+        stage.getIcons().add(new Image(App.class.getResourceAsStream("logo.png")));
+        stage.setMaximized(true);
+        stage.setResizable(true);
+        stage.show();
+    }
+}
