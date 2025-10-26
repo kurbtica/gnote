@@ -32,16 +32,30 @@
         <Label fx:id="roleLabel" GridPane.rowIndex="5" GridPane.columnIndex="1" />
     </GridPane>
 
-    <!-- Tableau des notes -->
-    <TableView fx:id="notesTable" prefWidth="600">
-        <columns>
-            <TableColumn fx:id="matiereColumn" text="Matière" prefWidth="150"/>
-            <TableColumn fx:id="valeurColumn" text="Note" prefWidth="100"/>
-            <TableColumn fx:id="dateColumn" text="Date" prefWidth="150"/>
-            <TableColumn fx:id="coefficientColumn" text="Coefficient" prefWidth="100"/>
-            <TableColumn fx:id="noteTypeColumn" text="Type de Note" prefWidth="150"/>
-        </columns>
-    </TableView>
-    <Label fx:id="moyenneLabel" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    <!-- Carte du relevé de notes -->
+    <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 3);">
+        <Label text="Relevé de notes" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+
+        <TableView fx:id="notesTable" prefHeight="400">
+            <columns>
+                <TableColumn fx:id="matiereColumn" text="Matière" prefWidth="200"/>
+                <TableColumn fx:id="moyennes" text="Moyennes" prefWidth="300">
+                    <columns>
+                        <TableColumn fx:id="moyenneEleveColumn" text="Élève" prefWidth="100"/>
+                        <TableColumn fx:id="moyenneClasseColumn" text="Classe" prefWidth="100"/>
+                        <TableColumn fx:id="moyenneMinColumn" text="Min" prefWidth="100"/>
+                        <TableColumn fx:id="moyenneMaxColumn" text="Max" prefWidth="100"/>
+                    </columns>
+                </TableColumn>
+                <TableColumn fx:id="notesColumn" text="Notes" prefWidth="400"/>
+                <TableColumn fx:id="appreciationsColumn" text="Appreciations" prefWidth="200" maxWidth="Infinity"/>
+            </columns>
+        </TableView>
+
+        <HBox alignment="CENTER_RIGHT">
+            <Label text="Moyenne générale :" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+            <Label fx:id="moyenneLabel" style="-fx-font-size: 16px; -fx-text-fill: #2196F3; -fx-font-weight: bold; -fx-padding: 0 0 0 10;"/>
+        </HBox>
+    </VBox>
 
 </VBox>

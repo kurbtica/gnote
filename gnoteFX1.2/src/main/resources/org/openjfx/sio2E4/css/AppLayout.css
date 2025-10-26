@@ -71,6 +71,11 @@
 
 .table-row-cell:filled:selected {
     -fx-background-color: #d4c0c0;
+    -fx-text-fill: #ccc;
+}
+
+.table-row-cell:filled:selected .table-cell {
+    -fx-text-fill: #ccc;
 }
 
 .table-row-cell:hover {
