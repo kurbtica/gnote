@@ -104,6 +104,45 @@
       "id" : 3,
       "libelle" : "DS"
     }
+  }, {
+    "id" : 2,
+    "enseignant" : {
+      "id" : 1,
+      "nom" : "Enseignant",
+      "prenom" : "Durand",
+      "email" : "test",
+      "adresse" : "test",
+      "telephone" : "test",
+      "role" : {
+        "id" : 2,
+        "libelle" : "ENSEIGNANT"
+      }
+    },
+    "eleve" : {
+      "id" : 0,
+      "nom" : "Etudiant",
+      "prenom" : "John",
+      "email" : "test",
+      "adresse" : "test",
+      "telephone" : "test",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      }
+    },
+    "matiere" : {
+      "id" : 0,
+      "libelle" : "Math"
+    },
+    "coefficient" : 1.0,
+    "valeur" : 12.0,
+    "commentaire" : "test3",
+    "date" : "2025-10-24",
+    "modification" : null,
+    "noteType" : {
+      "id" : 2,
+      "libelle" : "TP"
+    }
   } ],
   "NoteType" : [ {
     "id" : 0,
