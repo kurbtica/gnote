@@ -63,5 +63,6 @@
             onAction="#ajouterUtilisateur"
             GridPane.rowIndex="7" GridPane.columnIndex="1"
             style="-fx-background-color: #4CAF50; -fx-text-fill: white;" />
+        <Label fx:id="erreur"/>
     </GridPane>
 </VBox>

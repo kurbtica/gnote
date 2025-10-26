@@ -168,11 +168,20 @@ public class UsersController {
 		String selectedRole = roleComboBox.getValue();
 		int roleId = getRoleId(selectedRole);
 
-		if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || password.isEmpty()) {
+		if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || password.isEmpty() ) {
 			showAlert(AlertType.WARNING, "Veuillez remplir tous les champs obligatoires.");
 			return;
 		}
-		if (NetworkService.isOnline()) {
+        if (!email.matches("^[\\w\\d._%+-]+@[\\w\\d.-]+\\.[A-Za-z]{2,}$")) {
+            showAlert(AlertType.WARNING, "Email non conforme.");
+            return;
+        }
+
+        if (!telephone.matches("^(0|\\+33)[1-9](\\d{2}){4}$")) {
+            showAlert(AlertType.WARNING, "Téléphone non conforme.");
+            return;
+        }
+        if (NetworkService.isOnline()) {
 			try {
 				// Construction du JSON
 				String json = String.format(

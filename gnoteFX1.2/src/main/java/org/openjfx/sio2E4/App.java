@@ -33,6 +33,7 @@ public class App extends Application {
             lockSocket = new ServerSocket(9999); // port arbitraire
         } catch (IOException e) {
             System.out.println("⚠️ L'application Gnotes est déjà en cours d'exécution !");
+            System.exit(0);
             return; // on quitte sans lancer JavaFX
         }
         try {
