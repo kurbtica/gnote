@@ -1,17 +1,16 @@
 package org.openjfx.sio2E4.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
-import javafx.geometry.Insets;
-
 import org.openjfx.sio2E4.model.Role;
 import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.service.AuthService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openjfx.sio2E4.service.LocalStorageService;
 import org.openjfx.sio2E4.service.NetworkService;
 
@@ -82,7 +81,7 @@ public class UsersController {
 		roleColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getRole().getLibelle()));
 
 
-		fetchUsers();
+        fetchUsers();
 	}
 
 	private void fetchUsers() {

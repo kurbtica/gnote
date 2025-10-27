@@ -3,14 +3,13 @@ package org.openjfx.sio2E4.controller;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.scene.Node;
-
 import org.openjfx.sio2E4.model.LocalUser;
 import org.openjfx.sio2E4.service.AuthService;
 
@@ -108,9 +107,19 @@ public class MainLayoutController {
 	}
 
 	@FXML
-	private void showEtudiants() {
-		loadView("/org/openjfx/sio2E4/view/EtudiantsView.fxml");
-	}
+    private void showEtudiants() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/EtudiantsView.fxml"));
+            Parent usersRoot = loader.load();
+
+            EtudiantsController etudiantsController = loader.getController();
+            etudiantsController.setMainLayoutController(this);
+
+            contentArea.getChildren().setAll(usersRoot);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 	@FXML
 	private void showMatieres() {
 		loadView("/org/openjfx/sio2E4/view/MatieresView.fxml");
@@ -126,6 +135,7 @@ public class MainLayoutController {
 	
 	@FXML
 	private void showUsers() {
+        System.out.println("affichage carte");
 	    try {
 	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/UserView.fxml"));
 	        Parent usersRoot = loader.load();
@@ -144,6 +154,7 @@ public class MainLayoutController {
   //----------------------- User Card -----------------------
 
 	public void showUserCard(int userId) {
+        System.out.println("affichage carte etudiant");
 	    Platform.runLater(() -> {
 	        try {
 	            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/UserCardView.fxml"));
@@ -161,10 +172,51 @@ public class MainLayoutController {
 
 
 
-	
-	
 
-	private void loadView(String fxmlPath) {
+//----------------------- Etudiants Card -----------------------
+
+
+    @FXML
+    private void showEtudiant() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/EtudiantsView.fxml"));
+            Parent usersRoot = loader.load();
+
+            EtudiantsController etudiantsController = loader.getController();
+            etudiantsController.setMainLayoutController(this);
+
+            contentArea.getChildren().setAll(usersRoot);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    //----------------------- Etudiant Card -----------------------
+
+    public void showEtudiantCard(int etudiantId) {
+        Platform.runLater(() -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/EtudiantCardView.fxml"));
+                Parent etudiantCardRoot = loader.load();
+
+                EtudiantCardController controller = loader.getController();
+                controller.loadUser(etudiantId); // charge les infos de l'utilisateur
+
+                contentArea.getChildren().setAll(etudiantCardRoot); // MAJ de l'UI
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+
+
+
+
+
+    private void loadView(String fxmlPath) {
 		try {
 			Parent view = FXMLLoader.load(getClass().getResource(fxmlPath));
 			contentArea.getChildren().setAll(view);

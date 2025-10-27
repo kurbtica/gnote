@@ -10,6 +10,7 @@ module org.openjfx.sio2E4 {
 	requires javafx.graphics;
 
 
+
     // Exportez le package contenant votre contrôleur
     exports org.openjfx.sio2E4.controller;
 

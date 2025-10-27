@@ -180,5 +180,16 @@
       "id" : 2,
       "libelle" : "ENSEIGNANT"
     }
+  }, {
+    "id" : 2,
+    "nom" : "sdfgh",
+    "prenom" : "sdfg",
+    "email" : "mail@truc.com",
+    "adresse" : "dsf",
+    "telephone" : "0745454545",
+    "role" : {
+      "id" : 3,
+      "libelle" : "ETUDIANT"
+    }
   } ]
 }

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Pos?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.openjfx.sio2E4.controller.EtudiantCardController"
+      spacing="15" alignment="TOP_CENTER" style="-fx-padding: 20; -fx-background-color: #f4f4f9;">
+
+    <!-- Titre de la vue utilisateur -->
+    <Label text="Informations de l'utilisateur" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+
+    <!-- Affichage des détails de l'utilisateur -->
+    <GridPane hgap="15" vgap="10">
+        <Label text="Nom:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+        <Label fx:id="nomLabel" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+        <Label text="Prénom:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+        <Label fx:id="prenomLabel" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+        <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+        <Label fx:id="emailLabel" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+
+        <Label text="Téléphone:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+        <Label fx:id="telephoneLabel" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+
+        <Label text="Adresse:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+        <Label fx:id="adresseLabel" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+
+        <Label text="Rôle:" GridPane.rowIndex="5" GridPane.columnIndex="0" />
+        <Label fx:id="roleLabel" GridPane.rowIndex="5" GridPane.columnIndex="1" />
+    </GridPane>
+
+    <!-- Carte du relevé de notes -->
+    <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 3);">
+        <Label text="Relevé de notes" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
+
+        <TableView fx:id="notesTable" prefHeight="400">
+            <columns>
+                <TableColumn fx:id="matiereColumn" text="Matière" prefWidth="200"/>
+                <TableColumn fx:id="moyennes" text="Moyennes" prefWidth="300">
+                    <columns>
+                        <TableColumn fx:id="moyenneEleveColumn" text="Élève" prefWidth="100"/>
+                        <TableColumn fx:id="moyenneClasseColumn" text="Classe" prefWidth="100"/>
+                        <TableColumn fx:id="moyenneMinColumn" text="Min" prefWidth="100"/>
+                        <TableColumn fx:id="moyenneMaxColumn" text="Max" prefWidth="100"/>
+                    </columns>
+                </TableColumn>
+                <TableColumn fx:id="notesColumn" text="Notes" prefWidth="400"/>
+                <TableColumn fx:id="appreciationsColumn" text="Appreciations" prefWidth="200" maxWidth="Infinity"/>
+            </columns>
+        </TableView>
+
+        <HBox alignment="CENTER_RIGHT">
+            <Label text="Moyenne générale :" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+            <Label fx:id="moyenneLabel" style="-fx-font-size: 16px; -fx-text-fill: #2196F3; -fx-font-weight: bold; -fx-padding: 0 0 0 10;"/>
+        </HBox>
+    </VBox>
+
+</VBox>
