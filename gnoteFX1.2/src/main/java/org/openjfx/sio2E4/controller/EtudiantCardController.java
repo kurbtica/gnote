@@ -134,7 +134,9 @@ public class EtudiantCardController {
                         return null;
                     });
         } else {
-            ArrayList<Note> notes = LocalStorageService.loadNotes();
+            ArrayList<Note> notes = (ArrayList<Note>) LocalStorageService.loadNotes().stream()
+                    .filter(note -> note.getEleve().getId() == userId)
+                    .collect(Collectors.toList());
 
             // Regroupe les notes par matière pour n'avoir qu'une seule ligne par matière dans le TableView
             // Utilise un Map<String, List<Note>> où la clé est le nom de la matière et la valeur est la liste des notes
