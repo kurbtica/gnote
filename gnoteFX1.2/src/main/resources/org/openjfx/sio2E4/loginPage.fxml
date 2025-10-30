@@ -1,57 +1,47 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="org.openjfx.sio2E4.controller.loginPageController"
+           prefWidth="600" prefHeight="400">
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0"
-           xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.sio2E4.controller.loginPageController">
-   <children>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0">
-         <children>
-            <AnchorPane prefHeight="400.0" prefWidth="300.0">
-               <children>
-                  <Label layoutX="102.0" layoutY="141.0" text="Se connecter" textFill="#b53654">
-                     <font>
-                        <Font name="System Bold" size="16.0" />
-                     </font>
-                  </Label>
-                  <TextField fx:id="usernameField" layoutX="75.0" layoutY="179.0" promptText="Nom d'utilisateur" style="-fx-background-color: #EBEBEB; -fx-border-color: #B53654; -fx-border-width: 0px 0px 0px 3px;" />
-                  <PasswordField fx:id="passwordField" layoutX="75.0" layoutY="225.0" promptText="Mot de passe" style="-fx-background-color: #EBEBEB; -fx-border-color: #B53654; -fx-border-width: 0px 0px 0px 3px;" />
-                  <ImageView fitHeight="80.0" fitWidth="80.0" layoutX="110.0" layoutY="61.0">
-                     <image>
-                        <Image url="@logo.png" />
-                     </image>
-                  </ImageView>
-                  <Button fx:id="loginButton" onAction="#GoToHome" layoutX="107.0" layoutY="268.0" mnemonicParsing="false" style="-fx-background-color: #b53654;" text="Se connecter" textFill="WHITE" />
-                  <Label fx:id="errorLabel"
-                         layoutX="50.0"
-                         layoutY="310.0"
-                         prefWidth="200.0"
-                         wrapText="true"
-                         textAlignment="CENTER"
-                         alignment="CENTER"
-                         text=""
-                         textFill="RED"
-                  />
-               </children>
-            </AnchorPane>
-            <AnchorPane layoutX="300.0" prefHeight="400.0" prefWidth="300.0">
-               <children>
-                  <ImageView fitHeight="400.0" fitWidth="300.0">
-                     <image>
-                        <Image url="@image-background.png" />
-                     </image>
-                  </ImageView>
-               </children>
-            </AnchorPane>
-         </children>
-      </AnchorPane>
-   </children>
+   <!-- Contenu principal -->
+   <HBox alignment="CENTER" spacing="0" prefWidth="600" prefHeight="400">
+      <!-- Formulaire à gauche -->
+      <VBox alignment="CENTER" spacing="15" prefWidth="300" prefHeight="400">
+         <ImageView fitWidth="80" fitHeight="80">
+            <image>
+               <Image url="@logo.png" />
+            </image>
+         </ImageView>
+         <Label text="Se connecter" textFill="#b53654">
+            <font>
+               <Font name="System Bold" size="16"/>
+            </font>
+         </Label>
+         <TextField fx:id="usernameField" promptText="Nom d'utilisateur"
+                    style="-fx-background-color: #EBEBEB; -fx-border-color: #B53654; -fx-border-width: 0 0 0 3"
+                    maxWidth="150"/>
+         <PasswordField fx:id="passwordField" promptText="Mot de passe"
+                        style="-fx-background-color: #EBEBEB; -fx-border-color: #B53654; -fx-border-width: 0 0 0 3"
+                        maxWidth="150"/>
+         <Button fx:id="loginButton" onAction="#GoToHome" text="Se connecter"
+                 style="-fx-background-color: #b53654;" textFill="WHITE"/>
+         <Label fx:id="errorLabel" textFill="RED" wrapText="true" textAlignment="CENTER"/>
+      </VBox>
+
+      <!-- Image à droite -->
+      <ImageView fitWidth="300" fitHeight="400">
+         <image>
+            <Image url="@image-background.png"/>
+         </image>
+      </ImageView>
+   </HBox>
 </StackPane>
