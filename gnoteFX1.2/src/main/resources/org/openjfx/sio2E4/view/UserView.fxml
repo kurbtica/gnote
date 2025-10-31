@@ -2,67 +2,85 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml/1"
-    fx:controller="org.openjfx.sio2E4.controller.UsersController"
-    spacing="10" alignment="TOP_CENTER"
-    style="-fx-padding: 20;">
+<VBox spacing="20" style="-fx-background-color: #f8f9fa; -fx-padding: 30;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="org.openjfx.sio2E4.controller.UsersController">
 
-    <!-- Titre de la page -->
-    <Label text="Liste des utilisateurs"
-        style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-alignment: top-left;" />
+    <!-- En-tête avec titre et bouton d'ajout -->
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <Label style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;" text="Utilisateurs">
+                <font>
+                    <Font name="System Bold" size="28" />
+                </font>
+            </Label>
+            <Label style="-fx-font-size: 14px; -fx-text-fill: #6c757d;" text="Gérez les étudiants et enseignants de l'établissement." />
+        </VBox>
+
+        <Button fx:id="addUserButton" onAction="#showCreateDialog" style="-fx-background-color: #82263c; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 6; -fx-cursor: hand;" text="+ Ajouter un utilisateur">
+            <font>
+                <Font name="System Bold" size="14" />
+            </font>
+        </Button>
+    </HBox>
+
+    <!-- Barre de recherche et filtres (désactivé)
+    <GridPane hgap="10" vgap="10">
+        <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" percentWidth="40" />
+            <ColumnConstraints percentWidth="20" />
+            <ColumnConstraints percentWidth="20" />
+        </columnConstraints>
+
+        <!- Champ de recherche ->
+        <TextField fx:id="searchField" promptText="Rechercher par nom, email, classe…" style="-fx-background-color: white; -fx-background-radius: 6; -fx-border-color: #e5e7eb; -fx-border-radius: 6; -fx-padding: 10; -fx-font-size: 14px;" GridPane.columnIndex="0" />
+
+        <!- Filtre Rôle ->
+        <ComboBox fx:id="roleFilter" prefWidth="200" promptText="Rôle" style="-fx-background-color: white; -fx-background-radius: 6; -fx-border-color: #e5e7eb; -fx-border-radius: 6;" GridPane.columnIndex="1">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Tous les rôles" />
+                    <String fx:value="Étudiant" />
+                    <String fx:value="Enseignant" />
+                    <String fx:value="Administrateur" />
+                </FXCollections>
+            </items>
+        </ComboBox>
+      <rowConstraints>
+         <RowConstraints />
+      </rowConstraints>
+    </GridPane> -->
 
     <!-- Tableau des utilisateurs -->
-    <TableView fx:id="usersTable" prefWidth="800">
-        <columns>
-            <TableColumn fx:id="nomColumn" text="Nom" prefWidth="100" />
-            <TableColumn fx:id="prenomColumn" text="Prénom" prefWidth="100" />
-            <TableColumn fx:id="emailColumn" text="Email" prefWidth="200" />
-            <TableColumn fx:id="telephoneColumn" text="Téléphone" prefWidth="120" />
-            <TableColumn fx:id="adresseColumn" text="Adresse" prefWidth="200" />
-            <TableColumn fx:id="roleColumn" text="Rôle" prefWidth="80" />
-        </columns>
-    </TableView>
+    <VBox spacing="0"
+          style="-fx-background-radius: 8; -fx-border-color: #e5e7eb; -fx-border-radius: 8; -fx-border-width: 1;"
+          VBox.vgrow="ALWAYS">
 
-    <HBox spacing="10">
-        <Button text="Supprimer" onAction="#handleDeleteUser" />
-        <Button text="Modifier" onAction="#handleEditUser" />
-        <Button text="Voir Fiche" onAction="#handleShowUserCard" />
+        <TableView fx:id="usersTable"
+                   style="-fx-background-radius: 8; -fx-border-color: #e5e7eb; -fx-border-radius: 8; -fx-border-width: 1;"
+                   VBox.vgrow="ALWAYS" > <!--style="-fx-background-color: transparent; -fx-table-cell-border-color: transparent;"-->
+            <columns>
+                <TableColumn fx:id="nomColumn" prefWidth="150" style="-fx-font-weight: bold;" text="Nom" />
+                <TableColumn fx:id="prenomColumn" prefWidth="150" style="-fx-font-weight: bold;" text="Prenom" />
+                <TableColumn fx:id="emailColumn" prefWidth="200" text="Email" />
+                <TableColumn fx:id="roleColumn" prefWidth="120" text="Rôle" />
+                <TableColumn fx:id="telephoneColumn" prefWidth="150" text="Téléphone" />
+                <TableColumn fx:id="adresseColumn" prefWidth="100" text="Adresse" />
+                <TableColumn fx:id="actionsColumn" prefWidth="120" sortable="false" text="Actions" />
+            </columns>
+
+            <placeholder>
+                <VBox alignment="CENTER" spacing="10" style="-fx-padding: 50;">
+                    <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #6c757d;" text="Aucun résultat" />
+                    <Label style="-fx-font-size: 14px; -fx-text-fill: #9ca3af;" text="Ajustez les filtres ou ajoutez un utilisateur." />
+                </VBox>
+            </placeholder>
+        </TableView>
+    </VBox>
+
+    <!-- Pied de page avec compteur -->
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label fx:id="resultCountLabel" style="-fx-font-size: 14px; -fx-text-fill: #6c757d;" text="0 résultat" HBox.hgrow="ALWAYS" />
     </HBox>
-    
-    
-    <!-- Formulaire d'ajout d'utilisateur -->
-    <Label text="Formulaire d'ajout d'utilisateur"
-        style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-alignment: top-left;" />
 
-    <GridPane hgap="10" vgap="10">
-        <Label text="Nom:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
-        <TextField fx:id="nomField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
-
-        <Label text="Prénom:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
-        <TextField fx:id="prenomField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
-
-        <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
-        <TextField fx:id="emailField" GridPane.rowIndex="2" GridPane.columnIndex="1" />
-
-        <Label text="Téléphone:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
-        <TextField fx:id="telephoneField" GridPane.rowIndex="3" GridPane.columnIndex="1" />
-
-        <Label text="Adresse:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
-        <TextField fx:id="adresseField" GridPane.rowIndex="4" GridPane.columnIndex="1" />
-
-        <Label text="Mot de passe:" GridPane.rowIndex="5" GridPane.columnIndex="0" />
-        <PasswordField fx:id="passwordField" GridPane.rowIndex="5" GridPane.columnIndex="1" />
-
-        <Label text="Rôle :" GridPane.rowIndex="6" GridPane.columnIndex="0" />
-        <ComboBox fx:id="roleComboBox" prefWidth="200" GridPane.rowIndex="6"
-            GridPane.columnIndex="1" />
-
-        <Button text="Ajouter Utilisateur"
-            fx:id="ajouterButton"
-            onAction="#ajouterUtilisateur"
-            GridPane.rowIndex="7" GridPane.columnIndex="1"
-            style="-fx-background-color: #4CAF50; -fx-text-fill: white;" />
-        <Label fx:id="erreur"/>
-    </GridPane>
 </VBox>

@@ -162,9 +162,9 @@
     "id" : 0,
     "nom" : "Etudiant",
     "prenom" : "John",
-    "email" : "test",
-    "adresse" : "test",
-    "telephone" : "test",
+    "email" : "john.etudiant@example.com",
+    "adresse" : "Rue des Lilas",
+    "telephone" : "0601020304",
     "role" : {
       "id" : 3,
       "libelle" : "ETUDIANT"
@@ -173,23 +173,100 @@
     "id" : 1,
     "nom" : "Enseignant",
     "prenom" : "Durand",
-    "email" : "test",
-    "adresse" : "test",
-    "telephone" : "test",
+    "email" : "pierre.durand@example.com",
+    "adresse" : "Avenue Victor Hugo",
+    "telephone" : "0605060708",
     "role" : {
       "id" : 2,
       "libelle" : "ENSEIGNANT"
     }
   }, {
     "id" : 2,
-    "nom" : "sdfgh",
-    "prenom" : "sdfg",
-    "email" : "mail@truc.com",
-    "adresse" : "dsf",
-    "telephone" : "0745454545",
+    "nom" : "Admin",
+    "prenom" : "Martin",
+    "email" : "martin.admin@example.com",
+    "adresse" : "Rue de la Liberté",
+    "telephone" : "0708091011",
+    "role" : {
+      "id" : 1,
+      "libelle" : "ADMIN"
+    }
+  }, {
+    "id" : 3,
+    "nom" : "Leclerc",
+    "prenom" : "Emma",
+    "email" : "emma.leclerc@example.com",
+    "adresse" : "Rue des Acacias",
+    "telephone" : "0602030405",
     "role" : {
       "id" : 3,
       "libelle" : "ETUDIANT"
+    }
+  }, {
+    "id" : 4,
+    "nom" : "Bernard",
+    "prenom" : "Sophie",
+    "email" : "sophie.bernard@example.com",
+    "adresse" : "Boulevard de la Gare",
+    "telephone" : "0611223344",
+    "role" : {
+      "id" : 2,
+      "libelle" : "ENSEIGNANT"
+    }
+  }, {
+    "id" : 5,
+    "nom" : "Morel",
+    "prenom" : "Lucas",
+    "email" : "lucas.morel@example.com",
+    "adresse" : "Rue des Érables",
+    "telephone" : "0677889900",
+    "role" : {
+      "id" : 3,
+      "libelle" : "ETUDIANT"
+    }
+  }, {
+    "id" : 6,
+    "nom" : "Petit",
+    "prenom" : "Claire",
+    "email" : "claire.petit@example.com",
+    "adresse" : "Rue Nationale",
+    "telephone" : "0622334455",
+    "role" : {
+      "id" : 2,
+      "libelle" : "ENSEIGNANT"
+    }
+  }, {
+    "id" : 7,
+    "nom" : "Dupont",
+    "prenom" : "Nicolas",
+    "email" : "nicolas.dupont@example.com",
+    "adresse" : "Rue de la Mairie",
+    "telephone" : "0644556677",
+    "role" : {
+      "id" : 3,
+      "libelle" : "ETUDIANT"
+    }
+  }, {
+    "id" : 8,
+    "nom" : "Guerin",
+    "prenom" : "Alice",
+    "email" : "alice.guerin@example.com",
+    "adresse" : "Rue du Parc",
+    "telephone" : "0612121212",
+    "role" : {
+      "id" : 2,
+      "libelle" : "ENSEIGNANT"
+    }
+  }, {
+    "id" : 9,
+    "nom" : "Renard",
+    "prenom" : "Maxime",
+    "email" : "maxime.renard@example.com",
+    "adresse" : "Impasse des Pins",
+    "telephone" : "0688997788",
+    "role" : {
+      "id" : 1,
+      "libelle" : "ADMIN"
     }
   } ]
 }
