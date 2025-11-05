@@ -22,6 +22,7 @@ import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.service.AuthService;
 import org.openjfx.sio2E4.service.LocalStorageService;
 import org.openjfx.sio2E4.service.NetworkService;
+import org.openjfx.sio2E4.util.AlertHelper;
 
 public class MatieresController {
 
@@ -39,18 +40,6 @@ public class MatieresController {
 
     private final String API_URL = "http://localhost:8080/api/matieres";
     private final String BEARER_TOKEN = "Bearer " + AuthService.getToken();
-
-    // TODO déplacé toutes les méthodes showAlert, clearForm, ... dans un autre fichier
-
-    private void showAlert(Alert.AlertType type, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle("Information");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-
 
     @FXML
     private void initialize() {
@@ -153,7 +142,7 @@ public class MatieresController {
 
                 Platform.runLater(() -> {
                     matieresTable.getItems().add(newMatiere);
-                    showAlert(Alert.AlertType.INFORMATION, "Matière ajouté en local (mode hors ligne).");
+                    AlertHelper.showInformation("Matière ajouté en local (mode hors ligne).");
                 });
             }
 
@@ -223,7 +212,7 @@ public class MatieresController {
                     LocalStorageService.remove(matiere.get());
 
                     Platform.runLater(() -> {
-                        showAlert(Alert.AlertType.INFORMATION, "Matière supprimé en local (mode hors ligne).");
+                        AlertHelper.showInformation("Matière supprimé en local (mode hors ligne).");
                         fetchMatieres(); // Rafraîchit la liste des utilisateurs
                     });
                 }
@@ -273,7 +262,7 @@ public class MatieresController {
                 LocalStorageService.update(matiere);
 
                 Platform.runLater(() -> {
-                    showAlert(Alert.AlertType.INFORMATION, "Matière mis a jour en local (mode hors ligne).");
+                    AlertHelper.showInformation("Matière mis a jour en local (mode hors ligne).");
                     fetchMatieres(); // Rafraîchit la liste des utilisateurs
                 });
             }

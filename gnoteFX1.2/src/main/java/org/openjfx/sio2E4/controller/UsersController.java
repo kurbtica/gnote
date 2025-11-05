@@ -17,6 +17,7 @@ import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.service.AuthService;
 import org.openjfx.sio2E4.service.LocalStorageService;
 import org.openjfx.sio2E4.service.NetworkService;
+import org.openjfx.sio2E4.util.AlertHelper;
 
 import java.io.IOException;
 import java.net.URI;
@@ -52,16 +53,7 @@ public class UsersController {
 
 	private final String API_URL = "http://localhost:8080/api/users";
 	private final String BEARER_TOKEN = "Bearer " + AuthService.getToken();
-
-
-	private void showAlert(AlertType type, String message) {
-		Alert alert = new Alert(type);
-		alert.setTitle("Information");
-		alert.setHeaderText(null);
-		alert.setContentText(message);
-		alert.showAndWait();
-	}
-
+    
 	@FXML
 	public void initialize() {
 		nomColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getNom()));
@@ -241,16 +233,16 @@ public class UsersController {
 
 		// Définir les largeurs en pourcentage de la largeur totale du tableau
 		nomColumn.prefWidthProperty().bind(
-				usersTable.widthProperty().multiply(0.15)
+				usersTable.widthProperty().multiply(0.14)
 		);
 		prenomColumn.prefWidthProperty().bind(
-				usersTable.widthProperty().multiply(0.15) // 30
+				usersTable.widthProperty().multiply(0.14) // 30
 		);
 		emailColumn.prefWidthProperty().bind(
 				usersTable.widthProperty().multiply(0.15)
 		);
 		telephoneColumn.prefWidthProperty().bind(
-				usersTable.widthProperty().multiply(0.15) // 60
+				usersTable.widthProperty().multiply(0.14) // 60
 		);
 		adresseColumn.prefWidthProperty().bind(
 				usersTable.widthProperty().multiply(0.15) //
@@ -259,7 +251,7 @@ public class UsersController {
 				usersTable.widthProperty().multiply(0.15) // 90
 		);
 		actionsColumn.prefWidthProperty().bind(
-				usersTable.widthProperty().multiply(0.10)
+				usersTable.widthProperty().multiply(0.13)
 		);
 		usersTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
@@ -325,16 +317,16 @@ public class UsersController {
 		int roleId = user.getRole().getId();
 
 		if (user.getNom().isEmpty() || user.getPrenom().isEmpty() || user.getEmail().isEmpty()) { // || user.getHashedPassword().isEmpty()
-			showAlert(AlertType.WARNING, "Veuillez remplir tous les champs obligatoires.");
+			AlertHelper.showWarning("Veuillez remplir tous les champs obligatoires.");
 			return;
 		}
         if (!user.getEmail().matches("^[\\w\\d._%+-]+@[\\w\\d.-]+\\.[A-Za-z]{2,}$")) {
-            showAlert(AlertType.WARNING, "Email non conforme.");
+            AlertHelper.showWarning("Email non conforme.");
             return;
         }
 
         if (!user.getTelephone().matches("^(0|\\+33)[1-9](\\d{2}){4}$")) {
-            showAlert(AlertType.WARNING, "Téléphone non conforme.");
+            AlertHelper.showWarning("Téléphone non conforme.");
             return;
         }
         if (NetworkService.isOnline()) {
@@ -351,21 +343,21 @@ public class UsersController {
 
 				client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
 					if (response.statusCode() == 201 || response.statusCode() == 200) {
-						Platform.runLater(() -> showAlert(AlertType.INFORMATION, "Utilisateur ajouté avec succès !"));
+						Platform.runLater(() -> AlertHelper.showInformation("Utilisateur ajouté avec succès !"));
 						Platform.runLater(this::fetchUsers);
 						// Optionnel : refreshTable(); si tu veux actualiser la liste
 					} else {
-						Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur lors de l'ajout : " + response.body()));
+						Platform.runLater(() -> AlertHelper.showError("Erreur lors de l'ajout : " + response.body()));
 					}
 				}).exceptionally(e -> {
 					e.printStackTrace();
-					Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur réseau : " + e.getMessage()));
+					Platform.runLater(() -> AlertHelper.showError("Erreur réseau : " + e.getMessage()));
 					return null;
 				});
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				showAlert(AlertType.ERROR, "Erreur interne : " + e.getMessage());
+				AlertHelper.showError("Erreur interne : " + e.getMessage());
 			}
 		} else {
 			// === Mode hors ligne ===
@@ -373,7 +365,7 @@ public class UsersController {
 
 			Platform.runLater(() -> {
 				usersTable.getItems().add(user);
-				showAlert(AlertType.INFORMATION, "Utilisateur ajouté en local (mode hors ligne).");
+				AlertHelper.showInformation("Utilisateur ajouté en local (mode hors ligne).");
 			});
 		}
 	}
@@ -394,7 +386,7 @@ public class UsersController {
 	@FXML
 	private void handleDeleteUser(User user) {
 		if (user == null) {
-			showAlert(AlertType.WARNING, "Veuillez sélectionner un utilisateur à supprimer.");
+			AlertHelper.showWarning("Veuillez sélectionner un utilisateur à supprimer.");
 			return;
 		}
 
@@ -411,15 +403,15 @@ public class UsersController {
 			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
 				if (response.statusCode() == 204) { // 204 No Content signifie que la suppression a réussi
 					Platform.runLater(() -> {
-						showAlert(AlertType.INFORMATION, "Utilisateur supprimé avec succès.");
+						AlertHelper.showInformation("Utilisateur supprimé avec succès.");
 						fetchUsers(); // Rafraîchit la liste des utilisateurs
 					});
 				} else {
-					Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur lors de la suppression de l'utilisateur."));
+					Platform.runLater(() -> AlertHelper.showError("Erreur lors de la suppression de l'utilisateur."));
 				}
 			}).exceptionally(e -> {
 				e.printStackTrace();
-				Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur réseau : " + e.getMessage()));
+				Platform.runLater(() -> AlertHelper.showError("Erreur réseau : " + e.getMessage()));
 				return null;
 			});
 		} else {
@@ -431,7 +423,7 @@ public class UsersController {
 				LocalStorageService.remove(offlineUser.get());
 
 				Platform.runLater(() -> {
-					showAlert(AlertType.INFORMATION, "Utilisateur supprimé en local (mode hors ligne).");
+					AlertHelper.showInformation("Utilisateur supprimé en local (mode hors ligne).");
 					fetchUsers(); // Rafraîchit la liste des utilisateurs
 				});
 			}
@@ -443,7 +435,7 @@ public class UsersController {
 	@FXML
 	private void handleEditUser(User user) {
 		if (user == null) {
-			showAlert(AlertType.WARNING, "Veuillez sélectionner un utilisateur à modifier.");
+			AlertHelper.showWarning("Veuillez sélectionner un utilisateur à modifier.");
 			return;
 		}
 		showEditDialog(user);
@@ -463,20 +455,20 @@ public class UsersController {
 				client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
 					if (response.statusCode() == 200) {
 						Platform.runLater(() -> {
-							showAlert(AlertType.INFORMATION, "Utilisateur modifié avec succès !");
+							AlertHelper.showInformation("Utilisateur modifié avec succès !");
 							fetchUsers();
 						});
 					} else {
-						Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur de modification : " + response.body()));
+						Platform.runLater(() -> AlertHelper.showError("Erreur de modification : " + response.body()));
 					}
 				}).exceptionally(e -> {
 					e.printStackTrace();
-					Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur réseau : " + e.getMessage()));
+					Platform.runLater(() -> AlertHelper.showError("Erreur réseau : " + e.getMessage()));
 					return null;
 				});
 			} catch (Exception e) {
 				e.printStackTrace();
-				showAlert(AlertType.ERROR, "Erreur lors de la mise à jour.");
+				AlertHelper.showError("Erreur lors de la mise à jour.");
 			}
 		} else {
 			ArrayList<User> users = LocalStorageService.loadUsers();
@@ -487,7 +479,7 @@ public class UsersController {
 				LocalStorageService.update(user);
 
 				Platform.runLater(() -> {
-					showAlert(AlertType.INFORMATION, "Utilisateur mis a jour en local (mode hors ligne).");
+					AlertHelper.showInformation("Utilisateur mis a jour en local (mode hors ligne).");
 					fetchUsers(); // Rafraîchit la liste des utilisateurs
 				});
 			}

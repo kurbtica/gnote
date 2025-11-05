@@ -104,13 +104,6 @@ public class EtudiantsController {
         }
     }
 
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
     private void parseEtudiants(String responseBody) {
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -128,7 +121,6 @@ public class EtudiantsController {
     }
     @FXML
     private void handleShowEtudiantCard() {
-//        showAlert("Erreur","le bouton clique" );
         Etudiant selectedEtudiant = etudiantsTable.getSelectionModel().getSelectedItem();
         System.out.println(mainLayoutController != null);
         if (selectedEtudiant != null && mainLayoutController != null) {

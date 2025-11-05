@@ -37,6 +37,7 @@ import javafx.scene.control.ListCell;
 import org.openjfx.sio2E4.service.AuthService;
 import org.openjfx.sio2E4.service.LocalStorageService;
 import org.openjfx.sio2E4.service.NetworkService;
+import org.openjfx.sio2E4.util.AlertHelper;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -74,14 +75,6 @@ public class NotesController {
 
 	private final String API_URL = "http://localhost:8080/api/notes";
 	private final String BEARER_TOKEN = "Bearer " + AuthService.getToken();
-
-	private void showAlert(AlertType type, String message) {
-		Alert alert = new Alert(type);
-		alert.setTitle("Information");
-		alert.setHeaderText(null);
-		alert.setContentText(message);
-		alert.showAndWait();
-	}
 
 	private void clearForm() {
 		Platform.runLater(() -> {
@@ -393,7 +386,7 @@ public class NotesController {
 			LocalStorageService.save(newNote);
 
 			Platform.runLater(() -> {
-				showAlert(Alert.AlertType.INFORMATION, "Note ajouté en local (mode hors ligne).");
+				AlertHelper.showInformation("Note ajouté en local (mode hors ligne).");
 				fetchNotes();
 				clearForm();
 			});
@@ -405,7 +398,7 @@ public class NotesController {
 		Note selectedNote = notesTable.getSelectionModel().getSelectedItem();
 
 		if (selectedNote == null) {
-			showAlert(Alert.AlertType.WARNING, "Veuillez sélectionner une note à supprimer.");
+			AlertHelper.showWarning("Veuillez sélectionner une note à supprimer.");
 			return;
 		}
 
@@ -422,15 +415,15 @@ public class NotesController {
                 client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
                     if (response.statusCode() == 204) {
                         Platform.runLater(() -> {
-                            showAlert(AlertType.INFORMATION, "Note supprimée avec succès.");
+                            AlertHelper.showInformation("Note supprimée avec succès.");
                             fetchNotes(); // Méthode pour recharger la liste
                         });
                     } else {
-                        Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur lors de la suppression de la note."));
+                        Platform.runLater(() -> AlertHelper.showError("Erreur lors de la suppression de la note."));
                     }
                 }).exceptionally(e -> {
                     e.printStackTrace();
-                    Platform.runLater(() -> showAlert(AlertType.ERROR, "Erreur réseau : " + e.getMessage()));
+                    Platform.runLater(() -> AlertHelper.showError("Erreur réseau : " + e.getMessage()));
                     return null;
                 });
             } catch (Exception e) {
@@ -445,7 +438,7 @@ public class NotesController {
 				LocalStorageService.remove(note.get());
 
 				Platform.runLater(() -> {
-					showAlert(Alert.AlertType.INFORMATION, "Note supprimé en local (mode hors ligne).");
+                    AlertHelper.showInformation("Note supprimé en local (mode hors ligne).");
 					fetchNotes();
 				});
 			}
@@ -677,7 +670,7 @@ public class NotesController {
 		Note selectedNote = notesTable.getSelectionModel().getSelectedItem();
 
 		if (selectedNote == null) {
-			showAlert(Alert.AlertType.WARNING, "Veuillez sélectionner une note à modifier.");
+			AlertHelper.showWarning("Veuillez sélectionner une note à modifier.");
 			return;
 		}
 
@@ -686,7 +679,7 @@ public class NotesController {
 
 		// Empêcher un enseignant de modifier une note qui ne lui appartient pas
 		if ("ENSEIGNANT".equalsIgnoreCase(userRole) && selectedNote.getEnseignant().getId() != currentUser.getId()) {
-			showAlert(Alert.AlertType.ERROR, "Vous ne pouvez modifier que vos propres notes.");
+			AlertHelper.showError("Vous ne pouvez modifier que vos propres notes.");
 			return;
 		}
 
@@ -755,19 +748,19 @@ public class NotesController {
 							if (resp.statusCode() == 200) {
 								fetchNotes();
 								Platform.runLater(
-										() -> showAlert(Alert.AlertType.INFORMATION, "Note mise à jour avec succès."));
+										() -> AlertHelper.showInformation("Note mise à jour avec succès."));
 							} else {
 								Platform.runLater(
-										() -> showAlert(Alert.AlertType.ERROR, "Erreur de mise à jour : " + resp.body()));
+										() -> AlertHelper.showError("Erreur de mise à jour : " + resp.body()));
 							}
 						}).exceptionally(e -> {
 							e.printStackTrace();
-							Platform.runLater(() -> showAlert(Alert.AlertType.ERROR, "Erreur réseau : " + e.getMessage()));
+							Platform.runLater(() -> AlertHelper.showError("Erreur réseau : " + e.getMessage()));
 							return null;
 						});
 
 					} catch (Exception e) {
-						showAlert(Alert.AlertType.ERROR, "Erreur dans le formulaire : " + e.getMessage());
+						AlertHelper.showError("Erreur dans le formulaire : " + e.getMessage());
 						e.printStackTrace();
 					}
 				} else {
@@ -790,7 +783,7 @@ public class NotesController {
 						LocalStorageService.update(note);
 
 						Platform.runLater(() -> {
-							showAlert(Alert.AlertType.INFORMATION, "Note mis a jour en local (mode hors ligne).");
+							AlertHelper.showInformation("Note mis a jour en local (mode hors ligne).");
 							fetchMatieres(); // Rafraîchit la liste des utilisateurs
 						});
 					}

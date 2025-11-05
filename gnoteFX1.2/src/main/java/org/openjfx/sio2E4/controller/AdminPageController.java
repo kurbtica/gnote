@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
+import org.openjfx.sio2E4.util.AlertHelper;
 
 import java.io.IOException;
 
@@ -65,24 +66,10 @@ public class AdminPageController {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("Erreur", "Impossible d'ouvrir la fenêtre : " + title);
+            AlertHelper.showError("Impossible d'ouvrir la fenêtre : " + title);
         }
     }
-
-
-    /**
-     * Affiche un message d'alerte à l'utilisateur.
-     *
-     * @param title   Le titre de l'alerte.
-     * @param message Le message affiché.
-     */
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
+    
 
     /**
      * Gère la déconnexion et redirige vers la page de connexion.
@@ -97,7 +84,7 @@ public class AdminPageController {
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert("Erreur", "Impossible de se déconnecter.");
+            AlertHelper.showError("Impossible de se déconnecter.");
         }
     }
 }
