@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.openjfx.sio2E4.constants.StyleConstants;
 import org.openjfx.sio2E4.model.LocalUser;
 import org.openjfx.sio2E4.service.AuthService;
 
@@ -62,7 +63,7 @@ public class loginPageController {
 
 					default:
 						errorLabel.setText("Accès refusé. Vous n'avez pas les droits nécessaires.");
-						errorLabel.setStyle("-fx-text-fill: red;");
+						errorLabel.setStyle(StyleConstants.ERROR_LABEL_STYLE);
 						return;
 				}
 
@@ -74,12 +75,12 @@ public class loginPageController {
 			} catch (Exception e) {
 				e.printStackTrace();
 				errorLabel.setText("Erreur lors du chargement de la page.");
-				errorLabel.setStyle("-fx-text-fill: red;");
+				errorLabel.setStyle(StyleConstants.ERROR_LABEL_STYLE);
 			}
 		} else {
 			// Affiche un message d'erreur si l'authentification échoue
 			errorLabel.setText("Email ou mot de passe incorrect !");
-			errorLabel.setStyle("-fx-text-fill: red;");
+			errorLabel.setStyle(StyleConstants.ERROR_LABEL_STYLE);
 		}
 	}
 }

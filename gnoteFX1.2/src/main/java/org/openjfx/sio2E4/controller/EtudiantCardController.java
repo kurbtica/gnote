@@ -13,6 +13,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import org.openjfx.sio2E4.constants.StyleConstants;
 import org.openjfx.sio2E4.model.MatiereRow;
 import org.openjfx.sio2E4.model.Note;
 import org.openjfx.sio2E4.model.User;
@@ -160,14 +161,14 @@ public class EtudiantCardController {
 
                     Text valeur = new Text(String.valueOf(note.getValeur()));
                     Text coef = new Text("(" + note.getCoefficient() + ")");
-                    coef.setStyle("-fx-font-size: 10; -fx-translate-y: 4;"); // affiché en "indice"
+                    coef.setStyle(StyleConstants.COEFFICIENT_STYLE); // affiché en "indice"
 
                     // Créer un conteneur pour chaque note
                     HBox noteContainer = new HBox(2);
                     noteContainer.setAlignment(Pos.CENTER_LEFT);
                     noteContainer.setFillHeight(true);
                     noteContainer.getChildren().addAll(valeur, coef);
-                    noteContainer.setStyle("-fx-padding: 0 4 0 0;"); // espace entre les notes
+                    noteContainer.setStyle(StyleConstants.NOTE_CONTAINER_STYLE); // espace entre les notes
 
                     // Tooltip pour la date et le type
                     Tooltip tooltip = new Tooltip(

@@ -5,6 +5,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.beans.property.SimpleStringProperty;
+import org.openjfx.sio2E4.constants.StyleConstants;
 import org.openjfx.sio2E4.model.LocalUser;
 import org.openjfx.sio2E4.service.AuthService;
 
@@ -47,7 +48,7 @@ public class LocalUserController {
             localUserTable.getItems().add(currentUser);
         } else {
             errorLabel.setText("Aucun utilisateur local trouvé.");
-            errorLabel.setStyle("-fx-text-fill: red;");
+            errorLabel.setStyle(StyleConstants.ERROR_LABEL_STYLE);
         }
     }
 }
