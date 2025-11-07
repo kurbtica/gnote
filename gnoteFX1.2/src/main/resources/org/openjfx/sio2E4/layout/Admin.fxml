@@ -8,10 +8,12 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.AnchorPane?>
 
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
-    xmlns="http://javafx.com/javafx"
-    fx:controller="org.openjfx.sio2E4.controller.MainLayoutController"
-    stylesheets="@../css/AppLayout.css">
+            xmlns="http://javafx.com/javafx"
+            fx:controller="org.openjfx.sio2E4.controller.MainLayoutController"
+            stylesheets="@../css/AppLayout.css">
 
     <!-- Top Bar -->
     <top>
@@ -25,7 +27,7 @@
             <Button fx:id="logoutButton"
                 text="Déconnexion"
                 onMouseEntered="#onLogoutHover"
-                onMouseExited="#onLogoutExit"
+                onMouseExited="#onLogoutHoverExit"
                 onAction="#handleLogout"
                 style="-fx-background-color: #f4f4f4; -fx-text-fill: #82263c;">
             </Button>

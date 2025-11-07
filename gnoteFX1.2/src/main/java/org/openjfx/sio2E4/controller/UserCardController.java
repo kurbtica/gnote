@@ -33,6 +33,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
 import org.openjfx.sio2E4.service.LocalStorageService;
 import org.openjfx.sio2E4.service.NetworkService;
+import org.openjfx.sio2E4.service.NoteService;
 
 public class UserCardController {
 
@@ -140,60 +141,15 @@ public class UserCardController {
                     .filter(note -> note.getEleve().getId() == userId)
                     .collect(Collectors.toList());
 
-            // Regroupe les notes par matière pour n'avoir qu'une seule ligne par matière dans le TableView
-            // Utilise un Map<String, List<Note>> où la clé est le nom de la matière et la valeur est la liste des notes
-
-            Map<String, List<Note>> notesParMatiere = notes.stream()
-                    .filter(note -> note.getEleve().getId() == userId)
-                    .collect(Collectors.groupingBy(n -> n.getMatiere().getLibelle()));
-
-            ObservableList<MatiereRow> data = FXCollections.observableArrayList();
-
-            for (Map.Entry<String, List<Note>> entry : notesParMatiere.entrySet()) {
-                String matiere = entry.getKey();
-                List<Note> notesMatiere = entry.getValue();
-
-                HBox notesBox = new HBox(5); // crée un conteneur horizontal avec 5 pixels d’écart entre chaque élément
-                notesBox.setAlignment(Pos.CENTER_LEFT);
-                notesBox.setFillHeight(true);
-
-                for (Note note : notesMatiere) {
-                    // Crée un Label pour chaque note et applique un style visuel (couleur, arrondi, padding)
-                    // Installe un Tooltip sur chaque Label pour afficher le type et la date de la note lors du survol
-
-                    Text valeur = new Text(String.valueOf(note.getValeur()));
-                    Text coef = new Text("(" + note.getCoefficient() + ")");
-                    coef.setStyle(StyleConstants.COEFFICIENT_STYLE); // affiché en "indice"
-
-                    // Créer un conteneur pour chaque note
-                    HBox noteContainer = new HBox(2);
-                    noteContainer.setAlignment(Pos.CENTER_LEFT);
-                    noteContainer.setFillHeight(true);
-                    noteContainer.getChildren().addAll(valeur, coef);
-                    noteContainer.setStyle(StyleConstants.NOTE_CONTAINER_STYLE); // espace entre les notes
-
-                    // Tooltip pour la date et le type
-                    Tooltip tooltip = new Tooltip(
-                            note.getCommentaire() +
-                            "\nType: " + note.getNoteType().getLibelle() +
-                            "\nDate: " + note.getDate() +
-                            "\nEnseignant: " + note.getEnseignant().getNom().toUpperCase() + " " + note.getEnseignant().getPrenom()
-                    );
-                    Tooltip.install(noteContainer, tooltip);
-
-                    notesBox.getChildren().add(noteContainer);
-                }
-
-                // TODO cree un système appreciation par matière et le mettre a la place de "Not implemented" (emplacement déjà défini dans la vue)
-                data.add(new MatiereRow(matiere, calculateMoyenne(notesMatiere), notesBox, "Not implemented"));
-            }
+            Map<String, List<Note>> notesParMatiere = NoteService.groupNotesByMatiere(notes);
+            ObservableList<MatiereRow> data = NoteService.buildMatiereRows(notesParMatiere);
 
             Platform.runLater(() -> {
                 notesTable.setItems(data);
 
                 // Si l'utilisateur est un étudiant, calculer la moyenne
                 if ("ETUDIANT".equals(role)) {
-                    double moyenne = calculateMoyenne(notes);
+                    double moyenne = NoteService.calculateMoyenne(notes);
                     moyenneLabel.setText("Moyenne: " + moyenne);
                 }
             });
@@ -215,7 +171,7 @@ public class UserCardController {
 
                 // Si l'utilisateur est un étudiant, calculer la moyenne
                 if ("ETUDIANT".equals(role)) {
-                    double moyenne = calculateMoyenne(notes);
+                    double moyenne = NoteService.calculateMoyenne(notes);
                     moyenneLabel.setText("Moyenne: " + moyenne);
                 }
             });
@@ -223,23 +179,6 @@ public class UserCardController {
         } catch (IOException e) {
             e.printStackTrace(); // Gérer l'erreur de parsing
         }
-    }
-
-    private double calculateMoyenne(List<Note> notes) {
-        double totalCoef = 0;
-        double totalNotes = 0;
-
-        for (Note note : notes) {
-            totalCoef += note.getCoefficient();
-            totalNotes += note.getValeur() * note.getCoefficient();
-        }
-
-        if (totalCoef == 0) {
-            return 0; // Eviter une division par zéro si aucun coefficient n'est trouvé
-        }
-
-        // Arrondi a 2 chiffres après la virgule
-        return Math.round((totalNotes / totalCoef) * 100) / 100.0;
     }
 
     // Initialiser les colonnes de la TableView

@@ -25,7 +25,7 @@
             <Button fx:id="logoutButton"
                 text="Déconnexion"
                 onMouseEntered="#onLogoutHover"
-                onMouseExited="#onLogoutExit"
+                onMouseExited="#onLogoutHoverExit"
                 onAction="#handleLogout"
                 style="-fx-background-color: #f4f4f4; -fx-text-fill: #82263c;">
             </Button>

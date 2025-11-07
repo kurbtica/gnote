@@ -27,7 +27,7 @@
             style="-fx-font-size: 14px; -fx-font-weight: bold;" />
         <HBox spacing="10">
             <TextField fx:id="libelleField" promptText="Nom de la matière" prefWidth="200" />
-            <Button text="Ajouter" onAction="#handleAddMatiere" />
+            <Button fx:id="addMatiereButton" text="Ajouter" onAction="#handleAddMatiere" />
         </HBox>
         <HBox spacing="10">
             <Button text="Supprimer" onAction="#handleDeleteMatiere" />
