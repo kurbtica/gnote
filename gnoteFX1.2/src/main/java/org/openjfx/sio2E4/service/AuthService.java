@@ -2,6 +2,7 @@ package org.openjfx.sio2E4.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.openjfx.sio2E4.constants.APIConstants;
 import org.openjfx.sio2E4.model.LocalUser;
 
 import java.net.URI;
@@ -22,7 +23,7 @@ public class AuthService {
 			try {
 				// Construire la requête HTTP
 				HttpClient client = HttpClient.newHttpClient();
-				HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/api/auth/login"))
+				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.AUTH_LOGIN))
 						.header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers
 								.ofString("{\"email\":\"" + email + "\", \"password\":\"" + password + "\"}"))
 						.build();
@@ -92,7 +93,7 @@ public class AuthService {
 			if (!NetworkService.isOnline()) return;
 
 			HttpClient client = HttpClient.newHttpClient();
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/api/auth/logout"))
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.AUTH_LOGOUT))
 					.header("Authorization", "Bearer " + sessionToken).POST(HttpRequest.BodyPublishers.noBody())
 					.build();
 

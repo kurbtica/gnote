@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.SVGPath;
+import org.openjfx.sio2E4.constants.APIConstants;
 import org.openjfx.sio2E4.constants.StyleConstants;
 import org.openjfx.sio2E4.model.Role;
 import org.openjfx.sio2E4.model.User;
@@ -50,8 +51,6 @@ public class UsersController {
 
     @FXML private Label resultCountLabel;
 
-
-	private final String API_URL = "http://localhost:8080/api/users";
 	private final String BEARER_TOKEN = "Bearer " + AuthService.getToken();
     
 	@FXML
@@ -181,7 +180,7 @@ public class UsersController {
 		if (NetworkService.isOnline()) {
 			HttpClient client = HttpClient.newHttpClient();
 			HttpRequest request = HttpRequest.newBuilder()
-					.uri(URI.create(API_URL))
+					.uri(URI.create(APIConstants.USERS))
 					.header("Authorization", BEARER_TOKEN)
 					.GET()
 					.build();
@@ -256,7 +255,7 @@ public class UsersController {
 						user.getNom(), user.getPrenom(), user.getEmail(), user.getAdresse(), user.getTelephone(), "user.getHashedPassword()", roleId, user.getRole().getId());
 
 				HttpClient client = HttpClient.newHttpClient();
-				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL))
+				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.USERS))
 						.header("Authorization", BEARER_TOKEN).header("Content-Type", "application/json")
 						.POST(BodyPublishers.ofString(json)).build();
 
@@ -316,7 +315,7 @@ public class UsersController {
 	private void deleteUser(int userId) {
 		if (NetworkService.isOnline()) {
 			HttpClient client = HttpClient.newHttpClient();
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL + "/" + userId))
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.formatUrl(APIConstants.USER_BY_ID, userId)))
 					.header("Authorization", BEARER_TOKEN).DELETE().build();
 
 			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
@@ -366,7 +365,7 @@ public class UsersController {
 				ObjectMapper mapper = new ObjectMapper();
 				String json = mapper.writeValueAsString(user);
 
-				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL + "/" + user.getId()))
+				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.formatUrl(APIConstants.USER_BY_ID, user.getId())))
 						.header("Authorization", BEARER_TOKEN).header("Content-Type", "application/json")
 						.PUT(HttpRequest.BodyPublishers.ofString(json)).build();
 

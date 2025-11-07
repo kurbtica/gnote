@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import org.openjfx.sio2E4.constants.APIConstants;
 import org.openjfx.sio2E4.model.Etudiant;
 import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.service.AuthService;
@@ -40,7 +41,6 @@ public class EtudiantsController {
     @FXML
     private TableColumn<Etudiant, String> roleColumn;
 
-    private final String API_URL = "http://localhost:8080/api/etudiants";
     private final String BEARER_TOKEN = "Bearer " + AuthService.getToken(); // à remplacer dynamiquement
 
     @FXML
@@ -60,7 +60,7 @@ public class EtudiantsController {
         if (NetworkService.isOnline()) {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(API_URL))
+                    .uri(URI.create(APIConstants.ETUDIANTS))
                     .header("Authorization", BEARER_TOKEN)
                     .GET()
                     .build();

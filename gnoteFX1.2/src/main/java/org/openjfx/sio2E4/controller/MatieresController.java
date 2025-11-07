@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.openjfx.sio2E4.constants.APIConstants;
 import org.openjfx.sio2E4.model.Matiere;
 import org.openjfx.sio2E4.model.Role;
 import org.openjfx.sio2E4.model.User;
@@ -38,7 +39,6 @@ public class MatieresController {
     @FXML
     private Button addButton;
 
-    private final String API_URL = "http://localhost:8080/api/matieres";
     private final String BEARER_TOKEN = "Bearer " + AuthService.getToken();
 
     @FXML
@@ -78,7 +78,7 @@ public class MatieresController {
         if (NetworkService.isOnline()) {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(API_URL))
+                .uri(URI.create(APIConstants.MATIERES))
                 .header("Authorization", BEARER_TOKEN)
                 .GET()
                 .build();
@@ -116,7 +116,7 @@ public class MatieresController {
                 // Envoi de la requête POST pour ajouter une nouvelle matière
                 HttpClient client = HttpClient.newHttpClient();
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(API_URL))
+                        .uri(URI.create(APIConstants.MATIERES))
                         .header("Authorization", BEARER_TOKEN)
                         .header("Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString("{\"libelle\": \"" + libelle + "\"}"))
@@ -159,7 +159,7 @@ public class MatieresController {
         // Envoi de la requête PUT pour mettre à jour la matière dans la base de données
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(API_URL + "/" + matiere.getId()))
+                .uri(URI.create(APIConstants.formatUrl(APIConstants.MATIERE_BY_ID, matiere.getId())))
                 .header("Authorization", BEARER_TOKEN)
                 .header("Content-Type", "application/json")
                 .PUT(HttpRequest.BodyPublishers.ofString("{\"id\": " + matiere.getId() + ", \"libelle\": \"" + newLibelle + "\"}"))
@@ -188,7 +188,7 @@ public class MatieresController {
                 // Envoyer la requête DELETE pour supprimer la matière
                 HttpClient client = HttpClient.newHttpClient();
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(API_URL + "/" + matiereId))
+                        .uri(URI.create(APIConstants.formatUrl(APIConstants.MATIERE_BY_ID, matiereId)))
                         .header("Authorization", BEARER_TOKEN)
                         .DELETE()
                         .build();
@@ -235,7 +235,7 @@ public class MatieresController {
 
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(API_URL + "/" + matiere.getId()))
+                    .uri(URI.create(APIConstants.formatUrl(APIConstants.MATIERE_BY_ID, matiere.getId())))
                     .header("Authorization", BEARER_TOKEN)
                     .header("Content-Type", "application/json")
                     .PUT(HttpRequest.BodyPublishers.ofString("{\"libelle\": \"" + matiere.getLibelle() + "\"}"))

@@ -18,6 +18,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 
+import org.openjfx.sio2E4.constants.APIConstants;
 import org.openjfx.sio2E4.model.LocalUser;
 import org.openjfx.sio2E4.model.Matiere;
 import org.openjfx.sio2E4.model.Note;
@@ -188,7 +189,8 @@ public class NotesController {
 	private void fetchNotes() {
 		if (NetworkService.isOnline()) {
 			HttpClient client = HttpClient.newHttpClient();
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL)).header("Authorization", BEARER_TOKEN)
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.NOTES))
+					.header("Authorization", BEARER_TOKEN)
 					.GET().build();
 
 			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
@@ -351,7 +353,7 @@ public class NotesController {
 
 				// Préparer et envoyer la requête POST
 				HttpClient client = HttpClient.newHttpClient();
-				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL))
+				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.NOTES))
 						.header("Authorization", BEARER_TOKEN).header("Content-Type", "application/json")
 						.POST(HttpRequest.BodyPublishers.ofString(json)).build();
 
@@ -409,7 +411,7 @@ public class NotesController {
 		if(NetworkService.isOnline()) {
             try {
                 HttpClient client = HttpClient.newHttpClient();
-                HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/api/notes/" + noteId))
+                HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.formatUrl(APIConstants.NOTE_BY_ID, noteId)))
                         .header("Authorization", "Bearer " + AuthService.getToken()).DELETE().build();
 
                 client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
@@ -448,7 +450,7 @@ public class NotesController {
 	private void fetchUsers() {
 		if (NetworkService.isOnline()) {
 			HttpClient client = HttpClient.newHttpClient();
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/api/users"))
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.USERS))
 					.header("Authorization", BEARER_TOKEN).GET().build();
 
 			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
@@ -580,7 +582,7 @@ public class NotesController {
 	private void fetchMatieres() {
 		if (NetworkService.isOnline()) {
 			HttpClient client = HttpClient.newHttpClient();
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/api/matieres"))
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.MATIERES))
 					.header("Authorization", BEARER_TOKEN).GET().build();
 
 			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
@@ -624,7 +626,7 @@ public class NotesController {
 	private void fetchNoteTypes() {
 		if (NetworkService.isOnline()) {
 			HttpClient client = HttpClient.newHttpClient();
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create("http://localhost:8080/api/notes/type"))
+			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.NOTE_TYPES))
 					.header("Authorization", BEARER_TOKEN).GET().build();
 
 			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
@@ -740,7 +742,7 @@ public class NotesController {
 									commentaireFieldLocal.getText(), datePickerLocal.getValue().toString());
 
 						HttpClient client = HttpClient.newHttpClient();
-						HttpRequest request = HttpRequest.newBuilder().uri(URI.create(API_URL + "/" + selectedNote.getId()))
+						HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.formatUrl(APIConstants.NOTE_BY_ID, selectedNote.getId())))
 								.header("Authorization", BEARER_TOKEN).header("Content-Type", "application/json")
 								.PUT(HttpRequest.BodyPublishers.ofString(json)).build();
 

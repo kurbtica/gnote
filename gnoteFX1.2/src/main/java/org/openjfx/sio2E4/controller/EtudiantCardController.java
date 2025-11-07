@@ -13,6 +13,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import org.openjfx.sio2E4.constants.APIConstants;
 import org.openjfx.sio2E4.constants.StyleConstants;
 import org.openjfx.sio2E4.model.MatiereRow;
 import org.openjfx.sio2E4.model.Note;
@@ -55,10 +56,9 @@ public class EtudiantCardController {
     public void loadUser(int userId) {
         if (NetworkService.isOnline()) {
             HttpClient client = HttpClient.newHttpClient();
-            String urlString = "http://localhost:8080/api/users/" + userId;
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(urlString))
+                    .uri(URI.create(APIConstants.formatUrl(APIConstants.USER_BY_ID, userId)))
                     .header("Authorization", BEARER_TOKEN)
                     .GET()
                     .build();
@@ -119,10 +119,9 @@ public class EtudiantCardController {
     private void loadUserNotes(int userId, String role) {
         if (NetworkService.isOnline()) {
             HttpClient client = HttpClient.newHttpClient();
-            String urlString = "http://localhost:8080/api/users/" + userId + "/notes";
 
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(urlString))
+                    .uri(URI.create(APIConstants.formatUrl(APIConstants.USER_NOTES, userId)))
                     .header("Authorization", BEARER_TOKEN)
                     .GET()
                     .build();
