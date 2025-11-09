@@ -127,16 +127,41 @@ public class MainLayoutController {
 	}
 	
 	@FXML
-	private void showNotes() {
-		loadView("/org/openjfx/sio2E4/view/NoteView.fxml");
-	}
-	
-//----------------------- User Card -----------------------
+	public void showNotes() {
+		Platform.runLater(() -> {
+			try {
+				FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/EvaluationListView.fxml"));
+				Parent createEvaluationPageRoot = loader.load();
 
+				EvaluationListController evalController = loader.getController();
+				evalController.setMainLayoutController(this);
+
+				contentArea.getChildren().setAll(createEvaluationPageRoot); // MAJ de l'UI
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+	}
+
+	//----------------------- Create Evaluation -----------------------
+	public void showCreateEvaluationPage() {
+		Platform.runLater(() -> {
+			try {
+				FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/EvaluationFormView.fxml"));
+				Parent createEvaluationPageRoot = loader.load();
+
+				contentArea.getChildren().setAll(createEvaluationPageRoot); // MAJ de l'UI
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+	}
+
+	
+	//----------------------- User Card -----------------------
 	
 	@FXML
 	private void showUsers() {
-        System.out.println("affichage carte");
 	    try {
 	        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/UserView.fxml"));
 	        Parent usersRoot = loader.load();
@@ -151,11 +176,9 @@ public class MainLayoutController {
 	}
 
 
-    
-  //----------------------- User Card -----------------------
+	//----------------------- User Card -----------------------
 
 	public void showUserCard(int userId) {
-        System.out.println("affichage carte etudiant");
 	    Platform.runLater(() -> {
 	        try {
 	            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/UserCardView.fxml"));
@@ -172,10 +195,7 @@ public class MainLayoutController {
 	}
 
 
-
-
-//----------------------- Etudiants Card -----------------------
-
+	//----------------------- Etudiants Card -----------------------
 
     @FXML
     private void showEtudiant() {
@@ -191,7 +211,6 @@ public class MainLayoutController {
             e.printStackTrace();
         }
     }
-
 
 
     //----------------------- Etudiant Card -----------------------
@@ -211,10 +230,6 @@ public class MainLayoutController {
             }
         });
     }
-
-
-
-
 
 
     private void loadView(String fxmlPath) {
@@ -248,7 +263,4 @@ public class MainLayoutController {
 	private void onLogoutHoverExit() {
 		logoutButton.setStyle(StyleConstants.LOGOUT_BUTTON_HOVER_EXIT);
 	}
-	
-
-
 }

@@ -4,26 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
-import javafx.scene.control.Label;
 
 import org.openjfx.sio2E4.constants.APIConstants;
-import org.openjfx.sio2E4.model.LocalUser;
-import org.openjfx.sio2E4.model.Matiere;
-import org.openjfx.sio2E4.model.Note;
-import org.openjfx.sio2E4.model.NoteType;
-import org.openjfx.sio2E4.model.User;
+import org.openjfx.sio2E4.model.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -34,7 +19,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-import javafx.scene.control.ListCell;
+
 import org.openjfx.sio2E4.service.AuthService;
 import org.openjfx.sio2E4.service.LocalStorageService;
 import org.openjfx.sio2E4.service.NetworkService;
@@ -46,7 +31,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-public class NotesController {
+public class EvaluationListController {
 
 	LocalUser currentUser = AuthService.getCurrentUser();
 	String role = currentUser.getRole();
@@ -309,26 +294,26 @@ public class NotesController {
 
 	/* Formulaire de saisie de note */
 	@FXML
-	private javafx.scene.control.TextField valeurField;
+	private TextField valeurField;
 	@FXML
-	private javafx.scene.control.TextField coefficientField;
+	private TextField coefficientField;
 	@FXML
-	private javafx.scene.control.TextArea commentaireField;
+	private TextArea commentaireField;
 
 	@FXML
-	private javafx.scene.control.ComboBox<User> eleveComboBox;
+	private ComboBox<User> eleveComboBox;
 	@FXML
-	private javafx.scene.control.ComboBox<User> enseignantComboBox;
+	private ComboBox<User> enseignantComboBox;
 	@FXML
-	private javafx.scene.control.ComboBox<Matiere> matiereComboBox;
+	private ComboBox<Matiere> matiereComboBox;
 	@FXML
-	private javafx.scene.control.ComboBox<NoteType> noteTypeComboBox;
+	private ComboBox<NoteType> noteTypeComboBox;
 
 	@FXML
-	private javafx.scene.control.DatePicker datePicker;
+	private DatePicker datePicker;
 
 	@FXML
-	private javafx.scene.control.Button ajouterNoteButton;
+	private Button ajouterNoteButton;
 
 	@FXML
 	private void ajouterNote() {
@@ -795,4 +780,13 @@ public class NotesController {
 		});
 	}
 
+	private MainLayoutController mainLayoutController;
+
+	public void setMainLayoutController(MainLayoutController controller) {
+		this.mainLayoutController = controller;
+	}
+	@FXML
+	private void showCreateEvaluationPage() {
+        mainLayoutController.showCreateEvaluationPage();
+	}
 }

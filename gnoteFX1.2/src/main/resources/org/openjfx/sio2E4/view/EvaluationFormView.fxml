@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.openjfx.sio2E4.controller.EvaluationFormController"
+      spacing="20" style="-fx-padding: 20;">
+
+    <!-- Header Section -->
+    <VBox spacing="5" HBox.hgrow="ALWAYS">
+        <Label style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;" text="Nouvelle évaluation">
+            <font>
+                <Font name="System Bold" size="28" />
+            </font>
+        </Label>
+        <Label style="-fx-font-size: 14px; -fx-text-fill: #6c757d;" text="Saisissez les notes des étudiants et les paramètres de l'évaluation." />
+    </VBox>
+
+    <!-- Main Grid Layout -->
+    <GridPane hgap="24" vgap="24">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="50" minWidth="300"/>
+            <ColumnConstraints percentWidth="50" minWidth="300"/>
+        </columnConstraints>
+
+        <!-- Left Card: Students & Grades -->
+        <VBox styleClass="card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <VBox styleClass="card-header" spacing="4">
+                <padding>
+                    <Insets top="16" right="16" bottom="16" left="16"/>
+                </padding>
+                <Label text="Étudiants &amp; notes" styleClass="card-title">
+                    <font>
+                        <Font name="System Bold" size="16"/>
+                    </font>
+                </Label>
+            </VBox>
+
+            <VBox styleClass="card-content">
+                <padding>
+                    <Insets top="16" right="16" bottom="16" left="16"/>
+                </padding>
+
+                <TableView fx:id="etudiantTable" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn text="Nom" prefWidth="200" fx:id="nomColumn"/>
+                        <TableColumn text="Prenom" prefWidth="200" fx:id="prenomColumn"/>
+                        <TableColumn text="Note /20" prefWidth="150" fx:id="noteColumn"/>
+                    </columns>
+                </TableView>
+            </VBox>
+        </VBox>
+
+        <!-- Right Card: Evaluation Parameters -->
+        <VBox styleClass="card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <VBox styleClass="card-header" spacing="4">
+                <padding>
+                    <Insets top="16" right="16" bottom="16" left="16"/>
+                </padding>
+                <Label text="Paramètres de l'évaluation" styleClass="card-title">
+                    <font>
+                        <Font name="System Bold" size="16"/>
+                    </font>
+                </Label>
+            </VBox>
+
+            <VBox styleClass="card-content" spacing="16">
+                <padding>
+                    <Insets top="16" right="16" bottom="16" left="16"/>
+                </padding>
+
+                <!-- Form Grid -->
+                <GridPane hgap="16" vgap="16">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="50"/>
+                        <ColumnConstraints percentWidth="50"/>
+                    </columnConstraints>
+
+                    <!-- Titre -->
+                    <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label text="Titre"/>
+                        <TextField fx:id="titreField" promptText="Ex: Contrôle chap. 3"/>
+                    </VBox>
+
+                    <!-- Matière (ComboBox) -->
+                    <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label text="Matière"/>
+                        <ComboBox fx:id="matiereComboBox" maxWidth="Infinity"/>
+                    </VBox>
+
+                    <!-- Coefficient -->
+                    <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <Label text="Coef"/>
+                        <TextField fx:id="coefField" promptText="1.0"/>
+                    </VBox>
+
+                    <!-- Date -->
+                    <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <Label text="Date"/>
+                        <DatePicker fx:id="datePicker" maxWidth="Infinity"/>
+                    </VBox>
+
+                    <!-- Type de note (ComboBox) -->
+                    <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                        <Label text="Type de note"/>
+                        <ComboBox fx:id="noteTypeComboBox" promptText="Sélectionner un type"
+                                  maxWidth="Infinity"/>
+                    </VBox>
+
+                    <!-- Professeur (ComboBox) -->
+                    <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <Label text="Professeur"/>
+                        <ComboBox fx:id="enseignantComboBox" maxWidth="Infinity"/>
+                    </VBox>
+
+                    <!-- Description (spans 2 columns) -->
+                    <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="3" GridPane.columnSpan="2">
+                        <Label text="Description"/>
+                        <TextArea fx:id="commentaireField" promptText="Détails, consignes, etc."
+                                  prefRowCount="3" wrapText="true"/>
+                    </VBox>
+                </GridPane>
+
+                <!-- Buttons -->
+                <HBox spacing="8">
+                    <padding>
+                        <Insets top="8"/>
+                    </padding>
+                    <Button fx:id="saveButton" text="Enregistrer" defaultButton="true"/>
+                            <!--onAction="#handleSave"/>-->
+                    <Button fx:id="cancelButton" text="Annuler"/>
+                            <!--onAction="#handleCancel"/>-->
+                </HBox>
+            </VBox>
+        </VBox>
+    </GridPane>
+
+    <padding>
+        <Insets top="24" right="24" bottom="24" left="24"/>
+    </padding>
+</VBox>

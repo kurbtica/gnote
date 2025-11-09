@@ -4,7 +4,10 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox spacing="20" style="-fx-background-color: #f8f9fa; -fx-padding: 30;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="org.openjfx.sio2E4.controller.UsersController">
+<VBox spacing="20"
+      style="-fx-background-color: #f8f9fa; -fx-padding: 20;"
+      xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
+      fx:controller="org.openjfx.sio2E4.controller.UsersController">
 
     <!-- En-tête avec titre et bouton d'ajout -->
     <HBox alignment="CENTER_LEFT" spacing="20">
