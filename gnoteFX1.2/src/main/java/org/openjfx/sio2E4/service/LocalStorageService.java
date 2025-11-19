@@ -19,7 +19,6 @@ public class LocalStorageService {
     private static final ObjectMapper mapper = new ObjectMapper();
 
     private static final ArrayList<Etudiant> etudiants = new ArrayList<Etudiant>();
-    private static final ArrayList<LocalUser> localUsers = new ArrayList<LocalUser>();
     private static final ArrayList<Matiere> matieres = new ArrayList<Matiere>();
     private static final ArrayList<Note> notes = new ArrayList<Note>();
     private static final ArrayList<NoteType> noteTypes = new ArrayList<NoteType>();
@@ -84,10 +83,6 @@ public class LocalStorageService {
         saveObject(etudiant, "Etudiant");
     }
 
-    public static void save(LocalUser localUser) {
-        saveObject(localUser, "LocalUser");
-    }
-
     public static void save(Matiere matiere) {
         saveObject(matiere, "Matiere");
     }
@@ -142,10 +137,6 @@ public class LocalStorageService {
         return findObjectById(id, "Etudiant", Etudiant.class);
     }
 
-    public static LocalUser findLocalUserById(int id) {
-        return findObjectById(id, "LocalUser", LocalUser.class);
-    }
-
     public static Matiere findMatiereById(int id) {
         return findObjectById(id, "Matiere", Matiere.class);
     }
@@ -191,10 +182,6 @@ public class LocalStorageService {
     // Méthodes spécifiques pour récupérer les objets
     public static ArrayList<Etudiant> loadEtudiants() {
         return loadObjects("Etudiant", Etudiant.class);
-    }
-
-    public static ArrayList<LocalUser> loadLocalUsers() {
-        return loadObjects("LocalUser", LocalUser.class);
     }
 
     public static ArrayList<Matiere> loadMatieres() {
@@ -248,10 +235,6 @@ public class LocalStorageService {
     // Méthodes spécifiques pour la supprimer des objets
     public static void remove(Etudiant etudiant) {
         removeObject(etudiant.getId(), "Etudiant");
-    }
-
-    public static void remove(LocalUser localUser) {
-        removeObject(localUser.getId(), "LocalUser");
     }
 
     public static void remove(Matiere matiere) {
@@ -315,10 +298,6 @@ public class LocalStorageService {
     // Méthodes spécifiques pour la modifer des objets
     public static void update(Etudiant etudiant) {
         updateObject(etudiant, etudiant.getId(), "Etudiant");
-    }
-
-    public static void update(LocalUser localUser) {
-        updateObject(localUser, localUser.getId(), "LocalUser");
     }
 
     public static void update(Matiere matiere) {

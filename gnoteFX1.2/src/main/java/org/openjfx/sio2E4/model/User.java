@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
+    private String tocken;
     private int id;
     private String nom;
     private String prenom;
@@ -11,7 +12,21 @@ public class User {
     private String adresse;
     private String telephone;
     private Role role;
-    
+
+    public User( String tocken ,int id, String nom, String prenom, String emailResponse, Role role, String adresse, String telephone) {
+        this.tocken=tocken;
+        this.id=id;
+        this.nom=nom;
+        this.prenom=  prenom;
+        this.adresse=adresse;
+        this.email=emailResponse;
+        this.telephone=telephone;
+        this.role=role;
+        
+    }
+
+  
+
     @Override
     public String toString() {
         return this.prenom + " " + this.nom;
@@ -76,5 +91,9 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public String getToken() {
+        return tocken;
     }
 }

@@ -1,6 +1,7 @@
 package org.openjfx.sio2E4.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Role {
@@ -8,6 +9,10 @@ public class Role {
     private String libelle;
 
     public Role() {}
+
+    public Role(JsonNode role) {
+
+    }
 
     public int getId() {
         return id;

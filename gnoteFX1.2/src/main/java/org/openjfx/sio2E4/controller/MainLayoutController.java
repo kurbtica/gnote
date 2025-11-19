@@ -11,7 +11,9 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.openjfx.sio2E4.constants.StyleConstants;
-import org.openjfx.sio2E4.model.LocalUser;
+
+import org.openjfx.sio2E4.model.Role;
+import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.service.AuthService;
 
 import java.io.IOException;
@@ -26,13 +28,13 @@ public class MainLayoutController {
 
 	@FXML
 	public void initialize() {
-		LocalUser user = AuthService.getCurrentUser();
+		User user = AuthService.getCurrentUser();
 		if (user != null) {
-			String role = user.getRole().toUpperCase();
+			Role role = user.getRole();
 			String nom = user.getNom().toUpperCase();
 			String prenom = capitalize(user.getPrenom());
 
-			usernameLabel.setText(role + " - " + nom + " " + prenom);
+			usernameLabel.setText(role.getLibelle() + " - " + nom + " " + prenom);
 		} else {
 			usernameLabel.setText("Bienvenue invité");
 		}

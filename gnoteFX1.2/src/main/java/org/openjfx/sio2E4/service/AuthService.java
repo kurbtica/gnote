@@ -3,7 +3,8 @@ package org.openjfx.sio2E4.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openjfx.sio2E4.constants.APIConstants;
-import org.openjfx.sio2E4.model.LocalUser;
+import org.openjfx.sio2E4.model.Role;
+import org.openjfx.sio2E4.model.User;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -14,7 +15,7 @@ import java.util.Optional;
 
 public class AuthService {
 
-	private static LocalUser currentUser;
+	private static User currentUser;
 	private static String sessionToken;
 
 	// Méthode de login qui récupère toutes les informations de l'utilisateur
@@ -43,12 +44,14 @@ public class AuthService {
 					String nom = rootNode.path("nom").asText();
 					String prenom = rootNode.path("prenom").asText();
 					String emailResponse = rootNode.path("email").asText();
-					String role = rootNode.path("role").path("libelle").asText();
+					//String role = rootNode.path("role").asText();
+                    //Role role = rootNode.path("role");
+                    Role role = new Role(rootNode.path("role").path("id").asInt(), rootNode.path("role").path("libelle").asText());
 					String adresse = rootNode.path("adresse").asText();
 					String telephone = rootNode.path("telephone").asText();
 
 					// Crée un objet User avec toutes les données reçues
-					currentUser = new LocalUser(token, id, nom, prenom, emailResponse, role, adresse, telephone);
+					currentUser = new User(token, id, nom, prenom, emailResponse, role, adresse, telephone);
 					sessionToken = token; // Sauvegarde le token pour utilisation future
 					return true; // Authentification réussie
 				} else {
@@ -59,18 +62,18 @@ public class AuthService {
 				return false; // En cas d'erreur
 			}
 		} else {
-			ArrayList<LocalUser> localUsers = LocalStorageService.loadLocalUsers();
+			ArrayList<User> localUsers = LocalStorageService.loadUsers();
 			if(currentUser != null) localUsers.add(currentUser);
             if (localUsers.isEmpty()) {
 				// Création d'un user hors connexion pour le test TODO a supprimer
 				System.out.println("Création d'un user hors connexion pour le test");
-				currentUser = new LocalUser("abc", 0, "nom", "prenom", "admin@lycee.local", "ADMIN", "16 Pl. Saint-Sauveur, 35600 Redon", "06 00 00 00 00");
+				currentUser = new User("abc", 0, "nom", "prenom", "admin@lycee.local", new Role(1,"ADMIN"), "16 Pl. Saint-Sauveur, 35600 Redon", "06 00 00 00 00");
 				sessionToken = "abc"; // Sauvegarde le token pour utilisation future
 				LocalStorageService.save(currentUser);
 				return true;
 			} else {
 				// TODO rajouter un système de vérification du password ( avec des hashes )
-				Optional<LocalUser> localUser = localUsers.stream()
+				Optional<User> localUser = localUsers.stream()
 						.filter(user -> user.getEmail().equalsIgnoreCase(email))
 						.findFirst();
 				if (localUser.isPresent()) {
@@ -114,11 +117,11 @@ public class AuthService {
 	}
 
 	// Méthode pour récupérer les informations de l'utilisateur courant
-	public static LocalUser getCurrentUser() {
+	public static User getCurrentUser() {
 		return currentUser;
 	}
 
-	public static void setCurrentUser(LocalUser currentUser) {
+	public static void setCurrentUser(User currentUser) {
 		AuthService.currentUser = currentUser;
 	}
 

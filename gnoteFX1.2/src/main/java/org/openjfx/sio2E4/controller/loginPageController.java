@@ -10,7 +10,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.openjfx.sio2E4.constants.StyleConstants;
-import org.openjfx.sio2E4.model.LocalUser;
+
+import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.service.AuthService;
 
 public class loginPageController {
@@ -35,7 +36,7 @@ public class loginPageController {
 		// Vérifie si l'utilisateur est authentifié
 		if (AuthService.login(email, password)) {
 			// Récupère l'utilisateur connecté
-			LocalUser currentUser = AuthService.getCurrentUser();
+			User currentUser = AuthService.getCurrentUser();
 
 			// Affiche les informations de l'utilisateur (facultatif pour débogage)
 			System.out.println("Token: " + currentUser.getToken());
@@ -48,7 +49,7 @@ public class loginPageController {
 				Stage stage = (Stage) loginButton.getScene().getWindow();
 				Scene scene;
 
-				switch (currentUser.getRole()) {
+				switch (currentUser.getRole().getLibelle()) {
 					case "ADMIN":
 						loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/layout/Admin.fxml"));
 						Parent adminRoot = loader.load();

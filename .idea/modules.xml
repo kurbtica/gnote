@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/JFX.iml" filepath="$PROJECT_DIR$/.idea/JFX.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/gnote.iml" filepath="$PROJECT_DIR$/.idea/gnote.iml" />
     </modules>
   </component>
 </project>

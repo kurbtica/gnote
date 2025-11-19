@@ -33,8 +33,8 @@ import java.time.format.DateTimeParseException;
 
 public class EvaluationListController {
 
-	LocalUser currentUser = AuthService.getCurrentUser();
-	String role = currentUser.getRole();
+	User currentUser = AuthService.getCurrentUser();
+	Role role = currentUser.getRole();
 
 	/* Tableau d'affichage de note */
 	@FXML
@@ -73,7 +73,7 @@ public class EvaluationListController {
 			coefficientField.clear();
 
 			// Si l'utilisateur connecté est un enseignant, on le sélectionne à nouveau
-			if ("ENSEIGNANT".equalsIgnoreCase(currentUser.getRole())) {
+			if ("ENSEIGNANT".equalsIgnoreCase(currentUser.getRole().getLibelle())) {
 				// On cherche l'enseignant correspondant dans la liste (important si l'objet
 				// n'est pas le même en mémoire)
 				User enseignant = enseignantComboBox.getItems().stream().filter(u -> u.getId() == currentUser.getId())
@@ -449,7 +449,7 @@ public class EvaluationListController {
 	}
 
 	private void parseUsers(String responseBody) {
-		LocalUser user = AuthService.getCurrentUser();
+		User user = AuthService.getCurrentUser();
 		ObjectMapper mapper = new ObjectMapper();
 		if (NetworkService.isOnline()) {
 			try {
@@ -492,7 +492,7 @@ public class EvaluationListController {
 
 					// Si l'utilisateur est un enseignant connecté, sélectionner son nom dans le
 					// ComboBox
-					if ("ENSEIGNANT".equalsIgnoreCase(user.getRole())) {
+					if ("ENSEIGNANT".equalsIgnoreCase(user.getRole().getLibelle())) {
 						// Trouver l'objet User correspondant à l'enseignant
 						User enseignant = enseignants.stream().filter(
 										u -> (u.getPrenom() + " " + u.getNom()).equals(user.getPrenom() + " " + user.getNom()))
@@ -549,7 +549,7 @@ public class EvaluationListController {
 
 				// Si l'utilisateur est un enseignant connecté, sélectionner son nom dans le
 				// ComboBox
-				if ("ENSEIGNANT".equalsIgnoreCase(user.getRole())) {
+				if ("ENSEIGNANT".equalsIgnoreCase(user.getRole().getLibelle())) {
 					// Trouver l'objet User correspondant à l'enseignant
 					User enseignant = enseignants.stream().filter(
 									u -> (u.getPrenom() + " " + u.getNom()).equals(user.getPrenom() + " " + user.getNom()))
@@ -661,8 +661,8 @@ public class EvaluationListController {
 			return;
 		}
 
-		LocalUser currentUser = AuthService.getCurrentUser();
-		String userRole = currentUser.getRole();
+		User currentUser = AuthService.getCurrentUser();
+		String userRole = currentUser.getRole().getLibelle();
 
 		// Empêcher un enseignant de modifier une note qui ne lui appartient pas
 		if ("ENSEIGNANT".equalsIgnoreCase(userRole) && selectedNote.getEnseignant().getId() != currentUser.getId()) {
