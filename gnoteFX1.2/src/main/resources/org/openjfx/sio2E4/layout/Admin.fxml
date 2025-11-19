@@ -41,7 +41,7 @@
             <Button text="Accueil" onAction="#showDashboard" maxWidth="Infinity" />
             <Button text="Utilisateurs" onAction="#showUsers" maxWidth="Infinity" />
             <Button text="Matières" onAction="#showMatieres" maxWidth="Infinity" />
-            <Button text="Évaluations" onAction="#showNotes" maxWidth="Infinity" />
+            <Button text="Évaluations" onAction="#showEvaluationList" maxWidth="Infinity" />
         </VBox>
     </left>
 

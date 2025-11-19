@@ -38,7 +38,7 @@
         <VBox fx:id="leftSidebar" spacing="10" styleClass="left" prefWidth="200">
             <Button text="Accueil" onAction="#showDashboard" maxWidth="Infinity" />
             <Button text="Étudiants" onAction="#showEtudiants" maxWidth="Infinity" />
-            <Button text="Évaluations" onAction="#showEtudiants" maxWidth="Infinity" />
+            <Button text="Évaluations" onAction="#showEvaluationList" maxWidth="Infinity" />
         </VBox>
     </left>
 

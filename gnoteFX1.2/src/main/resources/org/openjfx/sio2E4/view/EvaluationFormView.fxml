@@ -11,7 +11,7 @@
 
     <!-- Header Section -->
     <VBox spacing="5" HBox.hgrow="ALWAYS">
-        <Label style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;" text="Nouvelle évaluation">
+        <Label fx:id="pageTitle" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;" text="Nouvelle évaluation">
             <font>
                 <Font name="System Bold" size="28" />
             </font>
@@ -129,10 +129,10 @@
                     <padding>
                         <Insets top="8"/>
                     </padding>
-                    <Button fx:id="saveButton" text="Enregistrer" defaultButton="true"/>
-                            <!--onAction="#handleSave"/>-->
-                    <Button fx:id="cancelButton" text="Annuler"/>
-                            <!--onAction="#handleCancel"/>-->
+                    <Button fx:id="saveButton" text="Enregistrer" defaultButton="true"
+                            onAction="#handleSave"/>
+                    <Button fx:id="cancelButton" text="Annuler"
+                            onAction="#handleCancel"/>
                 </HBox>
             </VBox>
         </VBox>

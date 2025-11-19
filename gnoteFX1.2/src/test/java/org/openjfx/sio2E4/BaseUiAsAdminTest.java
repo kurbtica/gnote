@@ -42,6 +42,7 @@ public abstract class BaseUiAsAdminTest extends ApplicationTest {
                 ""
         );
         AuthService.setCurrentUser(testUser);
+        AuthService.setSessionToken(testUser.getToken());
 
         Parent root = FXMLLoader.load(getClass().getResource("/org/openjfx/sio2E4/layout/Admin.fxml"));
 

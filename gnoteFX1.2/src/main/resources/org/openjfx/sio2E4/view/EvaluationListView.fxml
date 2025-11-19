@@ -24,25 +24,31 @@
     </HBox>
 
     <!-- TableView pour afficher les notes -->
-    <TableView fx:id="notesTable" prefWidth="951">
+    <TableView fx:id="evaluationTable" prefWidth="951">
         <columns>
-            <TableColumn fx:id="eleveColumn" text="Élève" prefWidth="150" />
+            <TableColumn fx:id="titleColumn" text="Titre" prefWidth="150" />
             <TableColumn fx:id="enseignantColumn" text="Enseignant" prefWidth="150" />
             <TableColumn fx:id="matiereColumn" text="Matière" prefWidth="120" />
-            <TableColumn fx:id="valeurColumn" text="Note" prefWidth="70" />
+            <TableColumn fx:id="moyennes" text="Moyennes" prefWidth="300">
+                <columns>
+                    <TableColumn fx:id="moyenneColumn" text="Classe" prefWidth="100"/>
+                    <TableColumn fx:id="moyenneMinColumn" text="Min" prefWidth="100"/>
+                    <TableColumn fx:id="moyenneMaxColumn" text="Max" prefWidth="100"/>
+                </columns>
+            </TableColumn>
             <TableColumn fx:id="coefficientColumn" text="Coef" prefWidth="70" />
             <TableColumn fx:id="noteTypeColumn" text="Type note" prefWidth="170" />
             <TableColumn fx:id="dateColumn" text="Date" prefWidth="100" />
-            <TableColumn fx:id="commentaireColumn" text="Commentaire" prefWidth="190" />
 
             <TableColumn fx:id="modificationColumn" text="Modification" prefWidth="150" />
+            <TableColumn fx:id="actionsColumn" prefWidth="120" sortable="false" text="Actions" />
         </columns>
     </TableView>
-    <HBox spacing="10">
+    <!--<HBox spacing="10">
         <Button text="Supprimer" onAction="#handleDeleteNote" />
         <Button text="Modifier" onAction="#handleUpdateNote" />
-    </HBox>
-    <!-- Formulaire d'ajout d'une note -->
+    </HBox>-->
+    <!-- Formulaire d'ajout d'une note
     <Label text="Ajouter une Note"
         style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-alignment: top-left;" />
 
@@ -79,7 +85,7 @@
             onAction="#ajouterNote"
             GridPane.rowIndex="8" GridPane.columnIndex="1"
             style="-fx-background-color: #4CAF50; -fx-text-fill: white;" />
-    </GridPane>
+    </GridPane> -->
     <!-- Label pour afficher l'élève avec la meilleure moyenne -->
     <Label fx:id="meilleurEleveLabel" text="Major de promotion :"
         style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-alignment: top-left;" />

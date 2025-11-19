@@ -129,4 +129,8 @@ public class AuthService {
 	public static String getToken() {
 		return sessionToken;
 	}
+
+	public static void setSessionToken(String sessionToken) {
+		AuthService.sessionToken = sessionToken;
+	}
 }

@@ -58,13 +58,24 @@ public class LocalStorageService {
             }
 
             int newId = array.size();
-
-            // Modifier l'ID de l'objet en utilisant la réflexion
+            // Vérifier si l'objet a déjà un ID
+            Integer existingId = null;
             try {
-                java.lang.reflect.Method setIdMethod = obj.getClass().getMethod("setId", int.class);
-                setIdMethod.invoke(obj, newId);
+                java.lang.reflect.Method getIdMethod = obj.getClass().getMethod("getId");
+                existingId = (Integer) getIdMethod.invoke(obj);
             } catch (Exception e) {
-                System.err.println("Erreur lors de la modification de l'ID : " + e.getMessage());
+                System.err.println("Erreur lors de la récupération de l'ID : " + e.getMessage());
+            }
+
+            if (existingId == null || existingId <= 0 || existingId >= array.size()) {
+
+                // Modifier l'ID de l'objet en utilisant la réflexion
+                try {
+                    java.lang.reflect.Method setIdMethod = obj.getClass().getMethod("setId", int.class);
+                    setIdMethod.invoke(obj, newId);
+                } catch (Exception e) {
+                    System.err.println("Erreur lors de la modification de l'ID : " + e.getMessage());
+                }
             }
 
             // Ajouter l'objet sérialisé (avec le nouvel ID)
@@ -85,6 +96,10 @@ public class LocalStorageService {
 
     public static void save(Matiere matiere) {
         saveObject(matiere, "Matiere");
+    }
+
+    public static void save(Evaluation evaluation) {
+        saveObject(evaluation, "Evaluation");
     }
 
     public static void save(Note note) {
@@ -141,6 +156,10 @@ public class LocalStorageService {
         return findObjectById(id, "Matiere", Matiere.class);
     }
 
+    public static Evaluation findEvaluationById(int id) {
+        return findObjectById(id, "Evaluation", Evaluation.class);
+    }
+
     public static Note findNoteById(int id) {
         return findObjectById(id, "Note", Note.class);
     }
@@ -186,6 +205,10 @@ public class LocalStorageService {
 
     public static ArrayList<Matiere> loadMatieres() {
         return loadObjects("Matiere", Matiere.class);
+    }
+
+    public static ArrayList<Evaluation> loadEvaluations() {
+        return loadObjects("Evaluation", Evaluation.class);
     }
 
     public static ArrayList<Note> loadNotes() {
@@ -239,6 +262,10 @@ public class LocalStorageService {
 
     public static void remove(Matiere matiere) {
         removeObject(matiere.getId(), "Matiere");
+    }
+
+    public static void remove(Evaluation evaluation) {
+        removeObject(evaluation.getId(), "Evaluation");
     }
 
     public static void remove(Note note) {
@@ -304,6 +331,10 @@ public class LocalStorageService {
         updateObject(matiere, matiere.getId(), "Matiere");
     }
 
+    public static void update(Evaluation evaluation) {
+        updateObject(evaluation, evaluation.getId(), "Evaluation");
+    }
+
     public static void update(Note note) {
         updateObject(note, note.getId(), "Note");
     }
@@ -318,6 +349,52 @@ public class LocalStorageService {
 
     public static void update(User user) {
         updateObject(user, user.getId(), "User");
+    }
+
+
+    private static int getNextObjectId(String key) {
+        try {
+            JsonNode root = mapper.readTree(Files.readString(filePath));
+            JsonNode arrayNode = root.get(key);
+
+            if (arrayNode != null && arrayNode.isArray()) {
+                return arrayNode.size();
+            }
+            return 0; // Si le tableau n'existe pas encore
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    // Méthodes spécifiques
+    public static int getNextID(Etudiant etudiant) {
+        return getNextObjectId("Etudiant");
+    }
+
+    public static int getNextID(Matiere matiere) {
+        return getNextObjectId("Matiere");
+    }
+
+    public static int getNextID(Evaluation evaluation) {
+        return getNextObjectId("Evaluation");
+    }
+
+    public static int getNextID(Note note) {
+        return getNextObjectId("Note");
+    }
+
+    public static int getNextID(NoteType noteType) {
+        return getNextObjectId("NoteType");
+    }
+
+    public static int getNextID(Role role) {
+        return getNextObjectId("Role");
+    }
+
+    public static int getNextID(User user) {
+        return getNextObjectId("User");
     }
 
     // Getter / Setter filePath

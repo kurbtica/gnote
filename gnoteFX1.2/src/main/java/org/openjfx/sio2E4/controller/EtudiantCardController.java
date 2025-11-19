@@ -142,7 +142,7 @@ public class EtudiantCardController {
             // Utilise un Map<String, List<Note>> où la clé est le nom de la matière et la valeur est la liste des notes
 
             Map<String, List<Note>> notesParMatiere = notes.stream()
-                    .collect(Collectors.groupingBy(n -> n.getMatiere().getLibelle()));
+                    .collect(Collectors.groupingBy(n -> n.getEvaluation().getMatiere().getLibelle()));
 
             ObservableList<MatiereRow> data = FXCollections.observableArrayList();
 
@@ -159,7 +159,7 @@ public class EtudiantCardController {
                     // Installe un Tooltip sur chaque Label pour afficher le type et la date de la note lors du survol
 
                     Text valeur = new Text(String.valueOf(note.getValeur()));
-                    Text coef = new Text("(" + note.getCoefficient() + ")");
+                    Text coef = new Text("(" + note.getEvaluation().getCoefficient() + ")");
                     coef.setStyle(StyleConstants.COEFFICIENT_STYLE); // affiché en "indice"
 
                     // Créer un conteneur pour chaque note
@@ -171,10 +171,10 @@ public class EtudiantCardController {
 
                     // Tooltip pour la date et le type
                     Tooltip tooltip = new Tooltip(
-                            note.getCommentaire() +
-                            "\nType: " + note.getNoteType().getLibelle() +
-                            "\nDate: " + note.getDate() +
-                            "\nEnseignant: " + note.getEnseignant().getNom().toUpperCase() + " " + note.getEnseignant().getPrenom()
+                            note.getEvaluation().getTitre() +
+                            "\nType: " + note.getEvaluation().getNoteType().getLibelle() +
+                            "\nDate: " + note.getEvaluation().getDate() +
+                            "\nEnseignant: " + note.getEvaluation().getEnseignant().getNom().toUpperCase() + " " + note.getEvaluation().getEnseignant().getPrenom()
                     );
                     Tooltip.install(noteContainer, tooltip);
 
@@ -227,8 +227,8 @@ public class EtudiantCardController {
         double totalNotes = 0;
 
         for (Note note : notes) {
-            totalCoef += note.getCoefficient();
-            totalNotes += note.getValeur() * note.getCoefficient();
+            totalCoef += note.getEvaluation().getCoefficient();
+            totalNotes += note.getValeur() * note.getEvaluation().getCoefficient();
         }
 
         if (totalCoef == 0) {

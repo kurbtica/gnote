@@ -1,24 +1,5 @@
 {
   "Etudiant" : [ ],
-  "LocalUser" : [ {
-    "token" : "abc",
-    "id" : 0,
-    "nom" : "nom",
-    "prenom" : "prenom",
-    "email" : "admin@lycee.local",
-    "role" : "ADMIN",
-    "adresse" : "16 Pl. Saint-Sauveur, 35600 Redon",
-    "telephone" : "06 00 00 00 00"
-  }, {
-    "token" : "abc",
-    "id" : 1,
-    "nom" : "nom",
-    "prenom" : "prenom",
-    "email" : "prof@lycee.local",
-    "role" : "ENSEIGNANT",
-    "adresse" : "16 Pl. Saint-Sauveur, 35600 Redon",
-    "telephone" : "06 00 00 00 00"
-  } ],
   "Matiere" : [ {
     "id" : 0,
     "libelle" : "Math"
@@ -143,6 +124,146 @@
       "id" : 2,
       "libelle" : "TP"
     }
+  }, {
+    "id" : 3,
+    "eleve" : {
+      "id" : 7,
+      "nom" : "Dupont",
+      "prenom" : "Nicolas",
+      "email" : "nicolas.dupont@example.com",
+      "adresse" : "Rue de la Mairie",
+      "telephone" : "0644556677",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      },
+      "token" : null
+    },
+    "valeur" : 12.0,
+    "modification" : null,
+    "evaluationId" : 0
+  }, {
+    "id" : 4,
+    "eleve" : {
+      "id" : 3,
+      "nom" : "Leclerc",
+      "prenom" : "Emma",
+      "email" : "emma.leclerc@example.com",
+      "adresse" : "Rue des Acacias",
+      "telephone" : "0602030405",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      },
+      "token" : null
+    },
+    "valeur" : 20.0,
+    "modification" : null,
+    "evaluationId" : 0
+  }, {
+    "id" : 5,
+    "eleve" : {
+      "id" : 5,
+      "nom" : "Morel",
+      "prenom" : "Lucas",
+      "email" : "lucas.morel@example.com",
+      "adresse" : "Rue des Érables",
+      "telephone" : "0677889900",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      },
+      "token" : null
+    },
+    "valeur" : 1.0,
+    "modification" : null,
+    "evaluationId" : 0
+  }, {
+    "id" : 6,
+    "eleve" : {
+      "id" : 0,
+      "nom" : "Etudiant",
+      "prenom" : "John",
+      "email" : "john.etudiant@example.com",
+      "adresse" : "Rue des Lilas",
+      "telephone" : "0601020304",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      },
+      "token" : null
+    },
+    "valeur" : 1.0,
+    "modification" : null,
+    "evaluationId" : 0
+  }, {
+    "id" : 7,
+    "eleve" : {
+      "id" : 3,
+      "nom" : "Leclerc",
+      "prenom" : "Emma",
+      "email" : "emma.leclerc@example.com",
+      "adresse" : "Rue des Acacias",
+      "telephone" : "0602030405",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      }
+    },
+    "valeur" : 6.0,
+    "modification" : null,
+    "evaluation" : null
+  }, {
+    "id" : 8,
+    "eleve" : {
+      "id" : 0,
+      "nom" : "Etudiant",
+      "prenom" : "John",
+      "email" : "john.etudiant@example.com",
+      "adresse" : "Rue des Lilas",
+      "telephone" : "0601020304",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      }
+    },
+    "valeur" : 6.0,
+    "modification" : null,
+    "evaluation" : null
+  }, {
+    "id" : 9,
+    "eleve" : {
+      "id" : 5,
+      "nom" : "Morel",
+      "prenom" : "Lucas",
+      "email" : "lucas.morel@example.com",
+      "adresse" : "Rue des Érables",
+      "telephone" : "0677889900",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      }
+    },
+    "valeur" : 6.0,
+    "modification" : null,
+    "evaluation" : null
+  }, {
+    "id" : 10,
+    "eleve" : {
+      "id" : 7,
+      "nom" : "Dupont",
+      "prenom" : "Nicolas",
+      "email" : "nicolas.dupont@example.com",
+      "adresse" : "Rue de la Mairie",
+      "telephone" : "0644556677",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      }
+    },
+    "valeur" : 6.0,
+    "modification" : null,
+    "evaluation" : null
   } ],
   "NoteType" : [ {
     "id" : 0,
@@ -268,5 +389,309 @@
       "id" : 1,
       "libelle" : "ADMIN"
     }
+  } ],
+  "Evaluation" : [ {
+    "id" : 0,
+    "enseignant" : {
+      "id" : 6,
+      "nom" : "Petit",
+      "prenom" : "Claire",
+      "email" : "claire.petit@example.com",
+      "adresse" : "Rue Nationale",
+      "telephone" : "0622334455",
+      "role" : {
+        "id" : 2,
+        "libelle" : "ENSEIGNANT"
+      },
+      "token" : null
+    },
+    "matiere" : {
+      "id" : 1,
+      "libelle" : "Francais"
+    },
+    "coefficient" : 1.0,
+    "titre" : "1",
+    "date" : "2025-11-19",
+    "modification" : null,
+    "noteType" : {
+      "id" : 1,
+      "libelle" : "ORAL"
+    },
+    "notes" : [ {
+      "id" : 3,
+      "eleve" : {
+        "id" : 7,
+        "nom" : "Dupont",
+        "prenom" : "Nicolas",
+        "email" : "nicolas.dupont@example.com",
+        "adresse" : "Rue de la Mairie",
+        "telephone" : "0644556677",
+        "role" : {
+          "id" : 3,
+          "libelle" : "ETUDIANT"
+        },
+        "token" : null
+      },
+      "valeur" : 12.0,
+      "modification" : null,
+      "evaluationId" : 0
+    }, {
+      "id" : 4,
+      "eleve" : {
+        "id" : 3,
+        "nom" : "Leclerc",
+        "prenom" : "Emma",
+        "email" : "emma.leclerc@example.com",
+        "adresse" : "Rue des Acacias",
+        "telephone" : "0602030405",
+        "role" : {
+          "id" : 3,
+          "libelle" : "ETUDIANT"
+        },
+        "token" : null
+      },
+      "valeur" : 20.0,
+      "modification" : null,
+      "evaluationId" : 0
+    }, {
+      "id" : 5,
+      "eleve" : {
+        "id" : 5,
+        "nom" : "Morel",
+        "prenom" : "Lucas",
+        "email" : "lucas.morel@example.com",
+        "adresse" : "Rue des Érables",
+        "telephone" : "0677889900",
+        "role" : {
+          "id" : 3,
+          "libelle" : "ETUDIANT"
+        },
+        "token" : null
+      },
+      "valeur" : 1.0,
+      "modification" : null,
+      "evaluationId" : 0
+    }, {
+      "id" : 6,
+      "eleve" : {
+        "id" : 0,
+        "nom" : "Etudiant",
+        "prenom" : "John",
+        "email" : "john.etudiant@example.com",
+        "adresse" : "Rue des Lilas",
+        "telephone" : "0601020304",
+        "role" : {
+          "id" : 3,
+          "libelle" : "ETUDIANT"
+        },
+        "token" : null
+      },
+      "valeur" : 16.0,
+      "modification" : null,
+      "evaluationId" : 0
+    } ]
+  }, {
+    "id" : 1,
+    "enseignant" : {
+      "id" : 4,
+      "nom" : "Bernard",
+      "prenom" : "Sophie",
+      "email" : "sophie.bernard@example.com",
+      "adresse" : "Boulevard de la Gare",
+      "telephone" : "0611223344",
+      "role" : {
+        "id" : 2,
+        "libelle" : "ENSEIGNANT"
+      }
+    },
+    "matiere" : {
+      "id" : 0,
+      "libelle" : "Math"
+    },
+    "coefficient" : 2.0,
+    "titre" : "2",
+    "date" : "2025-11-15",
+    "modification" : null,
+    "noteType" : {
+      "id" : 2,
+      "libelle" : "TP"
+    },
+    "notes" : [ {
+      "id" : 7,
+      "eleve" : {
+        "id" : 3,
+        "nom" : "Leclerc",
+        "prenom" : "Emma",
+        "email" : "emma.leclerc@example.com",
+        "adresse" : "Rue des Acacias",
+        "telephone" : "0602030405",
+        "role" : {
+          "id" : 3,
+          "libelle" : "ETUDIANT"
+        }
+      },
+      "valeur" : 6.0,
+      "modification" : null,
+      "evaluation" : {
+        "id" : 1,
+        "enseignant" : {
+          "id" : 4,
+          "nom" : "Bernard",
+          "prenom" : "Sophie",
+          "email" : "sophie.bernard@example.com",
+          "adresse" : "Boulevard de la Gare",
+          "telephone" : "0611223344",
+          "role" : {
+            "id" : 2,
+            "libelle" : "ENSEIGNANT"
+          }
+        },
+        "matiere" : {
+          "id" : 0,
+          "libelle" : "Math"
+        },
+        "coefficient" : 2.0,
+        "titre" : "2",
+        "date" : "2025-11-15",
+        "modification" : null,
+        "noteType" : {
+          "id" : 2,
+          "libelle" : "TP"
+        },
+        "notes" : [ ]
+      }
+    }, {
+      "id" : 8,
+      "eleve" : {
+        "id" : 0,
+        "nom" : "Etudiant",
+        "prenom" : "John",
+        "email" : "john.etudiant@example.com",
+        "adresse" : "Rue des Lilas",
+        "telephone" : "0601020304",
+        "role" : {
+          "id" : 3,
+          "libelle" : "ETUDIANT"
+        }
+      },
+      "valeur" : 6.0,
+      "modification" : null,
+      "evaluation" : {
+        "id" : 1,
+        "enseignant" : {
+          "id" : 4,
+          "nom" : "Bernard",
+          "prenom" : "Sophie",
+          "email" : "sophie.bernard@example.com",
+          "adresse" : "Boulevard de la Gare",
+          "telephone" : "0611223344",
+          "role" : {
+            "id" : 2,
+            "libelle" : "ENSEIGNANT"
+          }
+        },
+        "matiere" : {
+          "id" : 0,
+          "libelle" : "Math"
+        },
+        "coefficient" : 2.0,
+        "titre" : "2",
+        "date" : "2025-11-15",
+        "modification" : null,
+        "noteType" : {
+          "id" : 2,
+          "libelle" : "TP"
+        },
+        "notes" : [ ]
+      }
+    }, {
+      "id" : 9,
+      "eleve" : {
+        "id" : 5,
+        "nom" : "Morel",
+        "prenom" : "Lucas",
+        "email" : "lucas.morel@example.com",
+        "adresse" : "Rue des Érables",
+        "telephone" : "0677889900",
+        "role" : {
+          "id" : 3,
+          "libelle" : "ETUDIANT"
+        }
+      },
+      "valeur" : 6.0,
+      "modification" : null,
+      "evaluation" : {
+        "id" : 1,
+        "enseignant" : {
+          "id" : 4,
+          "nom" : "Bernard",
+          "prenom" : "Sophie",
+          "email" : "sophie.bernard@example.com",
+          "adresse" : "Boulevard de la Gare",
+          "telephone" : "0611223344",
+          "role" : {
+            "id" : 2,
+            "libelle" : "ENSEIGNANT"
+          }
+        },
+        "matiere" : {
+          "id" : 0,
+          "libelle" : "Math"
+        },
+        "coefficient" : 2.0,
+        "titre" : "2",
+        "date" : "2025-11-15",
+        "modification" : null,
+        "noteType" : {
+          "id" : 2,
+          "libelle" : "TP"
+        },
+        "notes" : [ ]
+      }
+    }, {
+      "id" : 10,
+      "eleve" : {
+        "id" : 7,
+        "nom" : "Dupont",
+        "prenom" : "Nicolas",
+        "email" : "nicolas.dupont@example.com",
+        "adresse" : "Rue de la Mairie",
+        "telephone" : "0644556677",
+        "role" : {
+          "id" : 3,
+          "libelle" : "ETUDIANT"
+        }
+      },
+      "valeur" : 6.0,
+      "modification" : null,
+      "evaluation" : {
+        "id" : 1,
+        "enseignant" : {
+          "id" : 4,
+          "nom" : "Bernard",
+          "prenom" : "Sophie",
+          "email" : "sophie.bernard@example.com",
+          "adresse" : "Boulevard de la Gare",
+          "telephone" : "0611223344",
+          "role" : {
+            "id" : 2,
+            "libelle" : "ENSEIGNANT"
+          }
+        },
+        "matiere" : {
+          "id" : 0,
+          "libelle" : "Math"
+        },
+        "coefficient" : 2.0,
+        "titre" : "2",
+        "date" : "2025-11-15",
+        "modification" : null,
+        "noteType" : {
+          "id" : 2,
+          "libelle" : "TP"
+        },
+        "notes" : [ ]
+      }
+    } ]
   } ]
 }

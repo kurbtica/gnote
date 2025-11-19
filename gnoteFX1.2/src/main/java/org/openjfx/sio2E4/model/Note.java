@@ -1,51 +1,60 @@
 package org.openjfx.sio2E4.model;
 
-import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.openjfx.sio2E4.service.LocalStorageService;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Note {
     private int id;
-    private User enseignant;
     private User eleve;
-    private Matiere matiere;
-    private double coefficient;
     private double valeur;
-    private String commentaire;
-    private String date;
     private String modification; // 🔄 nouveau champ
-    private NoteType noteType;
+    private int evaluationId; // on met pas l'objet pour l'instant car ca crée des boucles infini dans le json
 
     // GETTERS / SETTERS
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public User getEnseignant() { return enseignant; }
-    public void setEnseignant(User enseignant) { this.enseignant = enseignant; }
+    public User getEleve() {
+        return eleve;
+    }
+    public void setEleve(User eleve) {
+        this.eleve = eleve;
+    }
 
-    public User getEleve() { return eleve; }
-    public void setEleve(User eleve) { this.eleve = eleve; }
+    public double getValeur() {
+        return valeur;
+    }
+    public void setValeur(double valeur) {
+        this.valeur = valeur;
+    }
 
-    public Matiere getMatiere() { return matiere; }
-    public void setMatiere(Matiere matiere) { this.matiere = matiere; }
+    public String getModification() {
+        return modification;
+    }
+    public void setModification(String modification) {
+        this.modification = modification;
+    }
 
-    public double getCoefficient() { return coefficient; }
-    public void setCoefficient(double coefficient) { this.coefficient = coefficient; }
+    @JsonIgnore
+    public Evaluation getEvaluation() {
+        return LocalStorageService.findEvaluationById(evaluationId);
+    }
+    @JsonIgnore
+    public void setEvaluation(Evaluation evaluation) {
+        this.evaluationId = evaluation.getId();
+    }
 
-    public double getValeur() { return valeur; }
-    public void setValeur(double valeur) { this.valeur = valeur; }
-
-    public String getCommentaire() { return commentaire; }
-    public void setCommentaire(String commentaire) { this.commentaire = commentaire; }
-
-    public String getDate() { return date; }
-    public void setDate(String date) { this.date = date; }
-
-    public String getModification() { return modification; }
-    public void setModification(String modification) { this.modification = modification; }
-
-    public NoteType getNoteType() { return noteType; }
-    public void setNoteType(NoteType noteType) { this.noteType = noteType; }
+    public int getEvaluationId() {
+        return evaluationId;
+    }
+    public void setEvaluationId(int evaluationId) {
+        this.evaluationId = evaluationId;
+    }
 }

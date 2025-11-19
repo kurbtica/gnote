@@ -20,7 +20,7 @@ public class NoteService {
 
     public static Map<String, List<Note>> groupNotesByMatiere(List<Note> notes) {
         return notes.stream()
-                .collect(Collectors.groupingBy(n -> n.getMatiere().getLibelle()));
+                .collect(Collectors.groupingBy(n -> n.getEvaluation().getMatiere().getLibelle()));
     }
 
     public static ObservableList<MatiereRow> buildMatiereRows(Map<String, List<Note>> notesParMatiere) {
@@ -51,7 +51,7 @@ public class NoteService {
 
     private static HBox buildNoteContainer(Note note) {
         Text valeur = new Text(String.valueOf(note.getValeur()));
-        Text coef = new Text("(" + note.getCoefficient() + ")");
+        Text coef = new Text("(" + note.getEvaluation().getCoefficient() + ")");
         coef.setStyle(StyleConstants.COEFFICIENT_STYLE);
 
         HBox container = new HBox(2);
@@ -61,10 +61,10 @@ public class NoteService {
         container.setStyle(StyleConstants.NOTE_CONTAINER_STYLE);
 
         Tooltip tooltip = new Tooltip(
-                note.getCommentaire() +
-                        "\nType: " + note.getNoteType().getLibelle() +
-                        "\nDate: " + note.getDate() +
-                        "\nEnseignant: " + note.getEnseignant().getNom().toUpperCase() + " " + note.getEnseignant().getPrenom()
+                note.getEvaluation().getTitre() +
+                        "\nType: " + note.getEvaluation().getNoteType().getLibelle() +
+                        "\nDate: " + note.getEvaluation().getDate() +
+                        "\nEnseignant: " + note.getEvaluation().getEnseignant().getNom().toUpperCase() + " " + note.getEvaluation().getEnseignant().getPrenom()
         );
         Tooltip.install(container, tooltip);
 
@@ -76,8 +76,8 @@ public class NoteService {
         double totalNotes = 0;
 
         for (Note note : notes) {
-            totalCoef += note.getCoefficient();
-            totalNotes += note.getValeur() * note.getCoefficient();
+            totalCoef += note.getEvaluation().getCoefficient();
+            totalNotes += note.getValeur() * note.getEvaluation().getCoefficient();
         }
 
         if (totalCoef == 0) {

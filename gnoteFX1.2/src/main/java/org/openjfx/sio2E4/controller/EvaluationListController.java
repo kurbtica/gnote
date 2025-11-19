@@ -4,10 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
 
+import javafx.scene.layout.HBox;
+import javafx.scene.shape.SVGPath;
 import org.openjfx.sio2E4.constants.APIConstants;
+import org.openjfx.sio2E4.constants.StyleConstants;
 import org.openjfx.sio2E4.model.*;
 
 import java.io.IOException;
@@ -15,98 +19,73 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.openjfx.sio2E4.service.AuthService;
 import org.openjfx.sio2E4.service.LocalStorageService;
 import org.openjfx.sio2E4.service.NetworkService;
+import org.openjfx.sio2E4.service.NoteService;
 import org.openjfx.sio2E4.util.AlertHelper;
-
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 public class EvaluationListController {
 
 	User currentUser = AuthService.getCurrentUser();
-	Role role = currentUser.getRole();
+	String role = currentUser.getRole().getLibelle();
 
 	/* Tableau d'affichage de note */
 	@FXML
-	private TableView<Note> notesTable;
+	private TableView<Evaluation> evaluationTable;
 	@FXML
-	private TableColumn<Note, String> eleveColumn;
+	private TableColumn<Evaluation, String> titleColumn;
 	@FXML
-	private TableColumn<Note, String> enseignantColumn;
+	private TableColumn<Evaluation, String> enseignantColumn;
 	@FXML
-	private TableColumn<Note, String> matiereColumn;
+	private TableColumn<Evaluation, String> matiereColumn;
 	@FXML
-	private TableColumn<Note, String> valeurColumn;
+	private TableColumn<Evaluation, Object> moyennes;
 	@FXML
-	private TableColumn<Note, String> dateColumn;
+	private TableColumn<Evaluation, String> moyenneColumn;
 	@FXML
-	private TableColumn<Note, String> commentaireColumn;
+	private TableColumn<Evaluation, String> moyenneMinColumn;
 	@FXML
-	private TableColumn<Note, String> noteTypeColumn;
-	@FXML
-	private TableColumn<Note, String> coefficientColumn;
+	private TableColumn<Evaluation, String> moyenneMaxColumn;
 
 	@FXML
-	private TableColumn<Note, String> modificationColumn;
+	private TableColumn<Evaluation, String> dateColumn;
+	@FXML
+	private TableColumn<Evaluation, String> noteTypeColumn;
+	@FXML
+	private TableColumn<Evaluation, String> coefficientColumn;
+
+	@FXML
+	private TableColumn<Evaluation, String> modificationColumn;
+
+	@FXML
+	private TableColumn actionsColumn;
 
 	private final String API_URL = "http://localhost:8080/api/notes";
 	private final String BEARER_TOKEN = "Bearer " + AuthService.getToken();
-
-	private void clearForm() {
-		Platform.runLater(() -> {
-			eleveComboBox.setValue(null);
-			matiereComboBox.setValue(null);
-			valeurField.clear();
-			noteTypeComboBox.setValue(null);
-			datePicker.setValue(null);
-			commentaireField.clear();
-			coefficientField.clear();
-
-			// Si l'utilisateur connecté est un enseignant, on le sélectionne à nouveau
-			if ("ENSEIGNANT".equalsIgnoreCase(currentUser.getRole().getLibelle())) {
-				// On cherche l'enseignant correspondant dans la liste (important si l'objet
-				// n'est pas le même en mémoire)
-				User enseignant = enseignantComboBox.getItems().stream().filter(u -> u.getId() == currentUser.getId())
-						.findFirst().orElse(null);
-
-				if (enseignant != null) {
-					enseignantComboBox.setValue(enseignant);
-					enseignantComboBox.setDisable(true); // on le rend non modifiable
-				}
-			} else {
-				enseignantComboBox.setValue(null);
-				enseignantComboBox.setDisable(false); // autoriser la sélection si ce n’est pas un enseignant
-			}
-		});
-	}
 
 	@FXML
 	public void initialize() {
 
 		// Mapping des colonnes
-		eleveColumn.setCellValueFactory(data -> new SimpleStringProperty(
-				data.getValue().getEleve().getPrenom() + " " + data.getValue().getEleve().getNom()));
+		titleColumn.setCellValueFactory(data -> new SimpleStringProperty(
+				data.getValue().getTitre()));
 
 		enseignantColumn.setCellValueFactory(data -> new SimpleStringProperty(
 				data.getValue().getEnseignant().getPrenom() + " " + data.getValue().getEnseignant().getNom()));
 
 		matiereColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getMatiere().getLibelle()));
 
-		valeurColumn.setCellValueFactory(data -> new SimpleStringProperty(String.valueOf(data.getValue().getValeur())));
+
+		moyenneColumn.setCellValueFactory(data -> {
+			return new SimpleStringProperty(String.valueOf(NoteService.calculateMoyenne(data.getValue().getNotes())));
+		});
+
+		// TODO mettre en place un calcul de moyenne, note min et note max
 
 		dateColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDate()));
-
-		commentaireColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getCommentaire()));
 
 		// Nouvelle colonne pour le type de la note
 		noteTypeColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getNoteType().getLibelle()));
@@ -132,46 +111,131 @@ public class EvaluationListController {
 			return new SimpleStringProperty(modif);
 		});
 
-		/*----FORMATTAGE DES COMBOBOX----*/
 
-		noteTypeComboBox.setCellFactory(lv -> new ListCell<NoteType>() {
+		actionsColumn.setCellFactory(column -> new TableCell<Evaluation, Void>() {
+			private final Button viewButton = new Button();
+			private final Button editButton = new Button();
+			private final Button deleteButton = new Button();
+			private final HBox buttonsBox = new HBox(8);
+
+			{
+				// Icône SVG Eye (Voir)
+				SVGPath viewIcon = new SVGPath();
+				viewIcon.setContent("M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z");
+				viewIcon.setScaleX(0.8);
+				viewIcon.setScaleY(0.8);
+				viewIcon.setStyle(StyleConstants.ButtonActionsColumn.VIEW_BUTTON_ICON);
+				viewButton.setGraphic(viewIcon);
+				viewButton.setStyle(StyleConstants.ButtonActionsColumn.VIEW_BUTTON);
+				viewButton.setTooltip(new Tooltip("Voir la fiche"));
+
+				// Icône SVG Pencil (Modifier)
+				SVGPath editIcon = new SVGPath();
+				editIcon.setContent("M15.728 9.686l-1.414-1.414L5 17.586V19h1.414l9.314-9.314zm1.414-1.414l1.414-1.414-1.414-1.414-1.414 1.414 1.414 1.414zM7.242 21H3v-4.243L16.435 3.322a1 1 0 0 1 1.414 0l2.829 2.829a1 1 0 0 1 0 1.414L7.243 21z");
+				editIcon.setScaleX(0.8);
+				editIcon.setScaleY(0.8);
+				editIcon.setStyle(StyleConstants.ButtonActionsColumn.EDIT_BUTTON_ICON);
+				editButton.setGraphic(editIcon);
+				editButton.setStyle(StyleConstants.ButtonActionsColumn.EDIT_BUTTON);
+				editButton.setTooltip(new Tooltip("Modifier"));
+
+				// Icône SVG Trash (Supprimer)
+				SVGPath deleteIcon = new SVGPath();
+				deleteIcon.setContent("M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z");
+				deleteIcon.setScaleX(0.8);
+				deleteIcon.setScaleY(0.8);
+				deleteIcon.setStyle(StyleConstants.ButtonActionsColumn.DELETE_BUTTON_ICON);
+				deleteButton.setGraphic(deleteIcon);
+				deleteButton.setStyle(StyleConstants.ButtonActionsColumn.DELETE_BUTTON);
+				deleteButton.setTooltip(new Tooltip("Supprimer"));
+
+				// Effets hover pour le bouton Voir fiche utilisateur
+				viewButton.setOnMouseEntered(e -> {
+					viewButton.setStyle(StyleConstants.ButtonActionsColumn.VIEW_BUTTON_HOVER);
+					viewIcon.setStyle(StyleConstants.ButtonActionsColumn.VIEW_BUTTON_ICON_HOVER);
+				});
+				viewButton.setOnMouseExited(e -> {
+					viewButton.setStyle(StyleConstants.ButtonActionsColumn.VIEW_BUTTON);
+					viewIcon.setStyle(StyleConstants.ButtonActionsColumn.VIEW_BUTTON_ICON);
+				});
+
+				// Effets hover pour le bouton Modifier
+				editButton.setOnMouseEntered(e -> {
+					editButton.setStyle(StyleConstants.ButtonActionsColumn.EDIT_BUTTON_HOVER);
+				});
+				editButton.setOnMouseExited(e -> {
+					editButton.setStyle(StyleConstants.ButtonActionsColumn.EDIT_BUTTON);
+				});
+
+				// Effets hover pour le bouton Supprimer
+				deleteButton.setOnMouseEntered(e -> {
+					deleteButton.setStyle(StyleConstants.ButtonActionsColumn.DELETE_BUTTON_HOVER);
+					deleteIcon.setStyle(StyleConstants.ButtonActionsColumn.DELETE_BUTTON_ICON_HOVER);
+				});
+				deleteButton.setOnMouseExited(e -> {
+					deleteButton.setStyle(StyleConstants.ButtonActionsColumn.DELETE_BUTTON);
+					deleteIcon.setStyle(StyleConstants.ButtonActionsColumn.DELETE_BUTTON_ICON);
+				});
+
+				buttonsBox.setAlignment(Pos.CENTER_RIGHT);
+				buttonsBox.getChildren().addAll(viewButton, editButton, deleteButton);
+				buttonsBox.setPadding(new Insets(0, 10, 0, 0));
+			}
+
 			@Override
-			protected void updateItem(NoteType item, boolean empty) {
+			protected void updateItem(Void item, boolean empty) {
 				super.updateItem(item, empty);
-				// Affiche le libellé ou "vide" si l'élément est null ou la cellule vide
-				setText(empty || item == null ? null : item.getLibelle());
+				if (empty || getTableRow() == null) {
+					setGraphic(null);
+				} else {
+					Evaluation evaluation = getTableView().getItems().get(getIndex());
+
+					// Actions des boutons
+					viewButton.setOnAction(event -> showViewEvaluationPage(evaluation));
+					editButton.setOnAction(event -> showEditEvaluationPage(evaluation));
+					deleteButton.setOnAction(event -> handleDeleteEvaluation(evaluation));
+
+					setGraphic(buttonsBox);
+				}
 			}
 		});
-		noteTypeComboBox.setButtonCell(noteTypeComboBox.getCellFactory().call(null)); // Rendu du bouton du ComboBox
 
-		eleveComboBox.setCellFactory(lv -> new ListCell<User>() {
-			@Override
-			protected void updateItem(User item, boolean empty) {
-				super.updateItem(item, empty);
-				setText(empty || item == null ? null : item.getPrenom() + " " + item.getNom());
-			}
-		});
-		eleveComboBox.setButtonCell(eleveComboBox.getCellFactory().call(null)); // Rendu du bouton du ComboBox
 
-		enseignantComboBox.setCellFactory(lv -> new ListCell<User>() {
-			@Override
-			protected void updateItem(User item, boolean empty) {
-				super.updateItem(item, empty);
-				setText(empty || item == null ? null : item.getPrenom() + " " + item.getNom());
-			}
-		});
-		enseignantComboBox.setButtonCell(enseignantComboBox.getCellFactory().call(null)); // Rendu du bouton du ComboBox
+		// Définir les largeurs en pourcentage de la largeur totale du tableau
+		titleColumn.prefWidthProperty().bind(
+				evaluationTable.widthProperty().multiply(0.10)
+		);
+		enseignantColumn.prefWidthProperty().bind(
+				evaluationTable.widthProperty().multiply(0.10) // 30
+		);
+		matiereColumn.prefWidthProperty().bind(
+				evaluationTable.widthProperty().multiply(0.10)
+		);
+		moyennes.prefWidthProperty().bind(
+				evaluationTable.widthProperty().multiply(0.20) // 60
+		);
+		coefficientColumn.prefWidthProperty().bind(
+				evaluationTable.widthProperty().multiply(0.06) //
+		);
+		noteTypeColumn.prefWidthProperty().bind(
+				evaluationTable.widthProperty().multiply(0.10) // 90
+		);
+		dateColumn.prefWidthProperty().bind(
+				evaluationTable.widthProperty().multiply(0.10) // 90
+		);
+		modificationColumn.prefWidthProperty().bind(
+				evaluationTable.widthProperty().multiply(0.10) // 90
+		);
+		actionsColumn.prefWidthProperty().bind(
+				evaluationTable.widthProperty().multiply(0.14)
+		);
+		evaluationTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-		// Chargement des données du tableaus
-		fetchNotes();
-
-		// Chargement des données du formulaire
-		fetchUsers();
-		fetchMatieres();
-		fetchNoteTypes();
+		// Chargement des données du tableau
+		fetchEvaluations();
 	}
 
-	private void fetchNotes() {
+	private void fetchEvaluations() {
 		if (NetworkService.isOnline()) {
 			HttpClient client = HttpClient.newHttpClient();
 			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.NOTES))
@@ -179,605 +243,81 @@ public class EvaluationListController {
 					.GET().build();
 
 			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
-					.thenAccept(this::parseNotes).exceptionally(e -> {
+					.thenAccept(this::parseEvaluations).exceptionally(e -> {
 						e.printStackTrace();
 						return null;
 					});
 		} else {
 			System.out.println("Mode hors ligne activé — chargement des notes en local");
-			ArrayList<Note> localNotes = LocalStorageService.loadNotes();
-			Platform.runLater(() -> notesTable.getItems().setAll(localNotes));
+			ArrayList<Evaluation> localEvaluations = LocalStorageService.loadEvaluations();
+			Platform.runLater(() -> evaluationTable.getItems().setAll(localEvaluations));
 		}
 
 	}
 
-	private void parseNotes(String responseBody) {
+	private void parseEvaluations(String responseBody) {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 
-			List<Note> notes = Arrays.asList(mapper.readValue(responseBody, Note[].class));
-			Platform.runLater(() -> notesTable.getItems().setAll(notes));
-
-			eleveAvecMeilleureMoyenne(notes);
+			List<Evaluation> evaluations = Arrays.asList(mapper.readValue(responseBody, Evaluation[].class));
+			Platform.runLater(() -> evaluationTable.getItems().setAll(evaluations));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	@FXML
-	private Label meilleurEleveLabel; // Le Label qui affichera l'élève avec la meilleure moyenne
-
-	private void eleveAvecMeilleureMoyenne(List<Note> notes) {
-	    // Map pour stocker les totaux des valeurs pondérées et des coefficients par élève
-	    Map<Integer, Double> totalNotes = new HashMap<>();
-	    Map<Integer, Double> totalCoefficients = new HashMap<>();
-
-	    // Parcours des notes pour calculer les totaux
-	    for (Note note : notes) {
-	        int eleveId = note.getEleve().getId();
-	        double valeur = note.getValeur();
-	        double coefficient = note.getCoefficient();
-
-	        // Ajoute la valeur pondérée à l'élève
-	        totalNotes.put(eleveId, totalNotes.getOrDefault(eleveId, 0.0) + (valeur * coefficient));
-	        totalCoefficients.put(eleveId, totalCoefficients.getOrDefault(eleveId, 0.0) + coefficient);
-	    }
-
-	    // Calculer la moyenne pondérée pour chaque élève
-	    Map<Integer, Double> moyennes = new HashMap<>();
-	    for (int eleveId : totalNotes.keySet()) {
-	        double moyenne = totalNotes.get(eleveId) / totalCoefficients.get(eleveId);
-	        moyennes.put(eleveId, moyenne);
-	    }
-
-	    // Trouver l'élève avec la meilleure moyenne
-	    int meilleurEleveId = -1;
-	    double meilleureMoyenne = -1;
-	    for (Map.Entry<Integer, Double> entry : moyennes.entrySet()) {
-	        if (entry.getValue() > meilleureMoyenne) {
-	            meilleureMoyenne = entry.getValue();
-	            meilleurEleveId = entry.getKey();
-	        }
-	    }
-
-	    // Trouver l'élève correspondant à l'ID avec la meilleure moyenne
-	    User meilleurEleve = null;
-	    for (Note note : notes) {
-	        if (note.getEleve().getId() == meilleurEleveId) {
-	            meilleurEleve = note.getEleve();
-	            break;
-	        }
-	    }
-
-	    // Trouver la date la plus récente parmi les notes
-	    Instant dateRecenteInstant = null;
-	    DateTimeFormatter formatterAffichage = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-	    for (Note note : notes) {
-	        String dateStr = note.getDate();
-
-	        try {
-	            Instant instantNote;
-
-	            if (dateStr.contains("T")) {
-	                // Cas avec date + heure + offset, ex: "2025-05-23T12:26:22.884+00:00"
-	                instantNote = OffsetDateTime.parse(dateStr).toInstant();
-	            } else {
-	                // Cas avec date seule, ex: "2024-03-17"
-	                LocalDate ld = LocalDate.parse(dateStr);
-	                instantNote = ld.atStartOfDay(ZoneId.systemDefault()).toInstant();
-	            }
-
-	            if (dateRecenteInstant == null || instantNote.isAfter(dateRecenteInstant)) {
-	                dateRecenteInstant = instantNote;
-	            }
-	        } catch (DateTimeParseException e) {
-	            System.err.println("Erreur de parsing date : " + dateStr);
-	        }
-	    }
-
-	    // Mettre à jour le Label avec l'élève ayant la meilleure moyenne et la date la plus récente
-	    if (meilleurEleve != null) {
-	        String texte = "Major de promotion : " + meilleurEleve.getPrenom() + " " + meilleurEleve.getNom()
-	                + " avec une moyenne de " + String.format("%.2f", meilleureMoyenne);
-
-	        if (dateRecenteInstant != null) {
-	            ZonedDateTime dateRecenteLocal = dateRecenteInstant.atZone(ZoneId.systemDefault());
-	            texte += " | Date la plus récente : " + dateRecenteLocal.format(formatterAffichage);
-	        }
-
-	        final String texteFinal = texte; // variable finale pour la lambda
-	        Platform.runLater(() -> meilleurEleveLabel.setText(texteFinal));
-	    }
-	}
-
-
-	/* Formulaire de saisie de note */
-	@FXML
-	private TextField valeurField;
-	@FXML
-	private TextField coefficientField;
-	@FXML
-	private TextArea commentaireField;
 
 	@FXML
-	private ComboBox<User> eleveComboBox;
-	@FXML
-	private ComboBox<User> enseignantComboBox;
-	@FXML
-	private ComboBox<Matiere> matiereComboBox;
-	@FXML
-	private ComboBox<NoteType> noteTypeComboBox;
-
-	@FXML
-	private DatePicker datePicker;
-
-	@FXML
-	private Button ajouterNoteButton;
-
-	@FXML
-	private void ajouterNote() {
-		// Récupérer les données du formulaire
-		User eleve = eleveComboBox.getValue();
-		User enseignant = enseignantComboBox.getValue();
-		Matiere matiere = matiereComboBox.getValue();
-		NoteType noteType = noteTypeComboBox.getValue();
-
-		double valeur = Double.parseDouble(valeurField.getText());
-		double coefficient = Double.parseDouble(coefficientField.getText());
-		String date = datePicker.getValue().toString();
-		String commentaire = commentaireField.getText();
-		if (NetworkService.isOnline()) {
-			try {
-				String json = String.format(
-						"{" + "\"eleve\": { \"id\": %d }," + "\"enseignant\": { \"id\": %d },"
-								+ "\"matiere\": { \"id\": %d }," + "\"coefficient\": %s," + "\"valeur\": %s,"
-								+ "\"noteType\": { \"id\": %d }," + "\"commentaire\": \"%s\"," + "\"date\": \"%s\"" + "}",
-						eleve.getId(), enseignant.getId(), matiere.getId(), coefficient, valeur, noteType.getId(),
-						commentaire, date);
-
-				// Préparer et envoyer la requête POST
-				HttpClient client = HttpClient.newHttpClient();
-				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.NOTES))
-						.header("Authorization", BEARER_TOKEN).header("Content-Type", "application/json")
-						.POST(HttpRequest.BodyPublishers.ofString(json)).build();
-
-				client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
-					if (response.statusCode() == 201 || response.statusCode() == 200) {
-						// Succès : rafraîchir la liste
-						fetchNotes();
-						clearForm();
-					} else {
-						System.err.println("Erreur à l'ajout : " + response.body());
-					}
-				}).exceptionally(e -> {
-					e.printStackTrace();
-					return null;
-				});
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} else {
-			Note newNote = new Note();
-			newNote.setEleve(eleve);
-			newNote.setEnseignant(enseignant);
-			newNote.setMatiere(matiere);
-			newNote.setNoteType(noteType);
-
-			newNote.setValeur(valeur);
-			newNote.setCoefficient(coefficient);
-			newNote.setDate(date);
-			newNote.setCommentaire(commentaire);
-
-			LocalStorageService.save(newNote);
-
-			Platform.runLater(() -> {
-				AlertHelper.showInformation("Note ajouté en local (mode hors ligne).");
-				fetchNotes();
-				clearForm();
-			});
-		}
-	}
-
-	@FXML
-	private void handleDeleteNote() {
-		Note selectedNote = notesTable.getSelectionModel().getSelectedItem();
-
-		if (selectedNote == null) {
+	private void handleDeleteEvaluation(Evaluation evaluation) {
+		if (evaluation == null) {
 			AlertHelper.showWarning("Veuillez sélectionner une note à supprimer.");
 			return;
 		}
 
-		deleteNote(selectedNote.getId());
+		deleteEvaluation(evaluation.getId());
 	}
 
-	private void deleteNote(int noteId) {
+	private void deleteEvaluation(int noteId) {
 		if(NetworkService.isOnline()) {
-            try {
-                HttpClient client = HttpClient.newHttpClient();
-                HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.formatUrl(APIConstants.NOTE_BY_ID, noteId)))
-                        .header("Authorization", "Bearer " + AuthService.getToken()).DELETE().build();
+			try {
+				HttpClient client = HttpClient.newHttpClient();
+				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.formatUrl(APIConstants.NOTE_BY_ID, noteId)))
+						.header("Authorization", "Bearer " + AuthService.getToken()).DELETE().build();
 
-                client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
-                    if (response.statusCode() == 204) {
-                        Platform.runLater(() -> {
-                            AlertHelper.showInformation("Note supprimée avec succès.");
-                            fetchNotes(); // Méthode pour recharger la liste
-                        });
-                    } else {
-                        Platform.runLater(() -> AlertHelper.showError("Erreur lors de la suppression de la note."));
-                    }
-                }).exceptionally(e -> {
-                    e.printStackTrace();
-                    Platform.runLater(() -> AlertHelper.showError("Erreur réseau : " + e.getMessage()));
-                    return null;
-                });
-            } catch (Exception e) {
+				client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
+					if (response.statusCode() == 204) {
+						Platform.runLater(() -> {
+							AlertHelper.showInformation("Note supprimée avec succès.");
+							fetchEvaluations(); // Méthode pour recharger la liste
+						});
+					} else {
+						Platform.runLater(() -> AlertHelper.showError("Erreur lors de la suppression de la note."));
+					}
+				}).exceptionally(e -> {
+					e.printStackTrace();
+					Platform.runLater(() -> AlertHelper.showError("Erreur réseau : " + e.getMessage()));
+					return null;
+				});
+			} catch (Exception e) {
 				e.printStackTrace();
-            }
-        } else {
-			ArrayList<Note> notes = LocalStorageService.loadNotes();
-			Optional<Note> note  = notes.stream()
+			}
+		} else {
+			ArrayList<Evaluation> evaluations = LocalStorageService.loadEvaluations();
+			Optional<Evaluation> evaluation = evaluations.stream()
 					.filter(u -> u.getId()==noteId)
 					.findFirst();
-			if (note.isPresent()) {
-				LocalStorageService.remove(note.get());
+			if (evaluation.isPresent()) {
+				for (Note note : evaluation.get().getNotes()) {
+					LocalStorageService.remove(note);
+				}
+				LocalStorageService.remove(evaluation.get());
 
 				Platform.runLater(() -> {
-                    AlertHelper.showInformation("Note supprimé en local (mode hors ligne).");
-					fetchNotes();
+					AlertHelper.showInformation("Evaluation (et notes associées) supprimé en local (mode hors ligne).");
+					fetchEvaluations();
 				});
 			}
 		}
-	}
-
-	private void fetchUsers() {
-		if (NetworkService.isOnline()) {
-			HttpClient client = HttpClient.newHttpClient();
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.USERS))
-					.header("Authorization", BEARER_TOKEN).GET().build();
-
-			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
-					.thenAccept(this::parseUsers).exceptionally(e -> {
-						e.printStackTrace();
-						return null;
-					});
-		} else {
-			parseUsers("");
-		}
-	}
-
-	private void parseUsers(String responseBody) {
-		User user = AuthService.getCurrentUser();
-		ObjectMapper mapper = new ObjectMapper();
-		if (NetworkService.isOnline()) {
-			try {
-				List<User> users = Arrays.asList(mapper.readValue(responseBody, User[].class));
-
-				// Filtrer les utilisateurs par rôle
-				List<User> eleves = users.stream().filter(u -> "ETUDIANT".equalsIgnoreCase(u.getRole().getLibelle()))
-						.collect(Collectors.toList());
-
-				List<User> enseignants = users.stream().filter(u -> "ENSEIGNANT".equalsIgnoreCase(u.getRole().getLibelle()))
-						.collect(Collectors.toList());
-
-				// Mettre à jour les ComboBox dans le thread JavaFX
-				Platform.runLater(() -> {
-					// Mettre les utilisateurs dans les ComboBox
-					eleveComboBox.getItems().setAll(eleves);
-					enseignantComboBox.getItems().setAll(enseignants);
-
-					// Personnaliser l'affichage des ComboBox pour afficher le nom complet
-					enseignantComboBox.setCellFactory(lv -> new ListCell<User>() {
-						@Override
-						protected void updateItem(User item, boolean empty) {
-							super.updateItem(item, empty);
-							setText(empty || item == null ? null : item.getPrenom() + " " + item.getNom());
-						}
-					});
-
-					eleveComboBox.setCellFactory(lv -> new ListCell<User>() {
-						@Override
-						protected void updateItem(User item, boolean empty) {
-							super.updateItem(item, empty);
-							setText(empty || item == null ? null : item.getPrenom() + " " + item.getNom());
-						}
-					});
-
-					// Rendre l'affichage correct pour le bouton du ComboBox (afficher le nom
-					// complet)
-					enseignantComboBox.setButtonCell(enseignantComboBox.getCellFactory().call(null));
-					eleveComboBox.setButtonCell(eleveComboBox.getCellFactory().call(null));
-
-					// Si l'utilisateur est un enseignant connecté, sélectionner son nom dans le
-					// ComboBox
-					if ("ENSEIGNANT".equalsIgnoreCase(user.getRole().getLibelle())) {
-						// Trouver l'objet User correspondant à l'enseignant
-						User enseignant = enseignants.stream().filter(
-										u -> (u.getPrenom() + " " + u.getNom()).equals(user.getPrenom() + " " + user.getNom()))
-								.findFirst().orElse(null);
-
-						if (enseignant != null) {
-							enseignantComboBox.setValue(enseignant);
-							enseignantComboBox.setDisable(true);
-						}
-					}
-				});
-
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} else {
-			System.out.println("Mode hors ligne activé — chargement des utilisateur en local");
-			ArrayList<User> localUsers = LocalStorageService.loadUsers();
-
-			// Filtrer les utilisateurs par rôle
-			List<User> eleves = localUsers.stream().filter(u -> "ETUDIANT".equalsIgnoreCase(u.getRole().getLibelle()))
-					.collect(Collectors.toList());
-
-			List<User> enseignants = localUsers.stream().filter(u -> "ENSEIGNANT".equalsIgnoreCase(u.getRole().getLibelle()))
-					.collect(Collectors.toList());
-
-			// Mettre à jour les ComboBox dans le thread JavaFX
-			Platform.runLater(() -> {
-				// Mettre les utilisateurs dans les ComboBox
-				eleveComboBox.getItems().setAll(eleves);
-				enseignantComboBox.getItems().setAll(enseignants);
-
-				// Personnaliser l'affichage des ComboBox pour afficher le nom complet
-				/*enseignantComboBox.setCellFactory(lv -> new ListCell<User>() {
-					@Override
-					protected void updateItem(User item, boolean empty) {
-						super.updateItem(item, empty);
-						setText(empty || item == null ? null : item.getPrenom() + " " + item.getNom());
-					}
-				});
-
-				eleveComboBox.setCellFactory(lv -> new ListCell<User>() {
-					@Override
-					protected void updateItem(User item, boolean empty) {
-						super.updateItem(item, empty);
-						setText(empty || item == null ? null : item.getPrenom() + " " + item.getNom());
-					}
-				});*/
-
-				// Rendre l'affichage correct pour le bouton du ComboBox (afficher le nom
-				// complet)
-				enseignantComboBox.setButtonCell(enseignantComboBox.getCellFactory().call(null));
-				eleveComboBox.setButtonCell(eleveComboBox.getCellFactory().call(null));
-
-				// Si l'utilisateur est un enseignant connecté, sélectionner son nom dans le
-				// ComboBox
-				if ("ENSEIGNANT".equalsIgnoreCase(user.getRole().getLibelle())) {
-					// Trouver l'objet User correspondant à l'enseignant
-					User enseignant = enseignants.stream().filter(
-									u -> (u.getPrenom() + " " + u.getNom()).equals(user.getPrenom() + " " + user.getNom()))
-							.findFirst().orElse(null);
-
-					if (enseignant != null) {
-						enseignantComboBox.setValue(enseignant);
-						enseignantComboBox.setDisable(true);
-					}
-				}
-			});
-		}
-	}
-
-	private void fetchMatieres() {
-		if (NetworkService.isOnline()) {
-			HttpClient client = HttpClient.newHttpClient();
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.MATIERES))
-					.header("Authorization", BEARER_TOKEN).GET().build();
-
-			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
-					.thenAccept(this::parseMatieres).exceptionally(e -> {
-						e.printStackTrace();
-						return null;
-					});
-		} else {
-			System.out.println("Mode hors ligne activé — chargement des matières local");
-			ArrayList<Matiere> localMatieres = LocalStorageService.loadMatieres();
-			Platform.runLater(() -> matiereComboBox.getItems().setAll(localMatieres));
-		}
-	}
-
-	private void parseMatieres(String responseBody) {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			List<Matiere> matieres = Arrays.asList(mapper.readValue(responseBody, Matiere[].class));
-
-			Platform.runLater(() -> {
-				// Ajouter les objets Matiere directement au ComboBox
-				matiereComboBox.getItems().setAll(matieres);
-
-				// Afficher uniquement le libellé dans la liste déroulante
-				matiereComboBox.setCellFactory(lv -> new ListCell<Matiere>() {
-					@Override
-					protected void updateItem(Matiere item, boolean empty) {
-						super.updateItem(item, empty);
-						setText(empty || item == null ? null : item.getLibelle());
-					}
-				});
-
-				// Rendu du bouton du ComboBox
-				matiereComboBox.setButtonCell(matiereComboBox.getCellFactory().call(null));
-			});
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void fetchNoteTypes() {
-		if (NetworkService.isOnline()) {
-			HttpClient client = HttpClient.newHttpClient();
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.NOTE_TYPES))
-					.header("Authorization", BEARER_TOKEN).GET().build();
-
-			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
-					.thenAccept(this::parseNoteTypes).exceptionally(e -> {
-						e.printStackTrace();
-						return null;
-					});
-		} else {
-			System.out.println("Mode hors ligne activé — chargement des types de notes en local");
-			ArrayList<NoteType> localNoteType = LocalStorageService.loadNoteTypes();
-			Platform.runLater(() -> noteTypeComboBox.getItems().setAll(localNoteType));
-		}
-	}
-
-	private void parseNoteTypes(String responseBody) {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			List<NoteType> types = Arrays.asList(mapper.readValue(responseBody, NoteType[].class));
-
-			Platform.runLater(() -> {
-				// Ajouter les objets NoteType directement au ComboBox
-				noteTypeComboBox.getItems().setAll(types);
-
-				// Afficher uniquement le libellé dans la liste déroulante
-				noteTypeComboBox.setCellFactory(lv -> new ListCell<NoteType>() {
-					@Override
-					protected void updateItem(NoteType item, boolean empty) {
-						super.updateItem(item, empty);
-						setText(empty || item == null ? null : item.getLibelle());
-					}
-				});
-
-				// Rendu du bouton du ComboBox
-				noteTypeComboBox.setButtonCell(noteTypeComboBox.getCellFactory().call(null));
-			});
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@FXML
-	private void handleUpdateNote() {
-		Note selectedNote = notesTable.getSelectionModel().getSelectedItem();
-
-		if (selectedNote == null) {
-			AlertHelper.showWarning("Veuillez sélectionner une note à modifier.");
-			return;
-		}
-
-		User currentUser = AuthService.getCurrentUser();
-		String userRole = currentUser.getRole().getLibelle();
-
-		// Empêcher un enseignant de modifier une note qui ne lui appartient pas
-		if ("ENSEIGNANT".equalsIgnoreCase(userRole) && selectedNote.getEnseignant().getId() != currentUser.getId()) {
-			AlertHelper.showError("Vous ne pouvez modifier que vos propres notes.");
-			return;
-		}
-
-		Dialog<ButtonType> dialog = new Dialog<>();
-		dialog.setTitle("Modifier une note");
-
-		DialogPane dialogPane = new DialogPane();
-		dialog.setDialogPane(dialogPane);
-		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-
-		// Création de nouveaux champs indépendants
-		ComboBox<User> eleveBox = new ComboBox<>(eleveComboBox.getItems());
-		ComboBox<User> enseignantBox = new ComboBox<>(enseignantComboBox.getItems());
-		ComboBox<Matiere> matiereBox = new ComboBox<>(matiereComboBox.getItems());
-		ComboBox<NoteType> noteTypeBox = new ComboBox<>(noteTypeComboBox.getItems());
-
-		TextField valeurFieldLocal = new TextField();
-		TextField coefficientFieldLocal = new TextField();
-		TextArea commentaireFieldLocal = new TextArea();
-		DatePicker datePickerLocal = new DatePicker();
-
-		// Préremplissage
-		eleveBox.setValue(selectedNote.getEleve());
-		enseignantBox.setValue(selectedNote.getEnseignant());
-		matiereBox.setValue(selectedNote.getMatiere());
-		valeurFieldLocal.setText(String.valueOf(selectedNote.getValeur()));
-		coefficientFieldLocal.setText(String.valueOf(selectedNote.getCoefficient()));
-		datePickerLocal.setValue(LocalDate.parse(selectedNote.getDate()));
-		commentaireFieldLocal.setText(selectedNote.getCommentaire());
-
-		// Sélectionner le type de note
-		for (NoteType nt : noteTypeBox.getItems()) {
-			if (nt.getLibelle().equalsIgnoreCase(selectedNote.getNoteType().getLibelle())) {
-				noteTypeBox.setValue(nt);
-				break;
-			}
-		}
-
-		// 🔒 Désactiver le champ enseignant si c'est un enseignant connecté
-		if ("ENSEIGNANT".equalsIgnoreCase(userRole)) {
-			enseignantBox.setDisable(true);
-		}
-
-		VBox form = new VBox(10, eleveBox, enseignantBox, matiereBox, valeurFieldLocal, coefficientFieldLocal,
-				datePickerLocal, noteTypeBox, commentaireFieldLocal);
-		dialogPane.setContent(form);
-
-		dialog.showAndWait().ifPresent(response -> {
-			if (response == ButtonType.OK) {
-				if(NetworkService.isOnline()) {
-					try {
-						String json = String.format("{" + "\"eleve\": { \"id\": %d }," + "\"enseignant\": { \"id\": %d },"
-										+ "\"matiere\": { \"id\": %d }," + "\"coefficient\": %s," + "\"valeur\": %s,"
-										+ "\"noteType\": { \"id\": %d }," + "\"commentaire\": \"%s\"," + "\"date\": \"%s\"" + "}",
-								eleveBox.getValue().getId(), enseignantBox.getValue().getId(),
-								matiereBox.getValue().getId(), Double.parseDouble(coefficientFieldLocal.getText()),
-								Double.parseDouble(valeurFieldLocal.getText()), noteTypeBox.getValue().getId(),
-									commentaireFieldLocal.getText(), datePickerLocal.getValue().toString());
-
-						HttpClient client = HttpClient.newHttpClient();
-						HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.formatUrl(APIConstants.NOTE_BY_ID, selectedNote.getId())))
-								.header("Authorization", BEARER_TOKEN).header("Content-Type", "application/json")
-								.PUT(HttpRequest.BodyPublishers.ofString(json)).build();
-
-						client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(resp -> {
-							if (resp.statusCode() == 200) {
-								fetchNotes();
-								Platform.runLater(
-										() -> AlertHelper.showInformation("Note mise à jour avec succès."));
-							} else {
-								Platform.runLater(
-										() -> AlertHelper.showError("Erreur de mise à jour : " + resp.body()));
-							}
-						}).exceptionally(e -> {
-							e.printStackTrace();
-							Platform.runLater(() -> AlertHelper.showError("Erreur réseau : " + e.getMessage()));
-							return null;
-						});
-
-					} catch (Exception e) {
-						AlertHelper.showError("Erreur dans le formulaire : " + e.getMessage());
-						e.printStackTrace();
-					}
-				} else {
-					ArrayList<Note> notes = LocalStorageService.loadNotes();
-					Optional<Note> noteOpt  = notes.stream()
-							.filter(n -> n.getId()==selectedNote.getId())
-							.findFirst();
-					if (noteOpt.isPresent()) {
-						Note note = noteOpt.get();
-
-						note.setEleve(eleveBox.getValue());
-						note.setEnseignant(enseignantBox.getValue());
-						note.setMatiere(matiereBox.getValue());
-						note.setNoteType(noteTypeBox.getValue());
-						note.setCoefficient(Double.parseDouble(coefficientFieldLocal.getText()));
-						note.setValeur(Double.parseDouble(valeurFieldLocal.getText()));
-						note.setCommentaire(commentaireFieldLocal.getText());
-						note.setDate(datePickerLocal.getValue().toString());
-
-						LocalStorageService.update(note);
-
-						Platform.runLater(() -> {
-							AlertHelper.showInformation("Note mis a jour en local (mode hors ligne).");
-							fetchMatieres(); // Rafraîchit la liste des utilisateurs
-						});
-					}
-				}
-				fetchNotes();
-			}
-		});
 	}
 
 	private MainLayoutController mainLayoutController;
@@ -785,8 +325,23 @@ public class EvaluationListController {
 	public void setMainLayoutController(MainLayoutController controller) {
 		this.mainLayoutController = controller;
 	}
+
+	@FXML
+	private void showViewEvaluationPage(Evaluation evaluation) {
+		if (evaluation != null && mainLayoutController != null) {
+			mainLayoutController.showViewEvaluationFormPage(evaluation.getId());
+		}
+	}
+
 	@FXML
 	private void showCreateEvaluationPage() {
-        mainLayoutController.showCreateEvaluationPage();
+		mainLayoutController.showCreateEvaluationFormPage();
+	}
+
+	@FXML
+	private void showEditEvaluationPage(Evaluation evaluation) {
+		if (evaluation != null && mainLayoutController != null) {
+			mainLayoutController.showEditEvaluationFormPage(evaluation.getId());
+		}
 	}
 }
