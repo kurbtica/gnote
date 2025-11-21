@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import javafx.scene.control.TextInputDialog;
+import org.openjfx.sio2E4.model.User;
+import org.openjfx.sio2E4.util.AlertHelper;
 
 public class EtudiantCardController {
 
@@ -51,9 +54,17 @@ public class EtudiantCardController {
     @FXML private TableColumn<MatiereRow, HBox> notesColumn;
     @FXML private TableColumn<MatiereRow, String> appreciationsColumn;
 
+    // Éléments de l'éditeur d'appréciation (nouveau design)
+    @FXML private Label selectedMatiereLabel;
+    @FXML private TextArea appreciationTextArea;
+    @FXML private Button saveAppButton;
+    @FXML private Button cancelAppButton;
+
     private final String BEARER_TOKEN = "Bearer "+ AuthService.getToken();
+    private int currentUserId = -1;
     
     public void loadUser(int userId) {
+        this.currentUserId = userId;
         if (NetworkService.isOnline()) {
             HttpClient client = HttpClient.newHttpClient();
 
@@ -182,11 +193,20 @@ public class EtudiantCardController {
                 }
 
                 // TODO cree un système appreciation par matière et le mettre a la place de "Not implemented" (emplacement déjà défini dans la vue)
-                data.add(new MatiereRow(matiere, calculateMoyenne(notesMatiere), notesBox, "Not implemented"));
+                data.add(new MatiereRow(matiere, calculateMoyenne(notesMatiere), notesBox, ""));
             }
 
             Platform.runLater(() -> {
-                notesTable.setItems(data);
+                // Charger les appréciations locales si elles existent
+                User userLocal = LocalStorageService.findUserById(userId);
+                Map<String, String> appMap = userLocal != null ? userLocal.getAppreciations() : null;
+                ObservableList<MatiereRow> dataWithApp = FXCollections.observableArrayList();
+                for (MatiereRow row : data) {
+                    String appr = (appMap != null && appMap.containsKey(row.getMatiere())) ? appMap.get(row.getMatiere()) : "";
+                    dataWithApp.add(new MatiereRow(row.getMatiere(), row.getMoyenne(), row.getNotesHBox(), appr));
+                }
+
+                notesTable.setItems(dataWithApp);
 
                 // Si l'utilisateur est un étudiant, calculer la moyenne
                 if ("ETUDIANT".equals(role)) {
@@ -257,6 +277,59 @@ public class EtudiantCardController {
         });
 
         appreciationsColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getAppreciations()));
+        appreciationsColumn.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                    setOnMouseClicked(null);
+                } else {
+                    setText(item);
+                    setOnMouseClicked(event -> {
+                        if (event.getClickCount() == 2) {
+                            // Vérifier si l'utilisateur a le droit d'éditer
+                            User current = AuthService.getCurrentUser();
+                            boolean allowed = false;
+                            if (current != null && current.getRole() != null) {
+                                String lib = current.getRole().getLibelle();
+                                allowed = lib != null && (lib.equalsIgnoreCase("ADMIN") || lib.equalsIgnoreCase("ENSEIGNANT"));
+                            }
+                            if (!allowed) {
+                                AlertHelper.showWarning("Vous n'avez pas la permission d'éditer les appréciations.");
+                                return;
+                            }
+                            int index = getIndex();
+                            if (index < 0 || index >= getTableView().getItems().size()) return;
+                            String matiere = getTableView().getItems().get(index).getMatiere();
+                            TextInputDialog dialog = new TextInputDialog(item == null ? "" : item);
+                            dialog.setTitle("Éditer appréciation");
+                            dialog.setHeaderText("Matière: " + matiere);
+                            dialog.setContentText("Appréciation:");
+                            dialog.showAndWait().ifPresent(value -> {
+                                User u = LocalStorageService.findUserById(currentUserId);
+                                if (u != null) {
+                                    Map<String, String> map = u.getAppreciations();
+                                    if (map == null) map = new java.util.HashMap<>();
+                                    map.put(matiere, value);
+                                    u.setAppreciations(map);
+                                    LocalStorageService.update(u);
+                                }
+
+                                getTableView().getItems().set(index,
+                                        new MatiereRow(matiere,
+                                                getTableView().getItems().get(index).getMoyenne(),
+                                                getTableView().getItems().get(index).getNotesHBox(),
+                                                value));
+
+                                AlertHelper.showInformation("Appréciation enregistrée localement.");
+                            });
+                        }
+                    });
+                }
+            }
+        });
 
         // Définir les largeurs en pourcentage de la largeur totale du tableau
         matiereColumn.prefWidthProperty().bind(
@@ -272,5 +345,50 @@ public class EtudiantCardController {
                 notesTable.widthProperty().multiply(0.40) // 40%
         );
         notesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        // Quand l'utilisateur sélectionne une ligne, afficher l'appréciation dans le panneau droit
+        notesTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
+            if (newSel == null) {
+                selectedMatiereLabel.setText("(Sélectionne une matière)");
+                appreciationTextArea.setText("");
+                appreciationTextArea.setDisable(true);
+                saveAppButton.setDisable(true);
+                cancelAppButton.setDisable(true);
+            } else {
+                selectedMatiereLabel.setText(newSel.getMatiere());
+                appreciationTextArea.setDisable(false);
+                saveAppButton.setDisable(false);
+                cancelAppButton.setDisable(false);
+                appreciationTextArea.setText(newSel.getAppreciations() == null ? "" : newSel.getAppreciations());
+            }
+        });
+
+        // Handler Enregistrer
+        saveAppButton.setOnAction(ev -> {
+            MatiereRow sel = notesTable.getSelectionModel().getSelectedItem();
+            if (sel == null) return;
+            String matiere = sel.getMatiere();
+            String value = appreciationTextArea.getText();
+
+            User u = LocalStorageService.findUserById(currentUserId);
+            if (u != null) {
+                Map<String, String> map = u.getAppreciations();
+                if (map == null) map = new java.util.HashMap<>();
+                map.put(matiere, value);
+                u.setAppreciations(map);
+                LocalStorageService.update(u);
+            }
+
+            int idx = notesTable.getSelectionModel().getSelectedIndex();
+            notesTable.getItems().set(idx, new MatiereRow(matiere, sel.getMoyenne(), sel.getNotesHBox(), value));
+            AlertHelper.showInformation("Appréciation enregistrée localement.");
+        });
+
+        // Handler Annuler (restaurer la valeur actuelle sans sauvegarder)
+        cancelAppButton.setOnAction(ev -> {
+            MatiereRow sel = notesTable.getSelectionModel().getSelectedItem();
+            if (sel == null) return;
+            appreciationTextArea.setText(sel.getAppreciations() == null ? "" : sel.getAppreciations());
+        });
     }
 }

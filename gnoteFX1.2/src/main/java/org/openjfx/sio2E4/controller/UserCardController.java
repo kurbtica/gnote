@@ -31,9 +31,15 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.Button;
+import java.util.Map;
 import org.openjfx.sio2E4.service.LocalStorageService;
 import org.openjfx.sio2E4.service.NetworkService;
 import org.openjfx.sio2E4.service.NoteService;
+import org.openjfx.sio2E4.model.User;
+import org.openjfx.sio2E4.util.AlertHelper;
 
 public class UserCardController {
 
@@ -54,9 +60,28 @@ public class UserCardController {
     @FXML private TableColumn<MatiereRow, HBox> notesColumn;
     @FXML private TableColumn<MatiereRow, String> appreciationsColumn;
 
+    // Éléments de l'éditeur d'appréciation (nouveau design)
+    @FXML private Label selectedMatiereLabel;
+    @FXML private TextArea appreciationTextArea;
+    @FXML private Button saveAppButton;
+    @FXML private Button cancelAppButton;
+
     private final String BEARER_TOKEN = "Bearer "+ AuthService.getToken();
+    private int currentUserId = -1;
+
+    private boolean isEditorAllowed() {
+        try {
+            User current = AuthService.getCurrentUser();
+            if (current == null || current.getRole() == null) return false;
+            String lib = current.getRole().getLibelle();
+            return lib != null && (lib.equalsIgnoreCase("ADMIN") || lib.equalsIgnoreCase("ENSEIGNANT"));
+        } catch (Exception e) {
+            return false;
+        }
+    }
     
     public void loadUser(int userId) {
+        this.currentUserId = userId;
         if (NetworkService.isOnline()) {
             HttpClient client = HttpClient.newHttpClient();
 
@@ -144,13 +169,34 @@ public class UserCardController {
             Map<String, List<Note>> notesParMatiere = NoteService.groupNotesByMatiere(notes);
             ObservableList<MatiereRow> data = NoteService.buildMatiereRows(notesParMatiere);
 
+            // Charger les appréciations stockées localement pour cet utilisateur
+            User user = LocalStorageService.findUserById(userId);
+            Map<String, String> appMap = user != null ? user.getAppreciations() : null;
+
+            // Remplacer les chaînes "Not implemented" par les appréciations réelles si disponibles
+            ObservableList<MatiereRow> dataWithApp = FXCollections.observableArrayList();
+            for (MatiereRow row : data) {
+                String matiere = row.getMatiere();
+                String appr = (appMap != null && appMap.containsKey(matiere)) ? appMap.get(matiere) : "";
+                dataWithApp.add(new MatiereRow(matiere, row.getMoyenne(), row.getNotesHBox(), appr));
+            }
+
             Platform.runLater(() -> {
-                notesTable.setItems(data);
+                notesTable.setItems(dataWithApp);
 
                 // Si l'utilisateur est un étudiant, calculer la moyenne
                 if ("ETUDIANT".equals(role)) {
                     double moyenne = NoteService.calculateMoyenne(notes);
                     moyenneLabel.setText("Moyenne: " + moyenne);
+                }
+
+                // Initialisation du panneau d'édition en fonction du rôle de l'utilisateur connecté
+                boolean allowed = isEditorAllowed();
+                appreciationTextArea.setDisable(!allowed);
+                saveAppButton.setDisable(!allowed);
+                cancelAppButton.setDisable(!allowed);
+                if (!allowed) {
+                    selectedMatiereLabel.setText("(Édition réservée aux enseignants/admin)");
                 }
             });
         }
@@ -199,6 +245,99 @@ public class UserCardController {
         });
 
         appreciationsColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getAppreciations()));
+        // Permettre l'édition de l'appréciation par double-clic : ouvre une boîte de dialogue (si autorisé)
+        appreciationsColumn.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                    setOnMouseClicked(null);
+                } else {
+                    setText(item);
+                    setOnMouseClicked(event -> {
+                        if (event.getClickCount() == 2) {
+                            if (!isEditorAllowed()) {
+                                AlertHelper.showWarning("Vous n'avez pas la permission d'éditer les appréciations.");
+                                return;
+                            }
+                            int index = getIndex();
+                            if (index < 0 || index >= getTableView().getItems().size()) return;
+                            String matiere = getTableView().getItems().get(index).getMatiere();
+                            TextInputDialog dialog = new TextInputDialog(item == null ? "" : item);
+                            dialog.setTitle("Éditer appréciation");
+                            dialog.setHeaderText("Matière: " + matiere);
+                            dialog.setContentText("Appréciation:");
+                            dialog.showAndWait().ifPresent(value -> {
+                                // Mettre à jour localement
+                                User u = LocalStorageService.findUserById(currentUserId);
+                                if (u != null) {
+                                    Map<String, String> map = u.getAppreciations();
+                                    if (map == null) map = new java.util.HashMap<>();
+                                    map.put(matiere, value);
+                                    u.setAppreciations(map);
+                                    LocalStorageService.update(u);
+                                }
+
+                                // Mettre à jour l'affichage
+                                getTableView().getItems().set(index,
+                                        new MatiereRow(matiere,
+                                                getTableView().getItems().get(index).getMoyenne(),
+                                                getTableView().getItems().get(index).getNotesHBox(),
+                                                value));
+
+                                AlertHelper.showInformation("Appréciation enregistrée localement.");
+                            });
+                        }
+                    });
+                }
+            }
+        });
+
+        // Écoute de sélection + actions Save/Cancel
+        notesTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
+            boolean allowed = isEditorAllowed();
+            if (newSel == null) {
+                selectedMatiereLabel.setText("(Sélectionne une matière)");
+                appreciationTextArea.setText("");
+                appreciationTextArea.setDisable(true);
+                saveAppButton.setDisable(true);
+                cancelAppButton.setDisable(true);
+            } else {
+                selectedMatiereLabel.setText(newSel.getMatiere());
+                appreciationTextArea.setDisable(!allowed);
+                saveAppButton.setDisable(!allowed);
+                cancelAppButton.setDisable(!allowed);
+                appreciationTextArea.setText(newSel.getAppreciations() == null ? "" : newSel.getAppreciations());
+            }
+        });
+
+        saveAppButton.setOnAction(ev -> {
+            MatiereRow sel = notesTable.getSelectionModel().getSelectedItem();
+            if (sel == null) return;
+            String matiere = sel.getMatiere();
+            String value = appreciationTextArea.getText();
+
+            User u = LocalStorageService.findUserById(currentUserId);
+            if (u != null) {
+                Map<String, String> map = u.getAppreciations();
+                if (map == null) map = new java.util.HashMap<>();
+                map.put(matiere, value);
+                u.setAppreciations(map);
+                LocalStorageService.update(u);
+            }
+
+            int idx = notesTable.getSelectionModel().getSelectedIndex();
+            notesTable.getItems().set(idx, new MatiereRow(matiere, sel.getMoyenne(), sel.getNotesHBox(), value));
+            AlertHelper.showInformation("Appréciation enregistrée localement.");
+        });
+
+        cancelAppButton.setOnAction(ev -> {
+            MatiereRow sel = notesTable.getSelectionModel().getSelectedItem();
+            if (sel == null) return;
+            appreciationTextArea.setText(sel.getAppreciations() == null ? "" : sel.getAppreciations());
+        });
 
         // Définir les largeurs en pourcentage de la largeur totale du tableau
         matiereColumn.prefWidthProperty().bind(

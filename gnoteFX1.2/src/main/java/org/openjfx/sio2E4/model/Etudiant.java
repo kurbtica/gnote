@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Etudiant {
     private Long id;
@@ -13,6 +16,7 @@ public class Etudiant {
     private String adresse;
     private String telephone;
     private Role role;
+    private Map<String, String> appreciations;
 
 
 
@@ -97,5 +101,16 @@ public class Etudiant {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    @JsonProperty("appreciations")
+    public Map<String, String> getAppreciations() {
+        return appreciations;
+    }
+
+    @JsonProperty("appreciations")
+    public void setAppreciations(Map<String, String> appreciations) {
+        this.appreciations = appreciations;
+        if (this.appreciations == null) this.appreciations = new HashMap<>();
     }
 }

@@ -1,6 +1,10 @@
 package org.openjfx.sio2E4.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
@@ -12,6 +16,7 @@ public class User {
     private String adresse;
     private String telephone;
     private Role role;
+    private Map<String, String> appreciations;
 
     public User( String tocken ,int id, String nom, String prenom, String emailResponse, Role role, String adresse, String telephone) {
         this.tocken=tocken;
@@ -22,6 +27,7 @@ public class User {
         this.email=emailResponse;
         this.telephone=telephone;
         this.role=role;
+        this.appreciations = new HashMap<>();
         
     }
 
@@ -34,6 +40,7 @@ public class User {
 
     public User() {
         // Constructeur par défaut nécessaire pour Jackson
+        this.appreciations = new HashMap<>();
     }
 
     // Getters et setters
@@ -91,6 +98,17 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    @JsonProperty("appreciations")
+    public Map<String, String> getAppreciations() {
+        return appreciations;
+    }
+
+    @JsonProperty("appreciations")
+    public void setAppreciations(Map<String, String> appreciations) {
+        this.appreciations = appreciations;
+        if (this.appreciations == null) this.appreciations = new HashMap<>();
     }
 
     public String getToken() {

@@ -6,6 +6,9 @@
   }, {
     "id" : 1,
     "libelle" : "Francais"
+  }, {
+    "id" : 2,
+    "libelle" : "EPS"
   } ],
   "Note" : [ {
     "id" : 0,
@@ -264,6 +267,166 @@
     "valeur" : 6.0,
     "modification" : null,
     "evaluation" : null
+  }, {
+    "id" : 11,
+    "eleve" : {
+      "id" : 0,
+      "nom" : "Etudiant",
+      "prenom" : "John",
+      "email" : "john.etudiant@example.com",
+      "adresse" : "Rue des Lilas",
+      "telephone" : "0601020304",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      },
+      "token" : null,
+      "appreciations" : {
+        "Francais" : "bien"
+      }
+    },
+    "valeur" : 16.0,
+    "modification" : null,
+    "evaluationId" : 2
+  }, {
+    "id" : 12,
+    "eleve" : {
+      "id" : 5,
+      "nom" : "Morel",
+      "prenom" : "Lucas",
+      "email" : "lucas.morel@example.com",
+      "adresse" : "Rue des Érables",
+      "telephone" : "0677889900",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      },
+      "token" : null,
+      "appreciations" : { }
+    },
+    "valeur" : 14.0,
+    "modification" : null,
+    "evaluationId" : 2
+  }, {
+    "id" : 13,
+    "eleve" : {
+      "id" : 7,
+      "nom" : "Dupont",
+      "prenom" : "Nicolas",
+      "email" : "nicolas.dupont@example.com",
+      "adresse" : "Rue de la Mairie",
+      "telephone" : "0644556677",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      },
+      "token" : null,
+      "appreciations" : { }
+    },
+    "valeur" : 15.0,
+    "modification" : null,
+    "evaluationId" : 2
+  }, {
+    "id" : 14,
+    "eleve" : {
+      "id" : 3,
+      "nom" : "Leclerc",
+      "prenom" : "Emma",
+      "email" : "emma.leclerc@example.com",
+      "adresse" : "Rue des Acacias",
+      "telephone" : "0602030405",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      },
+      "token" : null,
+      "appreciations" : {
+        "Francais" : "çezauis"
+      }
+    },
+    "valeur" : 12.0,
+    "modification" : null,
+    "evaluationId" : 2
+  }, {
+    "id" : 15,
+    "eleve" : {
+      "id" : 3,
+      "nom" : "Leclerc",
+      "prenom" : "Emma",
+      "email" : "emma.leclerc@example.com",
+      "adresse" : "Rue des Acacias",
+      "telephone" : "0602030405",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      },
+      "token" : null,
+      "appreciations" : {
+        "Francais" : "çezauis"
+      }
+    },
+    "valeur" : 0.0,
+    "modification" : null,
+    "evaluationId" : 3
+  }, {
+    "id" : 16,
+    "eleve" : {
+      "id" : 5,
+      "nom" : "Morel",
+      "prenom" : "Lucas",
+      "email" : "lucas.morel@example.com",
+      "adresse" : "Rue des Érables",
+      "telephone" : "0677889900",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      },
+      "token" : null,
+      "appreciations" : { }
+    },
+    "valeur" : 0.0,
+    "modification" : null,
+    "evaluationId" : 3
+  }, {
+    "id" : 17,
+    "eleve" : {
+      "id" : 7,
+      "nom" : "Dupont",
+      "prenom" : "Nicolas",
+      "email" : "nicolas.dupont@example.com",
+      "adresse" : "Rue de la Mairie",
+      "telephone" : "0644556677",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      },
+      "token" : null,
+      "appreciations" : { }
+    },
+    "valeur" : 0.0,
+    "modification" : null,
+    "evaluationId" : 3
+  }, {
+    "id" : 18,
+    "eleve" : {
+      "id" : 0,
+      "nom" : "Etudiant",
+      "prenom" : "John",
+      "email" : "john.etudiant@example.com",
+      "adresse" : "Rue des Lilas",
+      "telephone" : "0601020304",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      },
+      "token" : null,
+      "appreciations" : {
+        "Francais" : "bien"
+      }
+    },
+    "valeur" : 0.0,
+    "modification" : null,
+    "evaluationId" : 3
   } ],
   "NoteType" : [ {
     "id" : 0,
@@ -289,6 +452,11 @@
     "role" : {
       "id" : 3,
       "libelle" : "ETUDIANT"
+    },
+    "token" : null,
+    "appreciations" : {
+      "Francais" : "bien",
+      "EPS" : "tet"
     }
   }, {
     "id" : 1,
@@ -322,6 +490,10 @@
     "role" : {
       "id" : 3,
       "libelle" : "ETUDIANT"
+    },
+    "token" : null,
+    "appreciations" : {
+      "Francais" : "çezauis"
     }
   }, {
     "id" : 4,
@@ -692,6 +864,224 @@
         },
         "notes" : [ ]
       }
+    } ]
+  }, {
+    "id" : 2,
+    "enseignant" : {
+      "id" : 1,
+      "nom" : "Enseignant",
+      "prenom" : "Durand",
+      "email" : "pierre.durand@example.com",
+      "adresse" : "Avenue Victor Hugo",
+      "telephone" : "0605060708",
+      "role" : {
+        "id" : 2,
+        "libelle" : "ENSEIGNANT"
+      },
+      "token" : null,
+      "appreciations" : { }
+    },
+    "matiere" : {
+      "id" : 1,
+      "libelle" : "Francais"
+    },
+    "coefficient" : 1.0,
+    "titre" : "test",
+    "date" : "2025-11-21",
+    "modification" : null,
+    "noteType" : {
+      "id" : 2,
+      "libelle" : "TP"
+    },
+    "notes" : [ {
+      "id" : 11,
+      "eleve" : {
+        "id" : 0,
+        "nom" : "Etudiant",
+        "prenom" : "John",
+        "email" : "john.etudiant@example.com",
+        "adresse" : "Rue des Lilas",
+        "telephone" : "0601020304",
+        "role" : {
+          "id" : 3,
+          "libelle" : "ETUDIANT"
+        },
+        "token" : null,
+        "appreciations" : {
+          "Francais" : "bien"
+        }
+      },
+      "valeur" : 16.0,
+      "modification" : null,
+      "evaluationId" : 2
+    }, {
+      "id" : 12,
+      "eleve" : {
+        "id" : 5,
+        "nom" : "Morel",
+        "prenom" : "Lucas",
+        "email" : "lucas.morel@example.com",
+        "adresse" : "Rue des Érables",
+        "telephone" : "0677889900",
+        "role" : {
+          "id" : 3,
+          "libelle" : "ETUDIANT"
+        },
+        "token" : null,
+        "appreciations" : { }
+      },
+      "valeur" : 14.0,
+      "modification" : null,
+      "evaluationId" : 2
+    }, {
+      "id" : 13,
+      "eleve" : {
+        "id" : 7,
+        "nom" : "Dupont",
+        "prenom" : "Nicolas",
+        "email" : "nicolas.dupont@example.com",
+        "adresse" : "Rue de la Mairie",
+        "telephone" : "0644556677",
+        "role" : {
+          "id" : 3,
+          "libelle" : "ETUDIANT"
+        },
+        "token" : null,
+        "appreciations" : { }
+      },
+      "valeur" : 15.0,
+      "modification" : null,
+      "evaluationId" : 2
+    }, {
+      "id" : 14,
+      "eleve" : {
+        "id" : 3,
+        "nom" : "Leclerc",
+        "prenom" : "Emma",
+        "email" : "emma.leclerc@example.com",
+        "adresse" : "Rue des Acacias",
+        "telephone" : "0602030405",
+        "role" : {
+          "id" : 3,
+          "libelle" : "ETUDIANT"
+        },
+        "token" : null,
+        "appreciations" : {
+          "Francais" : "çezauis"
+        }
+      },
+      "valeur" : 12.0,
+      "modification" : null,
+      "evaluationId" : 2
+    } ]
+  }, {
+    "id" : 3,
+    "enseignant" : {
+      "id" : 6,
+      "nom" : "Petit",
+      "prenom" : "Claire",
+      "email" : "claire.petit@example.com",
+      "adresse" : "Rue Nationale",
+      "telephone" : "0622334455",
+      "role" : {
+        "id" : 2,
+        "libelle" : "ENSEIGNANT"
+      },
+      "token" : null,
+      "appreciations" : { }
+    },
+    "matiere" : {
+      "id" : 2,
+      "libelle" : "EPS"
+    },
+    "coefficient" : 1.0,
+    "titre" : "course",
+    "date" : "2025-11-21",
+    "modification" : null,
+    "noteType" : {
+      "id" : 2,
+      "libelle" : "TP"
+    },
+    "notes" : [ {
+      "id" : 15,
+      "eleve" : {
+        "id" : 3,
+        "nom" : "Leclerc",
+        "prenom" : "Emma",
+        "email" : "emma.leclerc@example.com",
+        "adresse" : "Rue des Acacias",
+        "telephone" : "0602030405",
+        "role" : {
+          "id" : 3,
+          "libelle" : "ETUDIANT"
+        },
+        "token" : null,
+        "appreciations" : {
+          "Francais" : "çezauis"
+        }
+      },
+      "valeur" : 18.0,
+      "modification" : null,
+      "evaluationId" : 3
+    }, {
+      "id" : 16,
+      "eleve" : {
+        "id" : 5,
+        "nom" : "Morel",
+        "prenom" : "Lucas",
+        "email" : "lucas.morel@example.com",
+        "adresse" : "Rue des Érables",
+        "telephone" : "0677889900",
+        "role" : {
+          "id" : 3,
+          "libelle" : "ETUDIANT"
+        },
+        "token" : null,
+        "appreciations" : { }
+      },
+      "valeur" : 16.0,
+      "modification" : null,
+      "evaluationId" : 3
+    }, {
+      "id" : 17,
+      "eleve" : {
+        "id" : 7,
+        "nom" : "Dupont",
+        "prenom" : "Nicolas",
+        "email" : "nicolas.dupont@example.com",
+        "adresse" : "Rue de la Mairie",
+        "telephone" : "0644556677",
+        "role" : {
+          "id" : 3,
+          "libelle" : "ETUDIANT"
+        },
+        "token" : null,
+        "appreciations" : { }
+      },
+      "valeur" : 15.0,
+      "modification" : null,
+      "evaluationId" : 3
+    }, {
+      "id" : 18,
+      "eleve" : {
+        "id" : 0,
+        "nom" : "Etudiant",
+        "prenom" : "John",
+        "email" : "john.etudiant@example.com",
+        "adresse" : "Rue des Lilas",
+        "telephone" : "0601020304",
+        "role" : {
+          "id" : 3,
+          "libelle" : "ETUDIANT"
+        },
+        "token" : null,
+        "appreciations" : {
+          "Francais" : "bien"
+        }
+      },
+      "valeur" : 15.0,
+      "modification" : null,
+      "evaluationId" : 3
     } ]
   } ]
 }
