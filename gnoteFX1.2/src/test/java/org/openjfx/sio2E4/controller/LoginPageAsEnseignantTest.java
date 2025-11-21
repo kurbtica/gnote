@@ -8,7 +8,8 @@ import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openjfx.sio2E4.App;
-import org.openjfx.sio2E4.model.LocalUser;
+import org.openjfx.sio2E4.model.Role;
+import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.service.AuthService;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
@@ -30,13 +31,13 @@ class LoginPageAsEnseignantTest extends ApplicationTest {
         FxToolkit.registerPrimaryStage(); // assure isolation de chaque test
 
         // Simule un enseignant connecté
-        LocalUser testUser = new LocalUser(
+        User testUser = new User(
                 "abc",
                 0,
                 "Test",
                 "Enseignant",
                 "test.prof@lycee.local",
-                "ENSEIGNANT",
+                new Role(2, "ENSEIGNANT"),
                 "",
                 ""
         );
@@ -68,7 +69,7 @@ class LoginPageAsEnseignantTest extends ApplicationTest {
 
         assertNotNull(AuthService.getCurrentUser(), "L'enseignant doit être connecté");
         assertEquals("test.prof@lycee.local", AuthService.getCurrentUser().getEmail());
-        assertEquals("ENSEIGNANT", AuthService.getCurrentUser().getRole());
+        assertEquals("ENSEIGNANT", AuthService.getCurrentUser().getRole().getLibelle());
 
     }
   

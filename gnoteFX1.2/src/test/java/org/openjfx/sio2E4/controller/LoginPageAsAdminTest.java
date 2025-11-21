@@ -9,7 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.openjfx.sio2E4.App;
 
-import org.openjfx.sio2E4.model.LocalUser;
+import org.openjfx.sio2E4.model.Role;
+import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.service.AuthService;
 import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
@@ -31,13 +32,13 @@ class LoginPageAsAdminTest extends ApplicationTest {
         FxToolkit.registerPrimaryStage(); // assure isolation de chaque test
 
         // Simule un admin connecté
-        LocalUser testUser = new LocalUser(
+        User testUser = new User(
                 "abc",
                 0,
                 "Test",
                 "Admin",
                 "test.admin@lycee.local",
-                "ADMIN",
+                new Role(2, "ADMIN"),
                 "",
                 ""
         );
@@ -69,7 +70,7 @@ class LoginPageAsAdminTest extends ApplicationTest {
 
         assertNotNull(AuthService.getCurrentUser(), "L'administrateur doit être connecté");
         assertEquals("test.admin@lycee.local", AuthService.getCurrentUser().getEmail());
-        assertEquals("ADMIN", AuthService.getCurrentUser().getRole());
+        assertEquals("ADMIN", AuthService.getCurrentUser().getRole().getLibelle());
 
     }
   

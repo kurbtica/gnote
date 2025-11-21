@@ -41,7 +41,7 @@ public class loginPageController {
 			// Affiche les informations de l'utilisateur (facultatif pour débogage)
 			System.out.println("Token: " + currentUser.getToken());
 			System.out.println("User: " + currentUser.getNom() + " " + currentUser.getPrenom());
-			System.out.println("Role: " + currentUser.getRole());
+			System.out.println("Role: " + currentUser.getRole().getLibelle());
 
 			// Redirige en fonction du rôle
 			try {

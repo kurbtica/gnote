@@ -443,22 +443,6 @@
   } ],
   "Role" : [ ],
   "User" : [ {
-    "id" : 0,
-    "nom" : "Etudiant",
-    "prenom" : "John",
-    "email" : "john.etudiant@example.com",
-    "adresse" : "Rue des Lilas",
-    "telephone" : "0601020304",
-    "role" : {
-      "id" : 3,
-      "libelle" : "ETUDIANT"
-    },
-    "token" : null,
-    "appreciations" : {
-      "Francais" : "bien",
-      "EPS" : "tet"
-    }
-  }, {
     "id" : 1,
     "nom" : "Enseignant",
     "prenom" : "Durand",
@@ -561,6 +545,45 @@
       "id" : 1,
       "libelle" : "ADMIN"
     }
+  }, {
+    "id" : 9,
+    "nom" : "admin",
+    "prenom" : "admin",
+    "email" : "admin@lycee.local",
+    "adresse" : "test",
+    "telephone" : "0102030405",
+    "role" : {
+      "id" : 1,
+      "libelle" : "ADMIN"
+    },
+    "token" : null,
+    "appreciations" : { }
+  }, {
+    "id" : 10,
+    "nom" : "prof",
+    "prenom" : "prof",
+    "email" : "prof@lycee.local",
+    "adresse" : "test",
+    "telephone" : "0102030405",
+    "role" : {
+      "id" : 2,
+      "libelle" : "ENSEIGNANT"
+    },
+    "token" : null,
+    "appreciations" : { }
+  }, {
+    "id" : 11,
+    "nom" : "etudiant",
+    "prenom" : "etudiant",
+    "email" : "etudiant@lycee.local",
+    "adresse" : "etudiant",
+    "telephone" : "0102030405",
+    "role" : {
+      "id" : 3,
+      "libelle" : "ETUDIANT"
+    },
+    "token" : null,
+    "appreciations" : { }
   } ],
   "Evaluation" : [ {
     "id" : 0,
@@ -674,7 +697,8 @@
       "role" : {
         "id" : 2,
         "libelle" : "ENSEIGNANT"
-      }
+      },
+      "token" : null
     },
     "matiere" : {
       "id" : 0,
@@ -700,38 +724,12 @@
         "role" : {
           "id" : 3,
           "libelle" : "ETUDIANT"
-        }
+        },
+        "token" : null
       },
-      "valeur" : 6.0,
+      "valeur" : 5.0,
       "modification" : null,
-      "evaluation" : {
-        "id" : 1,
-        "enseignant" : {
-          "id" : 4,
-          "nom" : "Bernard",
-          "prenom" : "Sophie",
-          "email" : "sophie.bernard@example.com",
-          "adresse" : "Boulevard de la Gare",
-          "telephone" : "0611223344",
-          "role" : {
-            "id" : 2,
-            "libelle" : "ENSEIGNANT"
-          }
-        },
-        "matiere" : {
-          "id" : 0,
-          "libelle" : "Math"
-        },
-        "coefficient" : 2.0,
-        "titre" : "2",
-        "date" : "2025-11-15",
-        "modification" : null,
-        "noteType" : {
-          "id" : 2,
-          "libelle" : "TP"
-        },
-        "notes" : [ ]
-      }
+      "evaluationId" : 0
     }, {
       "id" : 8,
       "eleve" : {
@@ -744,38 +742,12 @@
         "role" : {
           "id" : 3,
           "libelle" : "ETUDIANT"
-        }
+        },
+        "token" : null
       },
-      "valeur" : 6.0,
+      "valeur" : 7.0,
       "modification" : null,
-      "evaluation" : {
-        "id" : 1,
-        "enseignant" : {
-          "id" : 4,
-          "nom" : "Bernard",
-          "prenom" : "Sophie",
-          "email" : "sophie.bernard@example.com",
-          "adresse" : "Boulevard de la Gare",
-          "telephone" : "0611223344",
-          "role" : {
-            "id" : 2,
-            "libelle" : "ENSEIGNANT"
-          }
-        },
-        "matiere" : {
-          "id" : 0,
-          "libelle" : "Math"
-        },
-        "coefficient" : 2.0,
-        "titre" : "2",
-        "date" : "2025-11-15",
-        "modification" : null,
-        "noteType" : {
-          "id" : 2,
-          "libelle" : "TP"
-        },
-        "notes" : [ ]
-      }
+      "evaluationId" : 0
     }, {
       "id" : 9,
       "eleve" : {
@@ -788,38 +760,12 @@
         "role" : {
           "id" : 3,
           "libelle" : "ETUDIANT"
-        }
+        },
+        "token" : null
       },
       "valeur" : 6.0,
       "modification" : null,
-      "evaluation" : {
-        "id" : 1,
-        "enseignant" : {
-          "id" : 4,
-          "nom" : "Bernard",
-          "prenom" : "Sophie",
-          "email" : "sophie.bernard@example.com",
-          "adresse" : "Boulevard de la Gare",
-          "telephone" : "0611223344",
-          "role" : {
-            "id" : 2,
-            "libelle" : "ENSEIGNANT"
-          }
-        },
-        "matiere" : {
-          "id" : 0,
-          "libelle" : "Math"
-        },
-        "coefficient" : 2.0,
-        "titre" : "2",
-        "date" : "2025-11-15",
-        "modification" : null,
-        "noteType" : {
-          "id" : 2,
-          "libelle" : "TP"
-        },
-        "notes" : [ ]
-      }
+      "evaluationId" : 0
     }, {
       "id" : 10,
       "eleve" : {
@@ -832,38 +778,12 @@
         "role" : {
           "id" : 3,
           "libelle" : "ETUDIANT"
-        }
+        },
+        "token" : null
       },
       "valeur" : 6.0,
       "modification" : null,
-      "evaluation" : {
-        "id" : 1,
-        "enseignant" : {
-          "id" : 4,
-          "nom" : "Bernard",
-          "prenom" : "Sophie",
-          "email" : "sophie.bernard@example.com",
-          "adresse" : "Boulevard de la Gare",
-          "telephone" : "0611223344",
-          "role" : {
-            "id" : 2,
-            "libelle" : "ENSEIGNANT"
-          }
-        },
-        "matiere" : {
-          "id" : 0,
-          "libelle" : "Math"
-        },
-        "coefficient" : 2.0,
-        "titre" : "2",
-        "date" : "2025-11-15",
-        "modification" : null,
-        "noteType" : {
-          "id" : 2,
-          "libelle" : "TP"
-        },
-        "notes" : [ ]
-      }
+      "evaluationId" : 0
     } ]
   }, {
     "id" : 2,

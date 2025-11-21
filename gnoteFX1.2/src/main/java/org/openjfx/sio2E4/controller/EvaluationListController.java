@@ -83,6 +83,20 @@ public class EvaluationListController {
 			return new SimpleStringProperty(String.valueOf(NoteService.calculateMoyenne(data.getValue().getNotes())));
 		});
 
+		moyenneMinColumn.setCellValueFactory(data -> {
+			return new SimpleStringProperty(String.valueOf(data.getValue().getNotes().stream()
+					.mapToDouble(Note::getValeur)
+					.min()
+					.orElse(Double.NaN)));
+		});
+
+		moyenneMaxColumn.setCellValueFactory(data -> {
+			return new SimpleStringProperty(String.valueOf(data.getValue().getNotes().stream()
+					.mapToDouble(Note::getValeur)
+					.max()
+					.orElse(Double.NaN)));
+		});
+
 		// TODO mettre en place un calcul de moyenne, note min et note max
 
 		dateColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDate()));

@@ -5,7 +5,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import org.openjfx.sio2E4.model.LocalUser;
+import org.openjfx.sio2E4.model.Role;
+import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.service.AuthService;
 import org.testfx.api.FxToolkit;
 import org.testfx.framework.junit5.ApplicationTest;
@@ -18,7 +19,7 @@ import java.util.concurrent.TimeoutException;
  *
  * Lors du démarrage du test :
  *  - Un utilisateur "test.prof@lycee.local" (rôle ENSEIGNANT) est automatiquement injecté
- *    dans le service d'authentification via {@link AuthService#setCurrentUser(LocalUser)}.
+ *    dans le service d'authentification via {@link AuthService#setCurrentUser(User)}.
  *  - La vue "Enseignant.fxml" est directement chargée dans la scène principale.
  *
  * Les classes de test qui étendent {@code BaseUiAsEnseignantTest}
@@ -31,13 +32,13 @@ public abstract class BaseUiAsEnseignantTest extends ApplicationTest {
         FxToolkit.registerPrimaryStage(); // assure isolation de chaque test
 
         // Simule un enseignant connecté
-        LocalUser testUser = new LocalUser(
+        User testUser = new User(
                 "abc",
                 0,
                 "Test",
                 "Enseignant",
                 "test.prof@lycee.local",
-                "ENSEIGNANT",
+                new Role(2, "ENSEIGNANT"),
                 "",
                 ""
         );

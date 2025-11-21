@@ -168,6 +168,7 @@ public class MainLayoutController {
 				Parent userCardRoot = loader.load();
 
 				EvaluationFormController controller = loader.getController();
+				controller.setMainLayoutController(this);
 				controller.loadViewEvaluation(evaluationId); // charge les infos de l'utilisateur
 
 				contentArea.getChildren().setAll(userCardRoot); // MAJ de l'UI
@@ -184,6 +185,7 @@ public class MainLayoutController {
 				Parent userCardRoot = loader.load();
 
 				EvaluationFormController controller = loader.getController();
+				controller.setMainLayoutController(this);
 				controller.loadEditEvaluation(evaluationId); // charge les infos de l'utilisateur
 
 				contentArea.getChildren().setAll(userCardRoot); // MAJ de l'UI

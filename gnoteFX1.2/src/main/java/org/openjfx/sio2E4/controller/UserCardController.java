@@ -1,31 +1,18 @@
 package org.openjfx.sio2E4.controller;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
-import org.openjfx.sio2E4.constants.APIConstants;
-import org.openjfx.sio2E4.constants.StyleConstants;
+
 import org.openjfx.sio2E4.model.MatiereRow;
 import org.openjfx.sio2E4.model.Note;
 import org.openjfx.sio2E4.model.User;
+import org.openjfx.sio2E4.repository.UserRepository;
 import org.openjfx.sio2E4.service.AuthService;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.application.Platform;
@@ -34,11 +21,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Button;
-import java.util.Map;
 import org.openjfx.sio2E4.service.LocalStorageService;
-import org.openjfx.sio2E4.service.NetworkService;
 import org.openjfx.sio2E4.service.NoteService;
-import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.util.AlertHelper;
 
 public class UserCardController {
@@ -69,161 +53,61 @@ public class UserCardController {
     private final String BEARER_TOKEN = "Bearer "+ AuthService.getToken();
     private int currentUserId = -1;
 
-    private boolean isEditorAllowed() {
-        try {
-            User current = AuthService.getCurrentUser();
-            if (current == null || current.getRole() == null) return false;
-            String lib = current.getRole().getLibelle();
-            return lib != null && (lib.equalsIgnoreCase("ADMIN") || lib.equalsIgnoreCase("ENSEIGNANT"));
-        } catch (Exception e) {
-            return false;
-        }
-    }
-    
+    // Injection du service
+    private final UserRepository userRepository = new UserRepository();
+
     public void loadUser(int userId) {
-        this.currentUserId = userId;
-        if (NetworkService.isOnline()) {
-            HttpClient client = HttpClient.newHttpClient();
+        // Appel au service pour l'utilisateur
+        userRepository.getUser(userId)
+                .thenAccept(user -> {
+                    // Mise à jour UI Utilisateur
+                    Platform.runLater(() -> updateUserInfoUI(user));
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(APIConstants.formatUrl(APIConstants.USER_BY_ID, userId)))
-                    .header("Authorization", BEARER_TOKEN)
-                    .GET()
-                    .build();
-
-            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenApply(HttpResponse::body)
-                    .thenAccept(this::parseUserResponse)
-                    .exceptionally(e -> {
-                        e.printStackTrace();
-                        return null;
-                    });
-        } else {
-            User user = LocalStorageService.findUserById(userId);
-            try {
-                Platform.runLater(() -> {
-                    // Affichage des informations utilisateur dans les labels
-                    nomLabel.setText(user.getNom());
-                    prenomLabel.setText(user.getPrenom());
-                    emailLabel.setText(user.getEmail());
-                    telephoneLabel.setText(user.getTelephone());
-                    adresseLabel.setText(user.getAdresse());
-                    roleLabel.setText(user.getRole().getLibelle());
+                    // Une fois l'user chargé, on charge ses notes
+                    loadUserNotes(user.getId(), user.getRole().getLibelle());
+                })
+                .exceptionally(e -> {
+                    e.printStackTrace(); // Gérez l'erreur (ex: afficher une alerte)
+                    return null;
                 });
-
-                loadUserNotes(user.getId(), user.getRole().getLibelle());
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
-    private void parseUserResponse(String response) {
-        try {
-            ObjectMapper mapper = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-            User user = mapper.readValue(response, User.class);
-
-            // Utilisation de Platform.runLater pour manipuler l'UI sur le FX thread
-            Platform.runLater(() -> {
-                // Affichage des informations utilisateur dans les labels
-                nomLabel.setText(user.getNom());
-                prenomLabel.setText(user.getPrenom());
-                emailLabel.setText(user.getEmail());
-                telephoneLabel.setText(user.getTelephone());
-                adresseLabel.setText(user.getAdresse());
-                roleLabel.setText(user.getRole().getLibelle());
-            });
-
-            // Charger et afficher les notes de l'utilisateur
-            loadUserNotes(user.getId(), user.getRole().getLibelle());
-
-        } catch (IOException e) {
-            e.printStackTrace(); // Gérer l'erreur de parsing
-        }
-    }
 
     private void loadUserNotes(int userId, String role) {
-        if (NetworkService.isOnline()) {
-            HttpClient client = HttpClient.newHttpClient();
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(APIConstants.formatUrl(APIConstants.USER_NOTES, userId)))
-                    .header("Authorization", BEARER_TOKEN)
-                    .GET()
-                    .build();
-
-            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenApply(HttpResponse::body)
-                    .thenAccept(response -> parseNotesResponse(response, role))
-                    .exceptionally(e -> {
-                        e.printStackTrace();
-                        return null;
-                    });
-        } else {
-            ArrayList<Note> notes = (ArrayList<Note>) LocalStorageService.loadNotes().stream()
-                    .filter(note -> note.getEleve().getId() == userId)
-                    .collect(Collectors.toList());
-
-            Map<String, List<Note>> notesParMatiere = NoteService.groupNotesByMatiere(notes);
-            ObservableList<MatiereRow> data = NoteService.buildMatiereRows(notesParMatiere);
-
-            // Charger les appréciations stockées localement pour cet utilisateur
-            User user = LocalStorageService.findUserById(userId);
-            Map<String, String> appMap = user != null ? user.getAppreciations() : null;
-
-            // Remplacer les chaînes "Not implemented" par les appréciations réelles si disponibles
-            ObservableList<MatiereRow> dataWithApp = FXCollections.observableArrayList();
-            for (MatiereRow row : data) {
-                String matiere = row.getMatiere();
-                String appr = (appMap != null && appMap.containsKey(matiere)) ? appMap.get(matiere) : "";
-                dataWithApp.add(new MatiereRow(matiere, row.getMoyenne(), row.getNotesHBox(), appr));
-            }
-
-            Platform.runLater(() -> {
-                notesTable.setItems(dataWithApp);
-
-                // Si l'utilisateur est un étudiant, calculer la moyenne
-                if ("ETUDIANT".equals(role)) {
-                    double moyenne = NoteService.calculateMoyenne(notes);
-                    moyenneLabel.setText("Moyenne: " + moyenne);
-                }
-
-                // Initialisation du panneau d'édition en fonction du rôle de l'utilisateur connecté
-                boolean allowed = isEditorAllowed();
-                appreciationTextArea.setDisable(!allowed);
-                saveAppButton.setDisable(!allowed);
-                cancelAppButton.setDisable(!allowed);
-                if (!allowed) {
-                    selectedMatiereLabel.setText("(Édition réservée aux enseignants/admin)");
-                }
-            });
-        }
+        // Appel au service pour les notes
+        userRepository.getUserNotes(userId)
+                .thenAccept(notes -> {
+                    Platform.runLater(() -> updateNotesUI(notes, role));
+                })
+                .exceptionally(e -> {
+                    e.printStackTrace();
+                    return null;
+                });
     }
 
-    private void parseNotesResponse(String response, String role) {
-        try {
-            ObjectMapper mapper = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    // --- Méthodes de mise à jour purement UI ---
 
-            List<Note> notes = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, Note.class));
+    private void updateUserInfoUI(User user) {
+        if (user == null) return;
+        nomLabel.setText(user.getNom());
+        prenomLabel.setText(user.getPrenom());
+        emailLabel.setText(user.getEmail());
+        telephoneLabel.setText(user.getTelephone());
+        adresseLabel.setText(user.getAdresse());
+        roleLabel.setText(user.getRole().getLibelle());
+    }
 
-            // Utilisation de Platform.runLater pour manipuler l'UI sur le FX thread
-            Platform.runLater(() -> {
-                // Mettre à jour la TableView avec les données
-                // TODO fonction avec l'api temporairement désactivé (pas d'api pour le moment, donc aucun moyen de tester)
-                //notesTable.getItems().setAll(notes);
+    private void updateNotesUI(List<Note> notes, String role) {
+        // Préparation des données pour le tableau (Logique de présentation)
+        Map<String, List<Note>> notesParMatiere = NoteService.groupNotesByMatiere(notes);
+        ObservableList<MatiereRow> data = NoteService.buildMatiereRows(notesParMatiere);
 
-                // Si l'utilisateur est un étudiant, calculer la moyenne
-                if ("ETUDIANT".equals(role)) {
-                    double moyenne = NoteService.calculateMoyenne(notes);
-                    moyenneLabel.setText("Moyenne: " + moyenne);
-                }
-            });
+        notesTable.setItems(data);
 
-        } catch (IOException e) {
-            e.printStackTrace(); // Gérer l'erreur de parsing
+        // Calcul moyenne
+        if ("ETUDIANT".equals(role)) {
+            double moyenne = NoteService.calculateMoyenne(notes);
+            moyenneLabel.setText("Moyenne: " + String.format("%.2f", moyenne));
         }
     }
 
@@ -258,10 +142,6 @@ public class UserCardController {
                     setText(item);
                     setOnMouseClicked(event -> {
                         if (event.getClickCount() == 2) {
-                            if (!isEditorAllowed()) {
-                                AlertHelper.showWarning("Vous n'avez pas la permission d'éditer les appréciations.");
-                                return;
-                            }
                             int index = getIndex();
                             if (index < 0 || index >= getTableView().getItems().size()) return;
                             String matiere = getTableView().getItems().get(index).getMatiere();
@@ -297,7 +177,6 @@ public class UserCardController {
 
         // Écoute de sélection + actions Save/Cancel
         notesTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
-            boolean allowed = isEditorAllowed();
             if (newSel == null) {
                 selectedMatiereLabel.setText("(Sélectionne une matière)");
                 appreciationTextArea.setText("");
@@ -306,9 +185,9 @@ public class UserCardController {
                 cancelAppButton.setDisable(true);
             } else {
                 selectedMatiereLabel.setText(newSel.getMatiere());
-                appreciationTextArea.setDisable(!allowed);
-                saveAppButton.setDisable(!allowed);
-                cancelAppButton.setDisable(!allowed);
+                appreciationTextArea.setDisable(false);
+                saveAppButton.setDisable(false);
+                cancelAppButton.setDisable(false);
                 appreciationTextArea.setText(newSel.getAppreciations() == null ? "" : newSel.getAppreciations());
             }
         });

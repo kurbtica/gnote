@@ -1,7 +1,7 @@
 package org.openjfx.sio2E4.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -11,25 +11,12 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.SVGPath;
-import org.openjfx.sio2E4.constants.APIConstants;
 import org.openjfx.sio2E4.constants.StyleConstants;
 import org.openjfx.sio2E4.model.Role;
 import org.openjfx.sio2E4.model.User;
-import org.openjfx.sio2E4.service.AuthService;
-import org.openjfx.sio2E4.service.LocalStorageService;
-import org.openjfx.sio2E4.service.NetworkService;
+import org.openjfx.sio2E4.repository.UserRepository;
 import org.openjfx.sio2E4.util.AlertHelper;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublishers;
-import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import org.openjfx.sio2E4.util.UserValidator;
 
 public class UsersController {
 
@@ -51,7 +38,8 @@ public class UsersController {
 
     @FXML private Label resultCountLabel;
 
-	private final String BEARER_TOKEN = "Bearer " + AuthService.getToken();
+	// Injection du service
+	private final UserRepository userRepository = new UserRepository();
     
 	@FXML
 	public void initialize() {
@@ -173,46 +161,24 @@ public class UsersController {
 		);
 		usersTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        fetchUsers();
+		loadUsersList();
 	}
 
-	private void fetchUsers() {
-		if (NetworkService.isOnline()) {
-			HttpClient client = HttpClient.newHttpClient();
-			HttpRequest request = HttpRequest.newBuilder()
-					.uri(URI.create(APIConstants.USERS))
-					.header("Authorization", BEARER_TOKEN)
-					.GET()
-					.build();
-
-			client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-					.thenApply(HttpResponse::body)
-					.thenAccept(this::parseUsers)
-					.exceptionally(e -> {
-						e.printStackTrace();
-						return null;
+	public void loadUsersList() {
+		// Appel au service pour l'utilisateur
+		userRepository.getUsersList()
+				.thenAccept(user -> {
+					// Mise à jour UI Utilisateur
+					Platform.runLater(() -> {
+						usersTable.getItems().setAll(user);
+						resultCountLabel.setText(user.size() + " résultat");
 					});
-		} else {
-			System.out.println("Mode hors ligne activé — chargement local");
-			ArrayList<User> localUsers = LocalStorageService.loadUsers();
-			Platform.runLater(() -> {
-                usersTable.getItems().setAll(localUsers);
-                resultCountLabel.setText(" " + localUsers.size() + " résultat");
-            });
-		}
-	}
 
-
-	private void parseUsers(String responseBody) {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			List<User> users = Arrays.asList(mapper.readValue(responseBody, User[].class));
-
-			// Assurer que la mise à jour du tableau se fait sur le thread principal JavaFX
-			Platform.runLater(() -> usersTable.getItems().setAll(users));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+				})
+				.exceptionally(e -> {
+					e.printStackTrace(); // Gérez l'erreur (ex: afficher une alerte)
+					return null;
+				});
 	}
 
 	// -------------------- user Card --------------------
@@ -228,64 +194,41 @@ public class UsersController {
 		}
 	}
 
-
 	@FXML
 	private void ajouterUtilisateur(User user) {
-
-		int roleId = user.getRole().getId();
-
-		if (user.getNom().isEmpty() || user.getPrenom().isEmpty() || user.getEmail().isEmpty()) { // || user.getHashedPassword().isEmpty()
+		// Validations de base (champs vides, regex)
+		if (user.getNom().isEmpty() || user.getPrenom().isEmpty() || user.getEmail().isEmpty()) {
 			AlertHelper.showWarning("Veuillez remplir tous les champs obligatoires.");
+			openUserDialog(user);
 			return;
 		}
-        if (!user.getEmail().matches("^[\\w\\d._%+-]+@[\\w\\d.-]+\\.[A-Za-z]{2,}$")) {
-            AlertHelper.showWarning("Email non conforme.");
-            return;
-        }
+		if (!UserValidator.validateEmail(user.getEmail())) {
+			AlertHelper.showWarning("Email non conforme.");
+			openUserDialog(user);
+			return;
+		}
+		if (!UserValidator.validatePhone(user.getTelephone())) {
+			AlertHelper.showWarning("Numéro de téléphone non conforme.");
+			openUserDialog(user);
+			return;
+		}
 
-        if (!user.getTelephone().matches("^(0|\\+33)[1-9](\\d{2}){4}$")) {
-            AlertHelper.showWarning("Téléphone non conforme.");
-            return;
-        }
-        if (NetworkService.isOnline()) {
-			try {
-				// Construction du JSON
-				String json = String.format(
-						"{\"nom\":\"%s\",\"prenom\":\"%s\",\"email\":\"%s\",\"adresse\":\"%s\",\"telephone\":\"%s\",\"passwordHash\":\"%s\",\"role\":{\"id\":%d,\"libelle\":\"%s\"}}",
-						user.getNom(), user.getPrenom(), user.getEmail(), user.getAdresse(), user.getTelephone(), "user.getHashedPassword()", roleId, user.getRole().getId());
-
-				HttpClient client = HttpClient.newHttpClient();
-				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.USERS))
-						.header("Authorization", BEARER_TOKEN).header("Content-Type", "application/json")
-						.POST(BodyPublishers.ofString(json)).build();
-
-				client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
-					if (response.statusCode() == 201 || response.statusCode() == 200) {
-						Platform.runLater(() -> AlertHelper.showInformation("Utilisateur ajouté avec succès !"));
-						Platform.runLater(this::fetchUsers);
-						// Optionnel : refreshTable(); si tu veux actualiser la liste
-					} else {
-						Platform.runLater(() -> AlertHelper.showError("Erreur lors de l'ajout : " + response.body()));
-					}
-				}).exceptionally(e -> {
-					e.printStackTrace();
-					Platform.runLater(() -> AlertHelper.showError("Erreur réseau : " + e.getMessage()));
+		// Appel au repository
+		userRepository.createUser(user)
+				.thenAccept(success -> {
+					Platform.runLater(() -> {
+						if (success) {
+							AlertHelper.showInformation("Utilisateur ajouté avec succès !");
+							loadUsersList(); // Rafraîchir le tableau
+						} else {
+							AlertHelper.showError("Erreur lors de l'ajout de l'utilisateur.");
+						}
+					});
+				})
+				.exceptionally(e -> {
+					Platform.runLater(() -> AlertHelper.showError("Erreur technique : " + e.getMessage()));
 					return null;
 				});
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				AlertHelper.showError("Erreur interne : " + e.getMessage());
-			}
-		} else {
-			// === Mode hors ligne ===
-			LocalStorageService.save(user);
-
-			Platform.runLater(() -> {
-				usersTable.getItems().add(user);
-				AlertHelper.showInformation("Utilisateur ajouté en local (mode hors ligne).");
-			});
-		}
 	}
 
 	private int getRoleId(String roleName) {
@@ -304,48 +247,25 @@ public class UsersController {
 	@FXML
 	private void handleDeleteUser(User user) {
 		if (user == null) {
-			AlertHelper.showWarning("Veuillez sélectionner un utilisateur à supprimer.");
+			AlertHelper.showWarning("Veuillez sélectionner un utilisateur.");
 			return;
 		}
 
-		// Supprimer l'utilisateur immédiatement
-		deleteUser(user.getId());
-	}
-
-	private void deleteUser(int userId) {
-		if (NetworkService.isOnline()) {
-			HttpClient client = HttpClient.newHttpClient();
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.formatUrl(APIConstants.USER_BY_ID, userId)))
-					.header("Authorization", BEARER_TOKEN).DELETE().build();
-
-			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
-				if (response.statusCode() == 204) { // 204 No Content signifie que la suppression a réussi
+		userRepository.deleteUser(user.getId())
+				.thenAccept(success -> {
 					Platform.runLater(() -> {
-						AlertHelper.showInformation("Utilisateur supprimé avec succès.");
-						fetchUsers(); // Rafraîchit la liste des utilisateurs
+						if (success) {
+							AlertHelper.showInformation("Utilisateur supprimé avec succès.");
+							loadUsersList();
+						} else {
+							AlertHelper.showError("Impossible de supprimer cet utilisateur.");
+						}
 					});
-				} else {
-					Platform.runLater(() -> AlertHelper.showError("Erreur lors de la suppression de l'utilisateur."));
-				}
-			}).exceptionally(e -> {
-				e.printStackTrace();
-				Platform.runLater(() -> AlertHelper.showError("Erreur réseau : " + e.getMessage()));
-				return null;
-			});
-		} else {
-			ArrayList<User> users = LocalStorageService.loadUsers();
-			Optional<User> offlineUser = users.stream()
-					.filter(u -> u.getId()==userId)
-					.findFirst();
-			if (offlineUser.isPresent()) {
-				LocalStorageService.remove(offlineUser.get());
-
-				Platform.runLater(() -> {
-					AlertHelper.showInformation("Utilisateur supprimé en local (mode hors ligne).");
-					fetchUsers(); // Rafraîchit la liste des utilisateurs
+				})
+				.exceptionally(e -> {
+					Platform.runLater(() -> AlertHelper.showError("Erreur technique : " + e.getMessage()));
+					return null;
 				});
-			}
-		}
 	}
 
 	// --------------------------Modification de l'utilisateur par boite de dialogue
@@ -360,227 +280,145 @@ public class UsersController {
 	}
 
 	private void updateUser(User user) {
-		if (NetworkService.isOnline()) {
-			try {
-				ObjectMapper mapper = new ObjectMapper();
-				String json = mapper.writeValueAsString(user);
+		// Validations de base (champs vides, regex)
+		if (user.getNom().isEmpty() || user.getPrenom().isEmpty() || user.getEmail().isEmpty()) {
+			AlertHelper.showWarning("Veuillez remplir tous les champs obligatoires.");
+			openUserDialog(user);
+			return;
+		}
+		if (!UserValidator.validateEmail(user.getEmail())) {
+			AlertHelper.showWarning("Email non conforme.");
+			openUserDialog(user);
+			return;
+		}
+		if (!UserValidator.validatePhone(user.getTelephone())) {
+			AlertHelper.showWarning("Numéro de téléphone non conforme.");
+			openUserDialog(user);
+			return;
+		}
 
-				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.formatUrl(APIConstants.USER_BY_ID, user.getId())))
-						.header("Authorization", BEARER_TOKEN).header("Content-Type", "application/json")
-						.PUT(HttpRequest.BodyPublishers.ofString(json)).build();
-
-				HttpClient client = HttpClient.newHttpClient();
-				client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
-					if (response.statusCode() == 200) {
-						Platform.runLater(() -> {
+		userRepository.updateUser(user)
+				.thenAccept(success -> {
+					Platform.runLater(() -> {
+						if (success) {
 							AlertHelper.showInformation("Utilisateur modifié avec succès !");
-							fetchUsers();
-						});
-					} else {
-						Platform.runLater(() -> AlertHelper.showError("Erreur de modification : " + response.body()));
-					}
-				}).exceptionally(e -> {
-					e.printStackTrace();
-					Platform.runLater(() -> AlertHelper.showError("Erreur réseau : " + e.getMessage()));
+							loadUsersList();
+						} else {
+							AlertHelper.showError("Erreur lors de la modification.");
+						}
+					});
+				})
+				.exceptionally(e -> {
+					Platform.runLater(() -> AlertHelper.showError("Erreur technique : " + e.getMessage()));
 					return null;
 				});
-			} catch (Exception e) {
-				e.printStackTrace();
-				AlertHelper.showError("Erreur lors de la mise à jour.");
-			}
-		} else {
-			ArrayList<User> users = LocalStorageService.loadUsers();
-			Optional<User> offlineUser = users.stream()
-					.filter(u -> u.getId()==user.getId())
-					.findFirst();
-			if (offlineUser.isPresent()) {
-				LocalStorageService.update(user);
-
-				Platform.runLater(() -> {
-					AlertHelper.showInformation("Utilisateur mis a jour en local (mode hors ligne).");
-					fetchUsers(); // Rafraîchit la liste des utilisateurs
-				});
-			}
-		}
 	}
 
-	private void showEditDialog(User user) {
+	// Point d'entrée pour CRÉER
+	@FXML
+	private void showCreateDialog() {
+		openUserDialog(null);
+	}
+
+	// Point d'entrée pour ÉDITER
+	@FXML
+	private void showEditDialog(User user) { // ou showEditDialog
+		if (user != null) openUserDialog(user);
+	}
+
+	private void openUserDialog(User inputUser) {
+		// On est en mode "Édition" seulement si l'utilisateur existe ET qu'il a un ID (donc il vient de la BDD)
+		// Si l'ID est 0, c'est que c'est un "brouillon" qu'on réaffiche pour correction.
+		boolean isEditMode = (inputUser != null && inputUser.getId() > 0);
+
+		// Si on a un inputUser (même brouillon), on le reprend, sinon on en crée un vierge
+		User user = (inputUser != null) ? inputUser : new User();
+
 		Dialog<User> dialog = new Dialog<>();
-		dialog.setTitle("Modifier l'utilisateur");
-		dialog.setHeaderText("Modifiez les informations de l'utilisateur :");
+		dialog.setTitle(isEditMode ? "Modifier l'utilisateur" : "Ajouter un utilisateur");
+		dialog.setHeaderText(isEditMode ? "Modifier les informations :" : "Remplir les informations :");
 
-		// Boutons OK / Annuler
-		ButtonType saveButtonType = new ButtonType("Enregistrer", ButtonBar.ButtonData.OK_DONE);
-		dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+		ButtonType validButtonType = new ButtonType(isEditMode ? "Enregistrer" : "Créer", ButtonBar.ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(validButtonType, ButtonType.CANCEL);
 
-		// Création du formulaire
-		GridPane grid = new GridPane();
-		grid.setHgap(10);
-		grid.setVgap(10);
-		grid.setPadding(new Insets(20, 150, 10, 10));
-
+		// --- Création des champs ---
+		// On pré-remplit avec les données de 'user' (qui peut être le brouillon refusé précédemment)
 		TextField nomField = new TextField(user.getNom());
 		TextField prenomField = new TextField(user.getPrenom());
 		TextField emailField = new TextField(user.getEmail());
 		TextField adresseField = new TextField(user.getAdresse());
-		TextField telephoneField = new TextField(user.getTelephone());
+		TextField phoneField = new TextField(user.getTelephone());
+		PasswordField passField = new PasswordField();
+
 		ComboBox<String> roleBox = new ComboBox<>();
 		roleBox.getItems().addAll("ADMIN", "ENSEIGNANT", "ETUDIANT");
-		roleBox.setValue(user.getRole().getLibelle());
+		// Gestion de sécurité pour éviter le NullPointerException sur le rôle
+		if (user.getRole() != null) {
+			roleBox.setValue(user.getRole().getLibelle());
+		}
 
-		grid.add(new Label("Nom:"), 0, 0);
-		grid.add(nomField, 1, 0);
-		grid.add(new Label("Prénom:"), 0, 1);
-		grid.add(prenomField, 1, 1);
-		grid.add(new Label("Email:"), 0, 2);
-		grid.add(emailField, 1, 2);
-		grid.add(new Label("Adresse:"), 0, 3);
-		grid.add(adresseField, 1, 3);
-		grid.add(new Label("Téléphone:"), 0, 4);
-		grid.add(telephoneField, 1, 4);
-		grid.add(new Label("Rôle:"), 0, 5);
-		grid.add(roleBox, 1, 5);
-
-		dialog.getDialogPane().setContent(grid);
-
-		// Convertir le résultat quand l'utilisateur clique sur Enregistrer
-		dialog.setResultConverter(dialogButton -> {
-			if (dialogButton == saveButtonType) {
-				user.setNom(nomField.getText());
-				user.setPrenom(prenomField.getText());
-				user.setEmail(emailField.getText());
-				user.setAdresse(adresseField.getText());
-				user.setTelephone(telephoneField.getText());
-				String selectedRole = roleBox.getValue();
-				int roleId = getRoleId(selectedRole);
-
-				// On recrée un rôle pour éviter les nulls
-				user.setRole(new Role(roleId, selectedRole));
-
-				return user;
-			}
-
-			return null;
-		});
-
-		dialog.showAndWait().ifPresent(updatedUser -> updateUser(updatedUser));
-	}
-
-	@FXML
-	private void showCreateDialog() {
-		Dialog<User> dialog = new Dialog<>();
-		dialog.setTitle("Ajouter un utilisateur");
-		dialog.setHeaderText("Créez un nouvel utilisateur :");
-
-		// Boutons OK / Annuler
-		ButtonType createButtonType = new ButtonType("Créer", ButtonBar.ButtonData.OK_DONE);
-		dialog.getDialogPane().getButtonTypes().addAll(createButtonType, ButtonType.CANCEL);
-
-		// Création du formulaire
+		// --- Mise en page (GridPane) ---
 		GridPane grid = new GridPane();
-		grid.setHgap(10);
-		grid.setVgap(10);
-		grid.setPadding(new Insets(20, 150, 10, 10));
+		grid.setHgap(10); grid.setVgap(10); grid.setPadding(new Insets(20, 150, 10, 10));
 
-		TextField nomField = new TextField();
-		nomField.setPromptText("Nom");
-		TextField prenomField = new TextField();
-		prenomField.setPromptText("Prénom");
-		TextField emailField = new TextField();
-		emailField.setPromptText("email@exemple.fr");
-		TextField adresseField = new TextField();
-		adresseField.setPromptText("Adresse");
-		TextField telephoneField = new TextField();
-		telephoneField.setPromptText("Téléphone");
-		PasswordField passwordField = new PasswordField();
-		passwordField.setPromptText("Mot de passe");
-		ComboBox<String> roleBox = new ComboBox<>();
-		roleBox.getItems().addAll("ADMIN", "ENSEIGNANT", "ETUDIANT");
-		roleBox.setPromptText("Sélectionner un rôle");
+		addRows(grid,
+				"Nom:", nomField,
+				"Prénom:", prenomField,
+				"Email:", emailField,
+				"Adresse:", adresseField,
+				"Téléphone:", phoneField
+		);
 
-		grid.add(new Label("Nom:"), 0, 0);
-		grid.add(nomField, 1, 0);
-		grid.add(new Label("Prénom:"), 0, 1);
-		grid.add(prenomField, 1, 1);
-		grid.add(new Label("Email:"), 0, 2);
-		grid.add(emailField, 1, 2);
-		grid.add(new Label("Adresse:"), 0, 3);
-		grid.add(adresseField, 1, 3);
-		grid.add(new Label("Téléphone:"), 0, 4);
-		grid.add(telephoneField, 1, 4);
-		grid.add(new Label("Mot de passe:"), 0, 5);
-		grid.add(passwordField, 1, 5);
+		// Le champ mot de passe apparaît si ce n'est PAS une édition (donc création ou correction brouillon)
+		if (!isEditMode) {
+			grid.add(new Label("Mot de passe:"), 0, 5);
+			grid.add(passField, 1, 5);
+		}
+
 		grid.add(new Label("Rôle:"), 0, 6);
 		grid.add(roleBox, 1, 6);
 
 		dialog.getDialogPane().setContent(grid);
+		Platform.runLater(nomField::requestFocus);
 
-		// Désactiver le bouton Créer si les champs obligatoires sont vides
-		Node createButton = dialog.getDialogPane().lookupButton(createButtonType);
-		createButton.setDisable(true);
+		// --- Convertisseur de résultat ---
+		dialog.setResultConverter(btn -> {
+			if (btn == validButtonType) {
+				user.setNom(nomField.getText().trim());
+				user.setPrenom(prenomField.getText().trim());
+				user.setEmail(emailField.getText().trim());
+				user.setAdresse(adresseField.getText().trim());
+				user.setTelephone(phoneField.getText().trim());
 
-		// Validation en temps réel
-		nomField.textProperty().addListener((observable, oldValue, newValue) -> {
-			createButton.setDisable(newValue.trim().isEmpty() ||
-					prenomField.getText().trim().isEmpty() ||
-					emailField.getText().trim().isEmpty() ||
-					passwordField.getText().trim().isEmpty() ||
-					roleBox.getValue() == null);
-		});
-		prenomField.textProperty().addListener((observable, oldValue, newValue) -> {
-			createButton.setDisable(newValue.trim().isEmpty() ||
-					nomField.getText().trim().isEmpty() ||
-					emailField.getText().trim().isEmpty() ||
-					passwordField.getText().trim().isEmpty() ||
-					roleBox.getValue() == null);
-		});
-		emailField.textProperty().addListener((observable, oldValue, newValue) -> {
-			createButton.setDisable(newValue.trim().isEmpty() ||
-					nomField.getText().trim().isEmpty() ||
-					prenomField.getText().trim().isEmpty() ||
-					passwordField.getText().trim().isEmpty() ||
-					roleBox.getValue() == null);
-		});
-		passwordField.textProperty().addListener((observable, oldValue, newValue) -> {
-			createButton.setDisable(newValue.trim().isEmpty() ||
-					nomField.getText().trim().isEmpty() ||
-					prenomField.getText().trim().isEmpty() ||
-					emailField.getText().trim().isEmpty() ||
-					roleBox.getValue() == null);
-		});
-		roleBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-			createButton.setDisable(newValue == null ||
-					nomField.getText().trim().isEmpty() ||
-					prenomField.getText().trim().isEmpty() ||
-					emailField.getText().trim().isEmpty() ||
-					passwordField.getText().trim().isEmpty());
-		});
+				String roleName = roleBox.getValue();
+				if (roleName != null) {
+					user.setRole(new Role(getRoleId(roleName), roleName));
+				}
 
-		// Focus sur le premier champ
-		Platform.runLater(() -> nomField.requestFocus());
-
-		// Convertir le résultat quand l'utilisateur clique sur Créer
-		dialog.setResultConverter(dialogButton -> {
-			if (dialogButton == createButtonType) {
-				User newUser = new User();
-				newUser.setNom(nomField.getText().trim());
-				newUser.setPrenom(prenomField.getText().trim());
-				newUser.setEmail(emailField.getText().trim());
-				newUser.setAdresse(adresseField.getText().trim());
-				newUser.setTelephone(telephoneField.getText().trim());
-				//newUser.setHashedPassword(passwordField.getText());
-
-				String selectedRole = roleBox.getValue();
-				int roleId = getRoleId(selectedRole);
-				newUser.setRole(new Role(roleId, selectedRole));
-
-				return newUser;
+				// En création/correction, on capture le mot de passe
+				if (!isEditMode && !passField.getText().isEmpty()) {
+					// user.setHashedPassword(passField.getText()); // Décommenter si besoin
+				}
+				return user;
 			}
 			return null;
 		});
 
-		dialog.showAndWait().ifPresent(newUser -> ajouterUtilisateur(newUser));
+		dialog.showAndWait().ifPresent(resultUser -> {
+			if (isEditMode) {
+				updateUser(resultUser);
+			} else {
+				ajouterUtilisateur(resultUser);
+			}
+		});
 	}
 
+	// Helper utilitaire (si tu ne l'as pas déjà mis)
+	private void addRows(GridPane grid, Object... components) {
+		for (int i = 0; i < components.length; i += 2) {
+			grid.add(new Label((String) components[i]), 0, i / 2);
+			grid.add((Node) components[i + 1], 1, i / 2);
+		}
+	}
 
 }
