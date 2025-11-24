@@ -1,7 +1,9 @@
-package org.openjfx.sio2E4.model;
+package org.openjfx.sio2E4.model.table;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import org.openjfx.sio2E4.model.Note;
+import org.openjfx.sio2E4.model.User;
 
 public class EvaluationRow {
     private User eleve;

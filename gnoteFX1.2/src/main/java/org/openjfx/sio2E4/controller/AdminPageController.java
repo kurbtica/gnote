@@ -14,6 +14,7 @@ import org.openjfx.sio2E4.util.AlertHelper;
 
 import java.io.IOException;
 
+@Deprecated
 public class AdminPageController {
 
     @FXML

@@ -7,7 +7,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import org.openjfx.sio2E4.constants.StyleConstants;
-import org.openjfx.sio2E4.model.MatiereRow;
+import org.openjfx.sio2E4.model.table.MatiereRow;
 import org.openjfx.sio2E4.model.Note;
 
 import java.util.List;

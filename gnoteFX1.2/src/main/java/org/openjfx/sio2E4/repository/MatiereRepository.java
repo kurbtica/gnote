@@ -144,8 +144,6 @@ public class MatiereRepository {
 
     // --- Méthodes privées pour l'API ---
     public CompletableFuture<Matiere> fetchMatiereFromApi(int matiereID) {
-        HttpClient client = HttpClient.newHttpClient();
-
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(APIConstants.formatUrl(APIConstants.MATIERE_BY_ID, matiereID)))
                 .header("Authorization", BEARER_TOKEN)
@@ -159,8 +157,6 @@ public class MatiereRepository {
     }
 
     public CompletableFuture<List<Matiere>> fetchMatieresListFromApi() {
-        HttpClient client = HttpClient.newHttpClient();
-
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(APIConstants.MATIERES))
                 .header("Authorization", BEARER_TOKEN)

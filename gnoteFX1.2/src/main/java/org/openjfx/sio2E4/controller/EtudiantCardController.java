@@ -1,38 +1,23 @@
 package org.openjfx.sio2E4.controller;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
-import org.openjfx.sio2E4.constants.APIConstants;
-import org.openjfx.sio2E4.constants.StyleConstants;
-import org.openjfx.sio2E4.model.MatiereRow;
+import org.openjfx.sio2E4.model.table.MatiereRow;
 import org.openjfx.sio2E4.model.Note;
 import org.openjfx.sio2E4.model.User;
-import org.openjfx.sio2E4.service.AuthService;
+import org.openjfx.sio2E4.repository.UserRepository;
 import org.openjfx.sio2E4.service.LocalStorageService;
-import org.openjfx.sio2E4.service.NetworkService;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import javafx.scene.control.TextInputDialog;
-import org.openjfx.sio2E4.model.User;
+import org.openjfx.sio2E4.service.NoteService;
 import org.openjfx.sio2E4.util.AlertHelper;
 
 public class EtudiantCardController {
@@ -59,204 +44,64 @@ public class EtudiantCardController {
     @FXML private TextArea appreciationTextArea;
     @FXML private Button saveAppButton;
     @FXML private Button cancelAppButton;
-
-    private final String BEARER_TOKEN = "Bearer "+ AuthService.getToken();
     private int currentUserId = -1;
-    
+
+    // Injection du service
+    private final UserRepository userRepository = new UserRepository();
+
     public void loadUser(int userId) {
-        this.currentUserId = userId;
-        if (NetworkService.isOnline()) {
-            HttpClient client = HttpClient.newHttpClient();
+        currentUserId = userId;
+        // Appel au service pour l'utilisateur
+        userRepository.getUser(userId)
+                .thenAccept(user -> {
+                    // Mise à jour UI Utilisateur
+                    Platform.runLater(() -> updateUserInfoUI(user));
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(APIConstants.formatUrl(APIConstants.USER_BY_ID, userId)))
-                    .header("Authorization", BEARER_TOKEN)
-                    .GET()
-                    .build();
-
-            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenApply(HttpResponse::body)
-                    .thenAccept(this::parseUserResponse)
-                    .exceptionally(e -> {
-                        e.printStackTrace();
-                        return null;
-                    });
-        } else {
-            User user = LocalStorageService.findUserById(userId);
-            try {
-                Platform.runLater(() -> {
-                    // Affichage des informations utilisateur dans les labels
-                    nomLabel.setText(user.getNom());
-                    prenomLabel.setText(user.getPrenom());
-                    emailLabel.setText(user.getEmail());
-                    telephoneLabel.setText(user.getTelephone());
-                    adresseLabel.setText(user.getAdresse());
-                    roleLabel.setText(user.getRole().getLibelle());
+                    // Une fois l'user chargé, on charge ses notes
+                    loadUserNotes(user.getId(), user.getRole().getLibelle());
+                })
+                .exceptionally(e -> {
+                    e.printStackTrace(); // Gérez l'erreur (ex: afficher une alerte)
+                    return null;
                 });
-
-                loadUserNotes(user.getId(), user.getRole().getLibelle());
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private void parseUserResponse(String response) {
-        try {
-            ObjectMapper mapper = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-            User user = mapper.readValue(response, User.class);
-
-            // Utilisation de Platform.runLater pour manipuler l'UI sur le FX thread
-            Platform.runLater(() -> {
-                // Affichage des informations utilisateur dans les labels
-                nomLabel.setText(user.getNom());
-                prenomLabel.setText(user.getPrenom());
-                emailLabel.setText(user.getEmail());
-                telephoneLabel.setText(user.getTelephone());
-                adresseLabel.setText(user.getAdresse());
-                roleLabel.setText(user.getRole().getLibelle());
-            });
-
-            // Charger et afficher les notes de l'utilisateur
-            loadUserNotes(user.getId(), user.getRole().getLibelle());
-
-        } catch (IOException e) {
-            e.printStackTrace(); // Gérer l'erreur de parsing
-        }
     }
 
     private void loadUserNotes(int userId, String role) {
-        if (NetworkService.isOnline()) {
-            HttpClient client = HttpClient.newHttpClient();
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(APIConstants.formatUrl(APIConstants.USER_NOTES, userId)))
-                    .header("Authorization", BEARER_TOKEN)
-                    .GET()
-                    .build();
-
-            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenApply(HttpResponse::body)
-                    .thenAccept(response -> parseNotesResponse(response, role))
-                    .exceptionally(e -> {
-                        e.printStackTrace();
-                        return null;
-                    });
-        } else {
-            ArrayList<Note> notes = (ArrayList<Note>) LocalStorageService.loadNotes().stream()
-                    .filter(note -> note.getEleve().getId() == userId)
-                    .collect(Collectors.toList());
-
-            // Regroupe les notes par matière pour n'avoir qu'une seule ligne par matière dans le TableView
-            // Utilise un Map<String, List<Note>> où la clé est le nom de la matière et la valeur est la liste des notes
-
-            Map<String, List<Note>> notesParMatiere = notes.stream()
-                    .collect(Collectors.groupingBy(n -> n.getEvaluation().getMatiere().getLibelle()));
-
-            ObservableList<MatiereRow> data = FXCollections.observableArrayList();
-
-            for (Map.Entry<String, List<Note>> entry : notesParMatiere.entrySet()) {
-                String matiere = entry.getKey();
-                List<Note> notesMatiere = entry.getValue();
-
-                HBox notesBox = new HBox(5); // crée un conteneur horizontal avec 5 pixels d’écart entre chaque élément
-                notesBox.setAlignment(Pos.CENTER_LEFT);
-                notesBox.setFillHeight(true);
-
-                for (Note note : notesMatiere) {
-                    // Crée un Label pour chaque note et applique un style visuel (couleur, arrondi, padding)
-                    // Installe un Tooltip sur chaque Label pour afficher le type et la date de la note lors du survol
-
-                    Text valeur = new Text(String.valueOf(note.getValeur()));
-                    Text coef = new Text("(" + note.getEvaluation().getCoefficient() + ")");
-                    coef.setStyle(StyleConstants.COEFFICIENT_STYLE); // affiché en "indice"
-
-                    // Créer un conteneur pour chaque note
-                    HBox noteContainer = new HBox(2);
-                    noteContainer.setAlignment(Pos.CENTER_LEFT);
-                    noteContainer.setFillHeight(true);
-                    noteContainer.getChildren().addAll(valeur, coef);
-                    noteContainer.setStyle(StyleConstants.NOTE_CONTAINER_STYLE); // espace entre les notes
-
-                    // Tooltip pour la date et le type
-                    Tooltip tooltip = new Tooltip(
-                            note.getEvaluation().getTitre() +
-                            "\nType: " + note.getEvaluation().getNoteType().getLibelle() +
-                            "\nDate: " + note.getEvaluation().getDate() +
-                            "\nEnseignant: " + note.getEvaluation().getEnseignant().getNom().toUpperCase() + " " + note.getEvaluation().getEnseignant().getPrenom()
-                    );
-                    Tooltip.install(noteContainer, tooltip);
-
-                    notesBox.getChildren().add(noteContainer);
-                }
-
-                // TODO cree un système appreciation par matière et le mettre a la place de "Not implemented" (emplacement déjà défini dans la vue)
-                data.add(new MatiereRow(matiere, calculateMoyenne(notesMatiere), notesBox, ""));
-            }
-
-            Platform.runLater(() -> {
-                // Charger les appréciations locales si elles existent
-                User userLocal = LocalStorageService.findUserById(userId);
-                Map<String, String> appMap = userLocal != null ? userLocal.getAppreciations() : null;
-                ObservableList<MatiereRow> dataWithApp = FXCollections.observableArrayList();
-                for (MatiereRow row : data) {
-                    String appr = (appMap != null && appMap.containsKey(row.getMatiere())) ? appMap.get(row.getMatiere()) : "";
-                    dataWithApp.add(new MatiereRow(row.getMatiere(), row.getMoyenne(), row.getNotesHBox(), appr));
-                }
-
-                notesTable.setItems(dataWithApp);
-
-                // Si l'utilisateur est un étudiant, calculer la moyenne
-                if ("ETUDIANT".equals(role)) {
-                    double moyenne = calculateMoyenne(notes);
-                    moyenneLabel.setText("Moyenne: " + moyenne);
-                }
-            });
-        }
+        // Appel au service pour les notes
+        userRepository.getUserNotes(userId)
+                .thenAccept(notes -> {
+                    Platform.runLater(() -> updateNotesUI(notes, role));
+                })
+                .exceptionally(e -> {
+                    e.printStackTrace();
+                    return null;
+                });
     }
 
-    private void parseNotesResponse(String response, String role) {
-        try {
-            ObjectMapper mapper = new ObjectMapper()
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    // --- Méthodes de mise à jour purement UI ---
 
-            List<Note> notes = mapper.readValue(response, mapper.getTypeFactory().constructCollectionType(List.class, Note.class));
-
-            // Utilisation de Platform.runLater pour manipuler l'UI sur le FX thread
-            Platform.runLater(() -> {
-                // Mettre à jour la TableView avec les données
-                // TODO fonction avec l'api temporairement désactivé (pas d'api pour le moment, donc aucun moyen de tester)
-                //notesTable.getItems().setAll(notes);
-
-                // Si l'utilisateur est un étudiant, calculer la moyenne
-                if ("ETUDIANT".equals(role)) {
-                    double moyenne = calculateMoyenne(notes);
-                    moyenneLabel.setText("Moyenne: " + moyenne);
-                }
-            });
-
-        } catch (IOException e) {
-            e.printStackTrace(); // Gérer l'erreur de parsing
-        }
+    private void updateUserInfoUI(User user) {
+        if (user == null) return;
+        nomLabel.setText(user.getNom());
+        prenomLabel.setText(user.getPrenom());
+        emailLabel.setText(user.getEmail());
+        telephoneLabel.setText(user.getTelephone());
+        adresseLabel.setText(user.getAdresse());
+        roleLabel.setText(user.getRole().getLibelle());
     }
 
-    private double calculateMoyenne(List<Note> notes) {
-        double totalCoef = 0;
-        double totalNotes = 0;
+    private void updateNotesUI(List<Note> notes, String role) {
+        // Préparation des données pour le tableau (Logique de présentation)
+        Map<String, List<Note>> notesParMatiere = NoteService.groupNotesByMatiere(notes);
+        ObservableList<MatiereRow> data = NoteService.buildMatiereRows(notesParMatiere);
 
-        for (Note note : notes) {
-            totalCoef += note.getEvaluation().getCoefficient();
-            totalNotes += note.getValeur() * note.getEvaluation().getCoefficient();
+        notesTable.setItems(data);
+
+        // Calcul moyenne
+        if ("ETUDIANT".equals(role)) {
+            double moyenne = NoteService.calculateMoyenne(notes);
+            moyenneLabel.setText("Moyenne: " + String.format("%.2f", moyenne));
         }
-
-        if (totalCoef == 0) {
-            return 0; // Eviter une division par zéro si aucun coefficient n'est trouvé
-        }
-
-        // Arrondi a 2 chiffres après la virgule
-        return Math.round((totalNotes / totalCoef) * 100) / 100.0;
     }
 
     // Initialiser les colonnes de la TableView
@@ -289,17 +134,6 @@ public class EtudiantCardController {
                     setText(item);
                     setOnMouseClicked(event -> {
                         if (event.getClickCount() == 2) {
-                            // Vérifier si l'utilisateur a le droit d'éditer
-                            User current = AuthService.getCurrentUser();
-                            boolean allowed = false;
-                            if (current != null && current.getRole() != null) {
-                                String lib = current.getRole().getLibelle();
-                                allowed = lib != null && (lib.equalsIgnoreCase("ADMIN") || lib.equalsIgnoreCase("ENSEIGNANT"));
-                            }
-                            if (!allowed) {
-                                AlertHelper.showWarning("Vous n'avez pas la permission d'éditer les appréciations.");
-                                return;
-                            }
                             int index = getIndex();
                             if (index < 0 || index >= getTableView().getItems().size()) return;
                             String matiere = getTableView().getItems().get(index).getMatiere();

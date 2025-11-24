@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openjfx.sio2E4.constants.APIConstants;
 import org.openjfx.sio2E4.model.Note;
-import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.service.AuthService;
 import org.openjfx.sio2E4.service.LocalStorageService;
 import org.openjfx.sio2E4.service.NetworkService;
@@ -18,71 +17,58 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
-public class UserRepository {
+public class NoteRepository {
 
     private final String BEARER_TOKEN = "Bearer " + AuthService.getToken();
     private final ObjectMapper mapper;
     private final HttpClient client;
 
-    public UserRepository(ObjectMapper mapper, HttpClient client) {
+    public NoteRepository(ObjectMapper mapper, HttpClient client) {
         this.mapper = mapper;
         this.client = client;
     }
 
-    public UserRepository() {
+    public NoteRepository() {
         this.mapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         this.client = HttpClient.newHttpClient();
     }
 
-    // Récupérer un utilisateur (Online ou Offline)
-    public CompletableFuture<User> getUser(int userId) {
+    // --- LECTURE (READ) ---
+
+    // Récupérer une note (Online ou Offline)
+    public CompletableFuture<Note> getNote(int noteID) {
         if (NetworkService.isOnline()) {
-            return fetchUserFromApi(userId);
+            return fetchNoteFromApi(noteID);
         } else {
             // On enveloppe l'appel local dans un Future pour garder la cohérence async
-            return CompletableFuture.supplyAsync(() -> LocalStorageService.findUserById(userId));
+            return CompletableFuture.supplyAsync(() -> LocalStorageService.findNoteById(noteID));
         }
     }
 
-    public CompletableFuture<List<User>> getUsersList() {
+    public CompletableFuture<List<Note>> getNotesList() {
         if (NetworkService.isOnline()) {
-            return fetchUsersListFromApi();
+            return fetchNotesListFromApi();
         } else {
             // On enveloppe l'appel local dans un Future pour garder la cohérence async
-            return CompletableFuture.supplyAsync(LocalStorageService::loadUsers);
-        }
-    }
-
-    // Récupérer les notes (Online ou Offline)
-    public CompletableFuture<List<Note>> getUserNotes(int userId) {
-        if (NetworkService.isOnline()) {
-            return fetchUserNotesFromApi(userId);
-        } else {
-            return CompletableFuture.supplyAsync(() -> {
-                // Logique de filtrage local déplacée ici
-                return LocalStorageService.loadNotes().stream()
-                        .filter(note -> note.getEleve().getId() == userId)
-                        .collect(Collectors.toList());
-            });
+            return CompletableFuture.supplyAsync(LocalStorageService::loadNotes);
         }
     }
 
     // --- ÉCRITURE (CREATE, UPDATE, DELETE) ---
 
     /**
-     * Ajoute un utilisateur (API ou Local)
+     * Ajoute une note (API ou Local)
      * @return true si succès, false sinon
      */
-    public CompletableFuture<Boolean> createUser(User user) {
+    public CompletableFuture<Boolean> createNote(Note note) {
         if (NetworkService.isOnline()) {
             try {
-                String json = mapper.writeValueAsString(user); // Conversion automatique Objet -> JSON
+                String json = mapper.writeValueAsString(note); // Conversion automatique Objet -> JSON
 
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(APIConstants.USERS))
+                        .uri(URI.create(APIConstants.NOTES))
                         .header("Authorization", BEARER_TOKEN)
                         .header("Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString(json))
@@ -97,22 +83,23 @@ public class UserRepository {
             }
         } else {
             return CompletableFuture.supplyAsync(() -> {
-                LocalStorageService.save(user);
+                LocalStorageService.save(note);
                 return true;
             });
         }
     }
 
     /**
-     * Met à jour un utilisateur
+     * Met à jour une note
      */
-    public CompletableFuture<Boolean> updateUser(User user) {
+    public CompletableFuture<Boolean> updateNote(Note note) {
         if (NetworkService.isOnline()) {
             try {
-                String json = mapper.writeValueAsString(user);
+                String json = mapper.writeValueAsString(note);
 
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(APIConstants.formatUrl(APIConstants.USER_BY_ID, user.getId())))
+                        // Suppose que vous avez une constante NOTES_BY_ID
+                        .uri(URI.create(APIConstants.formatUrl(APIConstants.NOTE_BY_ID, note.getId())))
                         .header("Authorization", BEARER_TOKEN)
                         .header("Content-Type", "application/json")
                         .PUT(HttpRequest.BodyPublishers.ofString(json))
@@ -127,19 +114,19 @@ public class UserRepository {
             }
         } else {
             return CompletableFuture.supplyAsync(() -> {
-                LocalStorageService.update(user);
+                LocalStorageService.update(note);
                 return true;
             });
         }
     }
 
     /**
-     * Supprime un utilisateur
+     * Supprime une note
      */
-    public CompletableFuture<Boolean> deleteUser(int userId) {
+    public CompletableFuture<Boolean> deleteNote(int noteID) {
         if (NetworkService.isOnline()) {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(APIConstants.formatUrl(APIConstants.USER_BY_ID, userId)))
+                    .uri(URI.create(APIConstants.formatUrl(APIConstants.NOTE_BY_ID, noteID)))
                     .header("Authorization", BEARER_TOKEN)
                     .DELETE()
                     .build();
@@ -149,8 +136,8 @@ public class UserRepository {
         } else {
             return CompletableFuture.supplyAsync(() -> {
                 // Logique locale simplifiée
-                List<User> users = LocalStorageService.loadUsers();
-                Optional<User> target = users.stream().filter(u -> u.getId() == userId).findFirst();
+                List<Note> notes = LocalStorageService.loadNotes();
+                Optional<Note> target = notes.stream().filter(n -> n.getId() == noteID).findFirst();
                 target.ifPresent(LocalStorageService::remove);
                 return target.isPresent();
             });
@@ -159,70 +146,49 @@ public class UserRepository {
 
 
     // --- Méthodes privées pour l'API ---
-    public CompletableFuture<User> fetchUserFromApi(int userId) {
+
+    public CompletableFuture<Note> fetchNoteFromApi(int noteID) {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(APIConstants.formatUrl(APIConstants.USER_BY_ID, userId)))
+                .uri(URI.create(APIConstants.formatUrl(APIConstants.NOTE_BY_ID, noteID)))
                 .header("Authorization", BEARER_TOKEN)
                 .GET()
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body)
-                .thenApply(this::parseUserJson);
-
+                .thenApply(this::parseNoteJson);
     }
 
-    public CompletableFuture<List<User>> fetchUsersListFromApi() {
+    public CompletableFuture<List<Note>> fetchNotesListFromApi() {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(APIConstants.USERS))
+                .uri(URI.create(APIConstants.NOTES))
                 .header("Authorization", BEARER_TOKEN)
                 .GET()
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body)
-                .thenApply(this::parseUsersListJson);
-
+                .thenApply(this::parseNotesListJson);
     }
-
-    private CompletableFuture<List<Note>> fetchUserNotesFromApi(int userId) {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(APIConstants.formatUrl(APIConstants.USER_NOTES, userId)))
-                .header("Authorization", BEARER_TOKEN)
-                .GET()
-                .build();
-
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenApply(this::parseUserNotesJson);
-    }
-
 
     // --- Méthodes de Parsing ---
-    private User parseUserJson(String response) {
+
+    private Note parseNoteJson(String response) {
         try {
-            return mapper.readValue(response, User.class);
+            return mapper.readValue(response, Note.class);
         } catch (IOException e) {
-            e.printStackTrace(); // Gérer l'erreur de parsing
+            e.printStackTrace();
         }
         return null;
     }
 
-    private List<User> parseUsersListJson(String json) {
+    private List<Note> parseNotesListJson(String json) {
         try {
-            return mapper.readValue(json, mapper.getTypeFactory().constructCollectionType(List.class, User.class));
-        } catch (IOException e) {
-            e.printStackTrace(); // Gérer l'erreur de parsing
-        }
-        return null;
-    }
-
-    private List<Note> parseUserNotesJson(String json) {
-        try {
+            // Utilisation de TypeFactory pour construire une List<Note> proprement
             return mapper.readValue(json, mapper.getTypeFactory().constructCollectionType(List.class, Note.class));
         } catch (IOException e) {
-            throw new RuntimeException("Erreur parsing Notes", e);
+            e.printStackTrace();
         }
+        return null;
     }
-
 }

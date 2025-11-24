@@ -427,6 +427,27 @@
     "valeur" : 0.0,
     "modification" : null,
     "evaluationId" : 3
+  }, {
+    "id" : 20,
+    "eleve" : {
+      "id" : 3,
+      "nom" : "Leclerc",
+      "prenom" : "Emma",
+      "email" : "emma.leclerc@example.com",
+      "adresse" : "Rue des Acacias",
+      "telephone" : "0602030405",
+      "role" : {
+        "id" : 3,
+        "libelle" : "ETUDIANT"
+      },
+      "token" : null,
+      "appreciations" : {
+        "Francais" : "çezauis"
+      }
+    },
+    "valeur" : 15.0,
+    "modification" : null,
+    "evaluationId" : 4
   } ],
   "NoteType" : [ {
     "id" : 0,

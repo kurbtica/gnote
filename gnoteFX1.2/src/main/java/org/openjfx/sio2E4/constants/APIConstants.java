@@ -13,6 +13,11 @@ public class APIConstants {
     public static final String USER_BY_ID = BASE_URL + "/users/%d";
     public static final String USER_NOTES = BASE_URL + "/users/%d/notes";
 
+    // Evaluations endpoints
+    public static final String EVALUATIONS = BASE_URL + "/evaluations";
+    public static final String EVALUATION_BY_ID = BASE_URL + "/evaluations/%d";
+    // public static final String EVALUATION_TYPES = BASE_URL + "/evaluations/type";
+
     // Notes endpoints
     public static final String NOTES = BASE_URL + "/notes";
     public static final String NOTE_BY_ID = BASE_URL + "/notes/%d";

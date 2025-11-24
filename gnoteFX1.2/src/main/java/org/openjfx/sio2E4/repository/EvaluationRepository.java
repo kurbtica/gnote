@@ -4,8 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openjfx.sio2E4.constants.APIConstants;
-import org.openjfx.sio2E4.model.Note;
-import org.openjfx.sio2E4.model.User;
+import org.openjfx.sio2E4.model.Evaluation;
 import org.openjfx.sio2E4.service.AuthService;
 import org.openjfx.sio2E4.service.LocalStorageService;
 import org.openjfx.sio2E4.service.NetworkService;
@@ -18,71 +17,58 @@ import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
-public class UserRepository {
+public class EvaluationRepository {
 
     private final String BEARER_TOKEN = "Bearer " + AuthService.getToken();
     private final ObjectMapper mapper;
     private final HttpClient client;
 
-    public UserRepository(ObjectMapper mapper, HttpClient client) {
+    public EvaluationRepository(ObjectMapper mapper, HttpClient client) {
         this.mapper = mapper;
         this.client = client;
     }
 
-    public UserRepository() {
+    public EvaluationRepository() {
         this.mapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         this.client = HttpClient.newHttpClient();
     }
 
-    // Récupérer un utilisateur (Online ou Offline)
-    public CompletableFuture<User> getUser(int userId) {
+    // --- LECTURE (READ) ---
+
+    // Récupérer une evaluation (Online ou Offline)
+    public CompletableFuture<Evaluation> getEvaluation(int evaluationID) {
         if (NetworkService.isOnline()) {
-            return fetchUserFromApi(userId);
+            return fetchEvaluationFromApi(evaluationID);
         } else {
             // On enveloppe l'appel local dans un Future pour garder la cohérence async
-            return CompletableFuture.supplyAsync(() -> LocalStorageService.findUserById(userId));
+            return CompletableFuture.supplyAsync(() -> LocalStorageService.findEvaluationById(evaluationID));
         }
     }
 
-    public CompletableFuture<List<User>> getUsersList() {
+    public CompletableFuture<List<Evaluation>> getEvaluationsList() {
         if (NetworkService.isOnline()) {
-            return fetchUsersListFromApi();
+            return fetchEvaluationsListFromApi();
         } else {
             // On enveloppe l'appel local dans un Future pour garder la cohérence async
-            return CompletableFuture.supplyAsync(LocalStorageService::loadUsers);
-        }
-    }
-
-    // Récupérer les notes (Online ou Offline)
-    public CompletableFuture<List<Note>> getUserNotes(int userId) {
-        if (NetworkService.isOnline()) {
-            return fetchUserNotesFromApi(userId);
-        } else {
-            return CompletableFuture.supplyAsync(() -> {
-                // Logique de filtrage local déplacée ici
-                return LocalStorageService.loadNotes().stream()
-                        .filter(note -> note.getEleve().getId() == userId)
-                        .collect(Collectors.toList());
-            });
+            return CompletableFuture.supplyAsync(LocalStorageService::loadEvaluations);
         }
     }
 
     // --- ÉCRITURE (CREATE, UPDATE, DELETE) ---
 
     /**
-     * Ajoute un utilisateur (API ou Local)
+     * Ajoute une evaluation (API ou Local)
      * @return true si succès, false sinon
      */
-    public CompletableFuture<Boolean> createUser(User user) {
+    public CompletableFuture<Boolean> createEvaluation(Evaluation evaluation) {
         if (NetworkService.isOnline()) {
             try {
-                String json = mapper.writeValueAsString(user); // Conversion automatique Objet -> JSON
+                String json = mapper.writeValueAsString(evaluation); // Conversion automatique Objet -> JSON
 
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(APIConstants.USERS))
+                        .uri(URI.create(APIConstants.EVALUATIONS))
                         .header("Authorization", BEARER_TOKEN)
                         .header("Content-Type", "application/json")
                         .POST(HttpRequest.BodyPublishers.ofString(json))
@@ -97,22 +83,23 @@ public class UserRepository {
             }
         } else {
             return CompletableFuture.supplyAsync(() -> {
-                LocalStorageService.save(user);
+                LocalStorageService.save(evaluation);
                 return true;
             });
         }
     }
 
     /**
-     * Met à jour un utilisateur
+     * Met à jour une evaluation
      */
-    public CompletableFuture<Boolean> updateUser(User user) {
+    public CompletableFuture<Boolean> updateEvaluation(Evaluation evaluation) {
         if (NetworkService.isOnline()) {
             try {
-                String json = mapper.writeValueAsString(user);
+                String json = mapper.writeValueAsString(evaluation);
 
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(APIConstants.formatUrl(APIConstants.USER_BY_ID, user.getId())))
+                        // Suppose que vous avez une constante NOTES_BY_ID
+                        .uri(URI.create(APIConstants.formatUrl(APIConstants.EVALUATION_BY_ID, evaluation.getId())))
                         .header("Authorization", BEARER_TOKEN)
                         .header("Content-Type", "application/json")
                         .PUT(HttpRequest.BodyPublishers.ofString(json))
@@ -127,19 +114,19 @@ public class UserRepository {
             }
         } else {
             return CompletableFuture.supplyAsync(() -> {
-                LocalStorageService.update(user);
+                LocalStorageService.update(evaluation);
                 return true;
             });
         }
     }
 
     /**
-     * Supprime un utilisateur
+     * Supprime une evaluation
      */
-    public CompletableFuture<Boolean> deleteUser(int userId) {
+    public CompletableFuture<Boolean> deleteEvaluation(int evaluationID) {
         if (NetworkService.isOnline()) {
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(APIConstants.formatUrl(APIConstants.USER_BY_ID, userId)))
+                    .uri(URI.create(APIConstants.formatUrl(APIConstants.EVALUATION_BY_ID, evaluationID)))
                     .header("Authorization", BEARER_TOKEN)
                     .DELETE()
                     .build();
@@ -149,8 +136,8 @@ public class UserRepository {
         } else {
             return CompletableFuture.supplyAsync(() -> {
                 // Logique locale simplifiée
-                List<User> users = LocalStorageService.loadUsers();
-                Optional<User> target = users.stream().filter(u -> u.getId() == userId).findFirst();
+                List<Evaluation> evaluations = LocalStorageService.loadEvaluations();
+                Optional<Evaluation> target = evaluations.stream().filter(n -> n.getId() == evaluationID).findFirst();
                 target.ifPresent(LocalStorageService::remove);
                 return target.isPresent();
             });
@@ -159,70 +146,49 @@ public class UserRepository {
 
 
     // --- Méthodes privées pour l'API ---
-    public CompletableFuture<User> fetchUserFromApi(int userId) {
+
+    public CompletableFuture<Evaluation> fetchEvaluationFromApi(int evaluationID) {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(APIConstants.formatUrl(APIConstants.USER_BY_ID, userId)))
+                .uri(URI.create(APIConstants.formatUrl(APIConstants.EVALUATION_BY_ID, evaluationID)))
                 .header("Authorization", BEARER_TOKEN)
                 .GET()
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body)
-                .thenApply(this::parseUserJson);
-
+                .thenApply(this::parseEvaluationJson);
     }
 
-    public CompletableFuture<List<User>> fetchUsersListFromApi() {
+    public CompletableFuture<List<Evaluation>> fetchEvaluationsListFromApi() {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(APIConstants.USERS))
+                .uri(URI.create(APIConstants.EVALUATIONS))
                 .header("Authorization", BEARER_TOKEN)
                 .GET()
                 .build();
 
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body)
-                .thenApply(this::parseUsersListJson);
-
+                .thenApply(this::parseEvaluationsListJson);
     }
-
-    private CompletableFuture<List<Note>> fetchUserNotesFromApi(int userId) {
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(APIConstants.formatUrl(APIConstants.USER_NOTES, userId)))
-                .header("Authorization", BEARER_TOKEN)
-                .GET()
-                .build();
-
-        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                .thenApply(HttpResponse::body)
-                .thenApply(this::parseUserNotesJson);
-    }
-
 
     // --- Méthodes de Parsing ---
-    private User parseUserJson(String response) {
+
+    private Evaluation parseEvaluationJson(String response) {
         try {
-            return mapper.readValue(response, User.class);
+            return mapper.readValue(response, Evaluation.class);
         } catch (IOException e) {
-            e.printStackTrace(); // Gérer l'erreur de parsing
+            e.printStackTrace();
         }
         return null;
     }
 
-    private List<User> parseUsersListJson(String json) {
+    private List<Evaluation> parseEvaluationsListJson(String json) {
         try {
-            return mapper.readValue(json, mapper.getTypeFactory().constructCollectionType(List.class, User.class));
+            // Utilisation de TypeFactory pour construire une List<Evaluation> proprement
+            return mapper.readValue(json, mapper.getTypeFactory().constructCollectionType(List.class, Evaluation.class));
         } catch (IOException e) {
-            e.printStackTrace(); // Gérer l'erreur de parsing
+            e.printStackTrace();
         }
         return null;
     }
-
-    private List<Note> parseUserNotesJson(String json) {
-        try {
-            return mapper.readValue(json, mapper.getTypeFactory().constructCollectionType(List.class, Note.class));
-        } catch (IOException e) {
-            throw new RuntimeException("Erreur parsing Notes", e);
-        }
-    }
-
 }

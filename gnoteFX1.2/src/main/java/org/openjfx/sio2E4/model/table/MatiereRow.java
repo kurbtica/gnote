@@ -1,4 +1,4 @@
-package org.openjfx.sio2E4.model;
+package org.openjfx.sio2E4.model.table;
 
 import javafx.scene.layout.HBox;
 

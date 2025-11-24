@@ -8,7 +8,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
-import org.openjfx.sio2E4.model.MatiereRow;
+import org.openjfx.sio2E4.model.table.MatiereRow;
 import org.openjfx.sio2E4.model.Note;
 import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.repository.UserRepository;
@@ -57,6 +57,7 @@ public class UserCardController {
     private final UserRepository userRepository = new UserRepository();
 
     public void loadUser(int userId) {
+        currentUserId = userId;
         // Appel au service pour l'utilisateur
         userRepository.getUser(userId)
                 .thenAccept(user -> {

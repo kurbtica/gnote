@@ -1,26 +1,13 @@
 package org.openjfx.sio2E4.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import org.openjfx.sio2E4.constants.APIConstants;
 import org.openjfx.sio2E4.model.Etudiant;
-import org.openjfx.sio2E4.model.User;
-import org.openjfx.sio2E4.service.AuthService;
-import org.openjfx.sio2E4.service.LocalStorageService;
-import org.openjfx.sio2E4.service.NetworkService;
+import org.openjfx.sio2E4.repository.UserRepository;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,7 +28,8 @@ public class EtudiantsController {
     @FXML
     private TableColumn<Etudiant, String> roleColumn;
 
-    private final String BEARER_TOKEN = "Bearer " + AuthService.getToken(); // à remplacer dynamiquement
+    // Injection du service
+    private final UserRepository etudiantRepository = new UserRepository();
 
     @FXML
     public void initialize() {
@@ -52,67 +40,44 @@ public class EtudiantsController {
         adresseColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getAdresse()));
         roleColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getRole().getLibelle()));
 
-        fetchEtudiants();
+        loadEtudiantsList();
     }
 
+    public void loadEtudiantsList() {
+        // Appel au service pour l'utilisateur
+        etudiantRepository.getUsersList()
+                .thenAccept(users -> {
+                    List<Etudiant> etudiants = users.stream()
+                            .filter(u -> u.getRole() != null &&
+                                    "ETUDIANT".equalsIgnoreCase(u.getRole().getLibelle()))
+                            .map(u -> {
+                                Etudiant e = new Etudiant();
+                                e.setId((long) u.getId());
+                                e.setNom(u.getNom());
+                                e.setPrenom(u.getPrenom());
+                                e.setEmail(u.getEmail());
+                                e.setAdresse(u.getAdresse());
+                                e.setTelephone(u.getTelephone());
 
-    private void fetchEtudiants() {
-        if (NetworkService.isOnline()) {
-            HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(APIConstants.ETUDIANTS))
-                    .header("Authorization", BEARER_TOKEN)
-                    .GET()
-                    .build();
+                                Etudiant.Role role = new Etudiant.Role();
+                                role.setLibelle(u.getRole().getLibelle());
+                                e.setRole(role);
 
-            client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                    .thenApply(HttpResponse::body)
-                    .thenAccept(this::parseEtudiants)
-                    .exceptionally(e -> {
-                        e.printStackTrace();
-                        return null;
+                                return e;
+                            })
+                            .collect(Collectors.toList());
+                    // Mise à jour UI Utilisateur
+                    Platform.runLater(() -> {
+                        etudiantsTable.getItems().setAll(etudiants);
                     });
-        } else {
-            System.out.println("Mode hors ligne activé — chargement local");
-            ArrayList<User> localUsers = LocalStorageService.loadUsers();
 
-// Conversion User → Etudiant pour les rôles "ETUDIANT"
-            List<Etudiant> localEtudiants = localUsers.stream()
-                    .filter(u -> u.getRole() != null &&
-                            "ETUDIANT".equalsIgnoreCase(u.getRole().getLibelle()))
-                    .map(u -> {
-                        Etudiant e = new Etudiant();
-                        e.setId((long) u.getId());
-                        e.setNom(u.getNom());
-                        e.setPrenom(u.getPrenom());
-                        e.setEmail(u.getEmail());
-                        e.setAdresse(u.getAdresse());
-                        e.setTelephone(u.getTelephone());
-
-                        Etudiant.Role role = new Etudiant.Role();
-                        role.setLibelle(u.getRole().getLibelle());
-                        e.setRole(role);
-
-                        return e;
-                    })
-                    .collect(Collectors.toList());
-
-// Mise à jour de la table sur le thread JavaFX
-            Platform.runLater(() -> etudiantsTable.getItems().setAll(localEtudiants));
-
-
-        }
+                })
+                .exceptionally(e -> {
+                    e.printStackTrace(); // Gérez l'erreur (ex: afficher une alerte)
+                    return null;
+                });
     }
 
-    private void parseEtudiants(String responseBody) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            List<Etudiant> etudiants = Arrays.asList(mapper.readValue(responseBody, Etudiant[].class));
-            Platform.runLater(() -> etudiantsTable.getItems().setAll(etudiants));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
     // -------------------- user Card --------------------
     private MainLayoutController mainLayoutController;
 

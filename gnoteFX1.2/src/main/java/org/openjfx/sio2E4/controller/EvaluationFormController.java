@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.openjfx.sio2E4.constants.APIConstants;
 import org.openjfx.sio2E4.model.*;
+import org.openjfx.sio2E4.model.table.EvaluationRow;
 import org.openjfx.sio2E4.service.AuthService;
 import org.openjfx.sio2E4.service.LocalStorageService;
 import org.openjfx.sio2E4.service.NetworkService;
@@ -45,6 +46,8 @@ public class EvaluationFormController {
 
     private final String API_URL = "http://localhost:8080/api/notes";
     private final String BEARER_TOKEN = "Bearer " + AuthService.getToken();
+
+    // TODO implémenter le nouveaux système de repository
 
     private void clearForm() {
         Platform.runLater(() -> {

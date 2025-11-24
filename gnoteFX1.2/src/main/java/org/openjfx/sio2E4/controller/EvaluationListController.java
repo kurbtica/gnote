@@ -1,6 +1,5 @@
 package org.openjfx.sio2E4.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -10,20 +9,12 @@ import javafx.scene.control.*;
 
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.SVGPath;
-import org.openjfx.sio2E4.constants.APIConstants;
 import org.openjfx.sio2E4.constants.StyleConstants;
 import org.openjfx.sio2E4.model.*;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.*;
-
+import org.openjfx.sio2E4.repository.EvaluationRepository;
+import org.openjfx.sio2E4.repository.NoteRepository;
 import org.openjfx.sio2E4.service.AuthService;
-import org.openjfx.sio2E4.service.LocalStorageService;
-import org.openjfx.sio2E4.service.NetworkService;
 import org.openjfx.sio2E4.service.NoteService;
 import org.openjfx.sio2E4.util.AlertHelper;
 
@@ -63,8 +54,9 @@ public class EvaluationListController {
 	@FXML
 	private TableColumn actionsColumn;
 
-	private final String API_URL = "http://localhost:8080/api/notes";
-	private final String BEARER_TOKEN = "Bearer " + AuthService.getToken();
+	// Injection du service
+	private final EvaluationRepository evaluationRepository = new EvaluationRepository();
+	private final NoteRepository noteRepository = new NoteRepository();
 
 	@FXML
 	public void initialize() {
@@ -96,8 +88,6 @@ public class EvaluationListController {
 					.max()
 					.orElse(Double.NaN)));
 		});
-
-		// TODO mettre en place un calcul de moyenne, note min et note max
 
 		dateColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDate()));
 
@@ -246,92 +236,50 @@ public class EvaluationListController {
 		evaluationTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
 		// Chargement des données du tableau
-		fetchEvaluations();
+		loadEvaluationsList();
 	}
 
-	private void fetchEvaluations() {
-		if (NetworkService.isOnline()) {
-			HttpClient client = HttpClient.newHttpClient();
-			HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.NOTES))
-					.header("Authorization", BEARER_TOKEN)
-					.GET().build();
-
-			client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenApply(HttpResponse::body)
-					.thenAccept(this::parseEvaluations).exceptionally(e -> {
-						e.printStackTrace();
-						return null;
+	public void loadEvaluationsList() {
+		// Appel au service pour l'utilisateur
+		evaluationRepository.getEvaluationsList()
+				.thenAccept(user -> {
+					// Mise à jour UI Utilisateur
+					Platform.runLater(() -> {
+						evaluationTable.getItems().setAll(user);
 					});
-		} else {
-			System.out.println("Mode hors ligne activé — chargement des notes en local");
-			ArrayList<Evaluation> localEvaluations = LocalStorageService.loadEvaluations();
-			Platform.runLater(() -> evaluationTable.getItems().setAll(localEvaluations));
-		}
 
-	}
-
-	private void parseEvaluations(String responseBody) {
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-
-			List<Evaluation> evaluations = Arrays.asList(mapper.readValue(responseBody, Evaluation[].class));
-			Platform.runLater(() -> evaluationTable.getItems().setAll(evaluations));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-
-	@FXML
-	private void handleDeleteEvaluation(Evaluation evaluation) {
-		if (evaluation == null) {
-			AlertHelper.showWarning("Veuillez sélectionner une note à supprimer.");
-			return;
-		}
-
-		deleteEvaluation(evaluation.getId());
-	}
-
-	private void deleteEvaluation(int noteId) {
-		if(NetworkService.isOnline()) {
-			try {
-				HttpClient client = HttpClient.newHttpClient();
-				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.formatUrl(APIConstants.NOTE_BY_ID, noteId)))
-						.header("Authorization", "Bearer " + AuthService.getToken()).DELETE().build();
-
-				client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).thenAccept(response -> {
-					if (response.statusCode() == 204) {
-						Platform.runLater(() -> {
-							AlertHelper.showInformation("Note supprimée avec succès.");
-							fetchEvaluations(); // Méthode pour recharger la liste
-						});
-					} else {
-						Platform.runLater(() -> AlertHelper.showError("Erreur lors de la suppression de la note."));
-					}
-				}).exceptionally(e -> {
-					e.printStackTrace();
-					Platform.runLater(() -> AlertHelper.showError("Erreur réseau : " + e.getMessage()));
+				})
+				.exceptionally(e -> {
+					e.printStackTrace(); // Gérez l'erreur (ex: afficher une alerte)
 					return null;
 				});
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} else {
-			ArrayList<Evaluation> evaluations = LocalStorageService.loadEvaluations();
-			Optional<Evaluation> evaluation = evaluations.stream()
-					.filter(u -> u.getId()==noteId)
-					.findFirst();
-			if (evaluation.isPresent()) {
-				for (Note note : evaluation.get().getNotes()) {
-					LocalStorageService.remove(note);
-				}
-				LocalStorageService.remove(evaluation.get());
+	}
 
-				Platform.runLater(() -> {
-					AlertHelper.showInformation("Evaluation (et notes associées) supprimé en local (mode hors ligne).");
-					fetchEvaluations();
-				});
-			}
+	@FXML
+	public void handleDeleteEvaluation(Evaluation evaluation) {
+		for (Note note : evaluation.getNotes()) {
+			noteRepository.deleteNote(note.getId())
+					.exceptionally(e -> {
+						Platform.runLater(() -> AlertHelper.showError("Erreur technique : " + e.getMessage()));
+						return null;
+					});
 		}
+		// Appel au service pour l'utilisateur
+		evaluationRepository.deleteEvaluation(evaluation.getId())
+				.thenAccept(success -> {
+					Platform.runLater(() -> {
+						if (success) {
+							AlertHelper.showInformation("Evaluation (et notes associées) supprimé avec succès.");
+							loadEvaluationsList();
+						} else {
+							AlertHelper.showError("Impossible de supprimer cette évaluation.");
+						}
+					});
+				})
+				.exceptionally(e -> {
+					Platform.runLater(() -> AlertHelper.showError("Erreur technique : " + e.getMessage()));
+					return null;
+				});
 	}
 
 	private MainLayoutController mainLayoutController;
