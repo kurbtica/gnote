@@ -1,0 +1,21 @@
+package com.stsau.slam2.API_Gnotes.model;
+
+import com.stsau.slam2.API_Gnotes.controller.NoteController;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
+import org.springframework.stereotype.Component;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+@Component
+public class NoteModelAssembler implements RepresentationModelAssembler<Note, EntityModel<Note>> {
+
+    @Override
+    public EntityModel<Note> toModel(Note note) {
+
+        return EntityModel.of(note, //
+                linkTo(methodOn(NoteController.class).one(note.getId())).withSelfRel(),
+                linkTo(methodOn(NoteController.class).all()).withRel("note"));
+    }
+}
