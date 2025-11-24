@@ -1,12 +1,12 @@
 package com.stsau.slam2.API_Gnotes.controller;
 
 
-import com.stsau.slam2.API_Gnotes.*;
-import com.stsau.slam2.API_Gnotes.Model.RoleModelAssembler;
+import com.stsau.slam2.API_Gnotes.model.Role;
+import com.stsau.slam2.API_Gnotes.model.RoleModelAssembler;
+import com.stsau.slam2.API_Gnotes.repository.RoleRepository;
+import com.stsau.slam2.API_Gnotes.exception.UserNotFoundException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.IanaLinkRelations;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

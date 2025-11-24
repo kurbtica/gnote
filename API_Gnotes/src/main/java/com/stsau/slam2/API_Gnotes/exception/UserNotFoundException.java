@@ -1,4 +1,4 @@
-package com.stsau.slam2.API_Gnotes;
+package com.stsau.slam2.API_Gnotes.exception;
 
 public class UserNotFoundException extends RuntimeException {
 

@@ -1,4 +1,4 @@
-package com.stsau.slam2.API_Gnotes;
+package com.stsau.slam2.API_Gnotes.model;
 
 import jakarta.persistence.*;
 

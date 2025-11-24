@@ -1,17 +1,15 @@
-package com.stsau.slam2.API_Gnotes;
+package com.stsau.slam2.API_Gnotes.model;
 
 import java.util.Objects;
 
 import jakarta.persistence.*;
 
-import javax.management.relation.Role;
-
 @Entity
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator="mon_seq_gen")
-    @SequenceGenerator(name="mon_seq_gen", sequenceName ="ma_sequence_bdd",allocationSize=1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "mon_seq_gen")
+    @SequenceGenerator(name = "mon_seq_gen", sequenceName = "user_seq", allocationSize=1)
     private Long id;
     private String nom;
     private String prenom;
@@ -61,7 +59,7 @@ public class User {
         return adresse;
     }
 
-    public void setAdresse(String adress) {
+    public void setAdresse(String adresse) {
         this.adresse = adresse;
     }
 

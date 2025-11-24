@@ -1,5 +1,9 @@
 package com.stsau.slam2.API_Gnotes;
 
+import com.stsau.slam2.API_Gnotes.model.Role;
+import com.stsau.slam2.API_Gnotes.repository.RoleRepository;
+import com.stsau.slam2.API_Gnotes.model.User;
+import com.stsau.slam2.API_Gnotes.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
