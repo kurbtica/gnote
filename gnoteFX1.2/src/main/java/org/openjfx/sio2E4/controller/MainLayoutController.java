@@ -19,286 +19,234 @@ import java.io.IOException;
 
 public class MainLayoutController {
 
-	@FXML
-	private Label usernameLabel;
+    @FXML
+    private Label usernameLabel;
 
-	@FXML
-	private StackPane contentArea;
+    @FXML
+    private StackPane contentArea;
 
-	@FXML
-	public void initialize() {
-		User user = AuthService.getCurrentUser();
-		if (user != null) {
-			Role role = user.getRole();
-			String nom = user.getNom().toUpperCase();
-			String prenom = capitalize(user.getPrenom());
+    @FXML
+    public void initialize() {
+        User user = AuthService.getCurrentUser();
+        if (user != null) {
+            Role role = user.getRole();
+            String nom = user.getNom().toUpperCase();
+            String prenom = capitalize(user.getPrenom());
 
-			usernameLabel.setText(role.getLibelle() + " - " + nom + " " + prenom);
-		} else {
-			usernameLabel.setText("Bienvenue invité");
-		}
-		javafx.application.Platform.runLater(() -> {
-			Scene scene = usernameLabel.getScene();
-			if (scene != null) {
-				scene.getStylesheets()
-						.add(getClass().getResource("/org/openjfx/sio2E4/css/AppLayout.css").toExternalForm());
-			}
-		});
+            usernameLabel.setText(role.getLibelle() + " - " + nom + " " + prenom);
+        } else {
+            usernameLabel.setText("Bienvenue invité");
+        }
+        javafx.application.Platform.runLater(() -> {
+            Scene scene = usernameLabel.getScene();
+            if (scene != null) {
+                scene.getStylesheets()
+                        .add(getClass().getResource("/org/openjfx/sio2E4/css/AppLayout.css").toExternalForm());
+            }
+        });
 
-		// Charge la vue par défaut (dashboard)
-		showDashboard();
-	}
+        // Charge la vue par défaut (dashboard)
+        showDashboard();
+    }
 
-	@FXML
-	private void handleLogout() {
-		// Réinitialise les infos d'auth (si tu utilises un service d'authentification)
-		AuthService.logout();
+    @FXML
+    private void handleLogout() {
+        // Réinitialise les infos d'auth (si tu utilises un service d'authentification)
+        AuthService.logout();
 
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/loginPage.fxml"));
-			Parent loginRoot = loader.load();
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/loginPage.fxml"));
+            Parent loginRoot = loader.load();
 
-			Stage stage = (Stage) contentArea.getScene().getWindow();
+            Stage stage = (Stage) contentArea.getScene().getWindow();
+            Scene loginScene = new Scene(loginRoot);
 
-			Scene loginScene = new Scene(loginRoot);
+            stage.setScene(loginScene);
+            stage.setTitle("Gnotes");
 
-			stage.setScene(loginScene);
-			stage.setTitle("Gnotes");
+            stage.setResizable(false);
+            stage.setMaximized(false);
+            stage.centerOnScreen();
 
-			stage.setResizable(false);
+            stage.setWidth(600);
+            stage.setHeight(400);
+            stage.setMinWidth(600);
+            stage.setMinHeight(400);
 
+            // Gestionnaire d'événements pour empêcher la réduction de la taille
+            stage.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_DRAGGED, event -> {
+                // Réajuster les dimensions si elles sont trop petites
+                if (stage.getWidth() < 800 || stage.getHeight() < 600) {
+                    stage.setWidth(600);
+                    stage.setHeight(400);
+                }
+            });
 
-			stage.setWidth(600);
-			stage.setHeight(400);
-			stage.setMinWidth(600);
-			stage.setMinHeight(400);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace(); // Gérer les exceptions
+        }
+    }
 
-			stage.centerOnScreen();
+    public void showDashboard() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/HomeView.fxml"));
 
-			stage.setMaximized(false);
+            Node homeView = loader.load();
+            contentArea.getChildren().setAll(homeView); // Remplace tout le contenu du StackPane
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-			// Gestionnaire d'événements pour empêcher la réduction de la taille
-			stage.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_DRAGGED, event -> {
-				// Réajuster les dimensions si elles sont trop petites
-				if (stage.getWidth() < 800 || stage.getHeight() < 600) {
-					stage.setWidth(600);
-					stage.setHeight(400);
-				}
-			});
+    @FXML
+    private void showEtudiants() {
+        loadViewWithController("/org/openjfx/sio2E4/view/EtudiantsView.fxml",
+                (EtudiantsController c) -> {
+                    c.setMainLayoutController(this);
+                });
+    }
 
-			stage.show();
-		} catch (Exception e) {
-			e.printStackTrace(); // Gérer les exceptions
-		}
-	}
+    @FXML
+    private void showMatieres() {
+        loadView("/org/openjfx/sio2E4/view/MatieresView.fxml");
+    }
 
-	public void showDashboard() {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/HomeView.fxml"));
+    @FXML
+    public void showEvaluationList() {
+        loadViewWithController("/org/openjfx/sio2E4/view/EvaluationListView.fxml",
+                (EvaluationListController c) -> c.setMainLayoutController(this));
+    }
 
-			Node homeView = loader.load();
-			contentArea.getChildren().setAll(homeView); // Remplace tout le contenu du StackPane
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    //----------------------- Evaluation Form -----------------------
+    public void showCreateEvaluationFormPage() {
+        loadViewWithController("/org/openjfx/sio2E4/view/EvaluationFormView.fxml",
+                (EvaluationFormController c) -> c.setMainLayoutController(this));
+    }
 
-	@FXML
-	private void showForms() {
-		loadView("/org/openjfx/sio2E4/views/formsView.fxml");
-	}
+    public void showViewEvaluationFormPage(int evaluationId) {
+        loadViewWithController("/org/openjfx/sio2E4/view/EvaluationFormView.fxml",
+                (EvaluationFormController c) -> {
+                    c.setMainLayoutController(this);
+                    c.loadViewEvaluation(evaluationId);
+                });
+    }
 
-	@FXML
-	private void showEtudiants() {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/EtudiantsView.fxml"));
-			Parent usersRoot = loader.load();
-
-			EtudiantsController etudiantsController = loader.getController();
-			etudiantsController.setMainLayoutController(this);
-
-			contentArea.getChildren().setAll(usersRoot);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	@FXML
-	private void showMatieres() {
-		loadView("/org/openjfx/sio2E4/view/MatieresView.fxml");
-	}
-
-	@FXML
-	public void showEvaluationList() {
-		Platform.runLater(() -> {
-			try {
-				FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/EvaluationListView.fxml"));
-				Parent createEvaluationPageRoot = loader.load();
-
-				EvaluationListController evalController = loader.getController();
-				evalController.setMainLayoutController(this);
-
-				contentArea.getChildren().setAll(createEvaluationPageRoot); // MAJ de l'UI
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-	}
-
-	//----------------------- Evaluation Form -----------------------
-	public void showCreateEvaluationFormPage() {
-		Platform.runLater(() -> {
-			try {
-				FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/EvaluationFormView.fxml"));
-				Parent createEvaluationPageRoot = loader.load();
-
-				EvaluationFormController evalController = loader.getController();
-				evalController.setMainLayoutController(this);
-
-				contentArea.getChildren().setAll(createEvaluationPageRoot); // MAJ de l'UI
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-	}
-
-	public void showViewEvaluationFormPage(int evaluationId) {
-		Platform.runLater(() -> {
-			try {
-				FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/EvaluationFormView.fxml"));
-				Parent userCardRoot = loader.load();
-
-				EvaluationFormController controller = loader.getController();
-				controller.setMainLayoutController(this);
-				controller.loadViewEvaluation(evaluationId); // charge les infos de l'utilisateur
-
-				contentArea.getChildren().setAll(userCardRoot); // MAJ de l'UI
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-	}
-
-	public void showEditEvaluationFormPage(int evaluationId) {
-		Platform.runLater(() -> {
-			try {
-				FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/EvaluationFormView.fxml"));
-				Parent userCardRoot = loader.load();
-
-				EvaluationFormController controller = loader.getController();
-				controller.setMainLayoutController(this);
-				controller.loadEditEvaluation(evaluationId); // charge les infos de l'utilisateur
-
-				contentArea.getChildren().setAll(userCardRoot); // MAJ de l'UI
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-	}
+    public void showEditEvaluationFormPage(int evaluationId) {
+        loadViewWithController("/org/openjfx/sio2E4/view/EvaluationFormView.fxml",
+                (EvaluationFormController c) -> {
+                    c.setMainLayoutController(this);
+                    c.loadEditEvaluation(evaluationId);
+                });
+    }
 
 
-	//----------------------- User Card -----------------------
+    //----------------------- User Card -----------------------
 
-	@FXML
-	private void showUsers() {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/UserView.fxml"));
-			Parent usersRoot = loader.load();
-
-			UsersController usersController = loader.getController();
-			usersController.setMainLayoutController(this);
-
-			contentArea.getChildren().setAll(usersRoot);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    @FXML
+    private void showUsers() {
+        loadViewWithController("/org/openjfx/sio2E4/view/UserView.fxml",
+                (UsersController c) -> {
+                    c.setMainLayoutController(this);
+                });
+    }
 
 
-	//----------------------- User Card -----------------------
+    //----------------------- User Card -----------------------
 
-	public void showUserCard(int userId) {
-		Platform.runLater(() -> {
-			try {
-				FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/UserCardView.fxml"));
-				Parent userCardRoot = loader.load();
-
-				UserCardController controller = loader.getController();
-				controller.loadUser(userId); // charge les infos de l'utilisateur
-
-				contentArea.getChildren().setAll(userCardRoot); // MAJ de l'UI
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-	}
+    public void showUserCard(int userId) {
+        loadViewWithController("/org/openjfx/sio2E4/view/UserCardView.fxml",
+                (UserCardController c) -> {
+                    c.loadUser(userId);
+                });
+    }
 
 
-	//----------------------- Etudiants Card -----------------------
+    //----------------------- Etudiants Card -----------------------
 
-	@FXML
-	private void showEtudiant() {
-		try {
-			FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/EtudiantsView.fxml"));
-			Parent usersRoot = loader.load();
+    @FXML
+    private void showEtudiant() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/EtudiantsView.fxml"));
+            Parent usersRoot = loader.load();
 
-			EtudiantsController etudiantsController = loader.getController();
-			etudiantsController.setMainLayoutController(this);
+            EtudiantsController etudiantsController = loader.getController();
+            etudiantsController.setMainLayoutController(this);
 
-			contentArea.getChildren().setAll(usersRoot);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-
-	//----------------------- Etudiant Card -----------------------
-
-	public void showEtudiantCard(int etudiantId) {
-		Platform.runLater(() -> {
-			try {
-				FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/EtudiantCardView.fxml"));
-				Parent etudiantCardRoot = loader.load();
-
-				EtudiantCardController controller = loader.getController();
-				controller.loadUser(etudiantId); // charge les infos de l'utilisateur
-
-				contentArea.getChildren().setAll(etudiantCardRoot); // MAJ de l'UI
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		});
-	}
+            contentArea.getChildren().setAll(usersRoot);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
-	private void loadView(String fxmlPath) {
-		try {
-			Parent view = FXMLLoader.load(getClass().getResource(fxmlPath));
-			contentArea.getChildren().setAll(view);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    //----------------------- Etudiant Card -----------------------
 
-	// Fonction pour faire du FULL MAJ
-	private String capitalize(String str) {
-		if (str == null || str.isEmpty())
-			return "";
-		return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
-	}
+    public void showEtudiantCard(int etudiantId) {
+        Platform.runLater(() -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/EtudiantCardView.fxml"));
+                Parent etudiantCardRoot = loader.load();
 
-	// Syle CSS réactif 
-	@FXML
-	private Button logoutButton;
+                EtudiantCardController controller = loader.getController();
+                controller.loadUser(etudiantId); // charge les infos de l'utilisateur
 
-	@FXML
-	private void onLogoutHover() {
-		if (logoutButton != null) {
-			logoutButton.setStyle(StyleConstants.LOGOUT_BUTTON_HOVER);
-		}
-	}
+                contentArea.getChildren().setAll(etudiantCardRoot); // MAJ de l'UI
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
-	@FXML
-	private void onLogoutHoverExit() {
-		logoutButton.setStyle(StyleConstants.LOGOUT_BUTTON_HOVER_EXIT);
-	}
+
+    private void loadView(String fxmlPath) {
+        try {
+            Parent view = FXMLLoader.load(getClass().getResource(fxmlPath));
+            contentArea.getChildren().setAll(view);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private <T> void loadViewWithController(String fxmlPath, java.util.function.Consumer<T> controllerConsumer) {
+        Platform.runLater(() -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+                Parent root = loader.load();
+
+                if (controllerConsumer != null) {
+                    T controller = loader.getController();
+                    controllerConsumer.accept(controller);
+                }
+
+                contentArea.getChildren().setAll(root);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+
+    // Fonction pour faire du FULL MAJ
+    private String capitalize(String str) {
+        if (str == null || str.isEmpty())
+            return "";
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+    }
+
+    // Syle CSS réactif
+    @FXML
+    private Button logoutButton;
+
+    @FXML
+    private void onLogoutHover() {
+        if (logoutButton != null) {
+            logoutButton.setStyle(StyleConstants.LOGOUT_BUTTON_HOVER);
+        }
+    }
+
+    @FXML
+    private void onLogoutHoverExit() {
+        logoutButton.setStyle(StyleConstants.LOGOUT_BUTTON_HOVER_EXIT);
+    }
 }
