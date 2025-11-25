@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ba823a25-a383-4a7e-863a-efe8bf233304" name="Changes" comment="Ajout du fichier TeacherCardController">
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/controller/HomeViewController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/controller/HomeViewController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/controller/MainLayoutController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/controller/MainLayoutController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/org/openjfx/sio2E4/css/AppLayout.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/org/openjfx/sio2E4/css/AppLayout.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/org/openjfx/sio2E4/view/HomeView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/org/openjfx/sio2E4/view/HomeView.fxml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Talos12675&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/kurbtica/gnote.git&quot;,
+    &quot;accountId&quot;: &quot;99326c8e-9055-46f2-93ba-a9bd3abe9d63&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="35mM4G0PyHaihYi1h2o8tOc39ki" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.App.executor&quot;: &quot;Run&quot;,
+    &quot;Application.gnote.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/eleves/Documents/Elouan/gnote/gnoteFX1.2&quot;
+  }
+}</component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ba823a25-a383-4a7e-863a-efe8bf233304" name="Changes" comment="" />
+      <created>1763710600347</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1763710600347</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Amélioration de l'affichage de l'ajout d'apprécation">
+      <option name="closed" value="true" />
+      <created>1764055314373</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1764055314373</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Ajout du fichier AppreciationDialog">
+      <option name="closed" value="true" />
+      <created>1764055853145</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1764055853145</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Cacher le relevé de notes pour les enseignants et admin.&#10;Pour les enseignants afficher la liste de ses évaluations et voir la moyenne de classe, note min/max">
+      <option name="closed" value="true" />
+      <created>1764060701744</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1764060701744</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Ajout du fichier TeacherCardController">
+      <option name="closed" value="true" />
+      <created>1764081875739</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1764081875739</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Amélioration de l'affichage de l'ajout d'apprécation" />
+    <MESSAGE value="Ajout du fichier AppreciationDialog" />
+    <MESSAGE value="Cacher le relevé de notes pour les enseignants et admin.&#10;Pour les enseignants afficher la liste de ses évaluations et voir la moyenne de classe, note min/max" />
+    <MESSAGE value="Ajout du fichier TeacherCardController" />
+    <option name="LAST_COMMIT_MESSAGE" value="Ajout du fichier TeacherCardController" />
+  </component>
+</project>

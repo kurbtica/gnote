@@ -208,3 +208,30 @@
     -fx-max-width: 300px;  /* Max largeur de la cellule */
     -fx-min-width: 100px;  /* Largeur minimale */
 }
+
+/* Small dashboard card */
+.card {
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #f8f2f2);
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 8, 0.0, 0, 2);
+}
+
+.card > Label:first-child {
+    -fx-text-fill: #5a1e2b;
+}
+
+.card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 10, 0.0, 0, 3);
+}
+
+/* Home summary message */
+.home-summary {
+    -fx-font-size: 13px;
+    -fx-padding: 12px;
+    -fx-background-color: rgba(255,255,255,0.85);
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-text-fill: #333333;
+}

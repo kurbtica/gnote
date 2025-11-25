@@ -88,14 +88,28 @@ public class MainLayoutController {
         }
     }
 
+    @FXML
     public void showDashboard() {
+        System.out.println("MainLayoutController: loading dashboard...");
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/HomeView.fxml"));
 
             Node homeView = loader.load();
+            if (homeView == null) {
+                System.err.println("MainLayoutController: loader returned null for HomeView.fxml");
+                contentArea.getChildren().setAll(new Label("Impossible de charger la page d'accueil."));
+                return;
+            }
+
             contentArea.getChildren().setAll(homeView); // Remplace tout le contenu du StackPane
+            System.out.println("MainLayoutController: dashboard loaded successfully.");
         } catch (IOException e) {
             e.printStackTrace();
+            // show a friendly error node instead of leaving blank
+            contentArea.getChildren().setAll(new Label("Erreur lors du chargement de l'accueil : " + e.getMessage()));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            contentArea.getChildren().setAll(new Label("Erreur inattendue lors du chargement de l'accueil."));
         }
     }
 
