@@ -35,6 +35,8 @@ public class UserCardController {
 
     // Tableau des notes
     @FXML private TableView<MatiereRow> notesTable;
+    // container wrapping the notes table and moyenne; used to hide the whole block for non-students
+    @FXML private javafx.scene.layout.VBox notesCard;
 
     @FXML private TableColumn<MatiereRow, String> matiereColumn;
     @FXML public TableColumn<MatiereRow, Object> moyennes;
@@ -99,8 +101,14 @@ public class UserCardController {
 
         notesTable.setItems(data);
 
-        // Calcul moyenne
-        if ("ETUDIANT".equals(role)) {
+        boolean isStudent = "ETUDIANT".equalsIgnoreCase(role);
+        if (notesCard != null) {
+            notesCard.setVisible(isStudent);
+            notesCard.setManaged(isStudent);
+        }
+
+        // Calcul et affichage de la moyenne uniquement pour les étudiants
+        if (isStudent) {
             double moyenne = NoteService.calculateMoyenne(notes);
             moyenneLabel.setText("Moyenne: " + String.format("%.2f", moyenne));
         }

@@ -144,10 +144,24 @@ public class MainLayoutController {
     }
 
     public void showUserCard(int userId) {
-        loadViewWithController("/org/openjfx/sio2E4/view/UserCardView.fxml",
-                (UserCardController c) -> {
-                    c.loadUser(userId);
-                });
+        // Determine the role of the user and load the appropriate view (Student/Teacher)
+        org.openjfx.sio2E4.repository.UserRepository repo = new org.openjfx.sio2E4.repository.UserRepository();
+        repo.getUser(userId).thenAccept(user -> {
+            Platform.runLater(() -> {
+                if (user != null && user.getRole() != null && "ENSEIGNANT".equalsIgnoreCase(user.getRole().getLibelle())) {
+                    loadViewWithController("/org/openjfx/sio2E4/view/TeacherCardView.fxml",
+                            (TeacherCardController c) -> c.loadUser(userId));
+                } else {
+                    loadViewWithController("/org/openjfx/sio2E4/view/UserCardView.fxml",
+                            (UserCardController c) -> c.loadUser(userId));
+                }
+            });
+        }).exceptionally(e -> {
+            // fallback to default user card on error
+            loadViewWithController("/org/openjfx/sio2E4/view/UserCardView.fxml",
+                    (UserCardController c) -> c.loadUser(userId));
+            return null;
+        });
     }
 
 

@@ -32,8 +32,8 @@
         <Label fx:id="roleLabel" GridPane.rowIndex="5" GridPane.columnIndex="1" />
     </GridPane>
 
-    <!-- Carte du relevé de notes avec éditeur d'appréciation à droite -->
-    <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 3);">
+    <!-- Carte du relevé de notes (notesCard container) -->
+    <VBox fx:id="notesCard" spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 3);">
         <Label text="Relevé de notes" style="-fx-font-size: 20px; -fx-font-weight: bold;" />
 
         <TableView fx:id="notesTable" prefHeight="400">
