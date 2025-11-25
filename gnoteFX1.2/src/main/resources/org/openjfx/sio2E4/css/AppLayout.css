@@ -139,6 +139,47 @@
     -fx-alignment: CENTER_LEFT;
 }
 
+/* Appreciation dialog styling */
+.dialog-pane.appreciation-dialog {
+    -fx-background-color: linear-gradient(#ffffff, #fbfbfb);
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 6px;
+}
+.appreciation-dialog .appreciation-header-title {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-text-fill: #333;
+}
+.appreciation-dialog .appreciation-header-subject {
+    -fx-font-size: 13px;
+    -fx-text-fill: #555;
+}
+.appreciation-dialog .appreciation-textarea {
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-border-color: #e3e3e3;
+    -fx-background-color: #ffffff;
+    -fx-padding: 8px;
+    -fx-font-size: 14px;
+}
+.appreciation-dialog .appreciation-hint {
+    -fx-font-size: 11px;
+    -fx-text-fill: #777;
+}
+.appreciation-dialog .appreciation-counter {
+    -fx-font-size: 11px;
+    -fx-text-fill: #999;
+}
+.dialog-pane .button {
+    -fx-padding: 6px 14px;
+}
+.dialog-pane .button.ok-button {
+    -fx-background-color: #2196F3;
+    -fx-text-fill: white;
+    -fx-background-radius: 6px;
+}
+
 /* Applique un style de fond gris au tableau quand on survole une ligne */
 .table-view .table-row-cell:hover {
     -fx-background-color: #f0f0f0;

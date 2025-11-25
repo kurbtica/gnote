@@ -543,6 +543,11 @@
     "role" : {
       "id" : 3,
       "libelle" : "ETUDIANT"
+    },
+    "token" : null,
+    "appreciations" : {
+      "EPS" : "Biendslmdslm,d",
+      "Francais" : "bonne expression"
     }
   }, {
     "id" : 8,

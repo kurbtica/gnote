@@ -16,7 +16,7 @@ import org.openjfx.sio2E4.service.LocalStorageService;
 
 import java.util.List;
 import java.util.Map;
-import javafx.scene.control.TextInputDialog;
+import org.openjfx.sio2E4.util.AppreciationDialog;
 import org.openjfx.sio2E4.service.NoteService;
 import org.openjfx.sio2E4.util.AlertHelper;
 
@@ -39,11 +39,6 @@ public class EtudiantCardController {
     @FXML private TableColumn<MatiereRow, HBox> notesColumn;
     @FXML private TableColumn<MatiereRow, String> appreciationsColumn;
 
-    // Éléments de l'éditeur d'appréciation (nouveau design)
-    @FXML private Label selectedMatiereLabel;
-    @FXML private TextArea appreciationTextArea;
-    @FXML private Button saveAppButton;
-    @FXML private Button cancelAppButton;
     private int currentUserId = -1;
 
     // Injection du service
@@ -137,11 +132,8 @@ public class EtudiantCardController {
                             int index = getIndex();
                             if (index < 0 || index >= getTableView().getItems().size()) return;
                             String matiere = getTableView().getItems().get(index).getMatiere();
-                            TextInputDialog dialog = new TextInputDialog(item == null ? "" : item);
-                            dialog.setTitle("Éditer appréciation");
-                            dialog.setHeaderText("Matière: " + matiere);
-                            dialog.setContentText("Appréciation:");
-                            dialog.showAndWait().ifPresent(value -> {
+                                AppreciationDialog.show(matiere, item == null ? "" : item)
+                                    .ifPresent(value -> {
                                 User u = LocalStorageService.findUserById(currentUserId);
                                 if (u != null) {
                                     Map<String, String> map = u.getAppreciations();
@@ -180,49 +172,6 @@ public class EtudiantCardController {
         );
         notesTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        // Quand l'utilisateur sélectionne une ligne, afficher l'appréciation dans le panneau droit
-        notesTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
-            if (newSel == null) {
-                selectedMatiereLabel.setText("(Sélectionne une matière)");
-                appreciationTextArea.setText("");
-                appreciationTextArea.setDisable(true);
-                saveAppButton.setDisable(true);
-                cancelAppButton.setDisable(true);
-            } else {
-                selectedMatiereLabel.setText(newSel.getMatiere());
-                appreciationTextArea.setDisable(false);
-                saveAppButton.setDisable(false);
-                cancelAppButton.setDisable(false);
-                appreciationTextArea.setText(newSel.getAppreciations() == null ? "" : newSel.getAppreciations());
-            }
-        });
-
-        // Handler Enregistrer
-        saveAppButton.setOnAction(ev -> {
-            MatiereRow sel = notesTable.getSelectionModel().getSelectedItem();
-            if (sel == null) return;
-            String matiere = sel.getMatiere();
-            String value = appreciationTextArea.getText();
-
-            User u = LocalStorageService.findUserById(currentUserId);
-            if (u != null) {
-                Map<String, String> map = u.getAppreciations();
-                if (map == null) map = new java.util.HashMap<>();
-                map.put(matiere, value);
-                u.setAppreciations(map);
-                LocalStorageService.update(u);
-            }
-
-            int idx = notesTable.getSelectionModel().getSelectedIndex();
-            notesTable.getItems().set(idx, new MatiereRow(matiere, sel.getMoyenne(), sel.getNotesHBox(), value));
-            AlertHelper.showInformation("Appréciation enregistrée localement.");
-        });
-
-        // Handler Annuler (restaurer la valeur actuelle sans sauvegarder)
-        cancelAppButton.setOnAction(ev -> {
-            MatiereRow sel = notesTable.getSelectionModel().getSelectedItem();
-            if (sel == null) return;
-            appreciationTextArea.setText(sel.getAppreciations() == null ? "" : sel.getAppreciations());
-        });
+        // no right-hand appreciation editor — selection-based editor removed
     }
 }
