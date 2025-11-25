@@ -30,7 +30,7 @@ public class UserController { // 1. Changement de nom : EmployeeController -> Us
     }
 
     // Aggregate root
-    @GetMapping("/users")
+    @GetMapping("/api/users")
     public CollectionModel<EntityModel<User>> all() {
         // 3. Utilisation de l'assembler ici pour nettoyer le code
         // Cela remplace votre logique complexe où 'employee' et 'user' se mélangeaient
@@ -42,7 +42,7 @@ public class UserController { // 1. Changement de nom : EmployeeController -> Us
                 linkTo(methodOn(UserController.class).all()).withSelfRel());
     }
 
-    @PostMapping("/users")
+    @PostMapping("/api/users")
     ResponseEntity<?> newUser(@RequestBody User newUser) {
         EntityModel<User> entityModel = assembler.toModel(repository.save(newUser));
 
@@ -52,7 +52,7 @@ public class UserController { // 1. Changement de nom : EmployeeController -> Us
     }
 
     // Single item
-    @GetMapping("/users/{id}")
+    @GetMapping("/api/users/{id}")
     public EntityModel<User> one(@PathVariable Long id) {
 
         User user = repository.findById(id)
@@ -61,7 +61,7 @@ public class UserController { // 1. Changement de nom : EmployeeController -> Us
         return assembler.toModel(user);
     }
 
-    @PutMapping("/users/{id}")
+    @PutMapping("/api/users/{id}")
     ResponseEntity<?> replaceUser(@RequestBody User newUser, @PathVariable Long id) {
 
         User updatedUser = repository.findById(id)
@@ -87,7 +87,7 @@ public class UserController { // 1. Changement de nom : EmployeeController -> Us
                 .body(entityModel);
     }
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/api/users/{id}")
     void deleteUser(@PathVariable Long id) {
         repository.deleteById(id);
     }

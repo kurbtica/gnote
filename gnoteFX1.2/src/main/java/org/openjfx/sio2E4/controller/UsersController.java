@@ -231,7 +231,7 @@ public class UsersController {
 				});
 	}
 
-	private int getRoleId(String roleName) {
+	private int getRoleId(String roleName) { // TODO a supprimer
 		switch (roleName) {
 			case "ADMIN":
 				return 1;

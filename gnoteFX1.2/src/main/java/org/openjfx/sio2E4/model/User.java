@@ -96,6 +96,26 @@ public class User {
         return role;
     }
 
+    @JsonProperty("role")
+    public void unpackRoleFromId(int roleId) {
+
+        Role newRole = new Role();
+        newRole.setId(roleId);
+        switch (roleId) {
+            case 1:
+                newRole.setLibelle("ADMIN");
+                break;
+            case 2:
+                newRole.setLibelle("ENSEIGNANT");
+                break;
+            default:
+                newRole.setLibelle("ETUDIANT");
+                break;
+        }
+
+        this.role = newRole;
+    }
+
     public void setRole(Role role) {
         this.role = role;
     }

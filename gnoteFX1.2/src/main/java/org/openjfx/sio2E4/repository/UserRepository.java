@@ -1,7 +1,9 @@
 package org.openjfx.sio2E4.repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openjfx.sio2E4.constants.APIConstants;
 import org.openjfx.sio2E4.model.Note;
@@ -15,6 +17,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -210,11 +213,25 @@ public class UserRepository {
 
     private List<User> parseUsersListJson(String json) {
         try {
-            return mapper.readValue(json, mapper.getTypeFactory().constructCollectionType(List.class, User.class));
+            // 1. On lit l'arbre JSON complet
+            JsonNode rootNode = mapper.readTree(json);
+
+            // 2. On navigue jusqu'au noeud qui contient la liste
+            // Le chemin est : racine -> _embedded -> userList
+            JsonNode usersNode = rootNode.path("_embedded").path("userList");
+
+            // 3. Si le noeud existe et est un tableau, on le convertit
+            if (!usersNode.isMissingNode() && usersNode.isArray()) {
+                return mapper.readerFor(new TypeReference<List<User>>(){})
+                        .readValue(usersNode);
+            }
+
         } catch (IOException e) {
-            e.printStackTrace(); // Gérer l'erreur de parsing
+            e.printStackTrace();
         }
-        return null;
+
+        // 4. IMPORTANT : Retourner une liste vide plutôt que null pour éviter le NullPointerException
+        return new ArrayList<>();
     }
 
     private List<Note> parseUserNotesJson(String json) {
