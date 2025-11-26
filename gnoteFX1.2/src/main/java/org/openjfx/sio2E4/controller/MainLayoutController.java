@@ -90,7 +90,7 @@ public class MainLayoutController {
 
     @FXML
     public void showDashboard() {
-        System.out.println("MainLayoutController: loading dashboard...");
+        //System.out.println("MainLayoutController: loading dashboard...");
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/view/HomeView.fxml"));
 
@@ -102,7 +102,7 @@ public class MainLayoutController {
             }
 
             contentArea.getChildren().setAll(homeView); // Remplace tout le contenu du StackPane
-            System.out.println("MainLayoutController: dashboard loaded successfully.");
+            //System.out.println("MainLayoutController: dashboard loaded successfully.");
         } catch (IOException e) {
             e.printStackTrace();
             // show a friendly error node instead of leaving blank

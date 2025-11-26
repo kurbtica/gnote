@@ -2,7 +2,13 @@ package org.openjfx.sio2E4.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,6 +21,7 @@ public class User {
     private String email;
     private String adresse;
     private String telephone;
+    @JsonDeserialize(using = RoleDeserializer.class)
     private Role role;
     private Map<String, String> appreciations;
 
@@ -96,26 +103,6 @@ public class User {
         return role;
     }
 
-    @JsonProperty("role")
-    public void unpackRoleFromId(int roleId) {
-
-        Role newRole = new Role();
-        newRole.setId(roleId);
-        switch (roleId) {
-            case 1:
-                newRole.setLibelle("ADMIN");
-                break;
-            case 2:
-                newRole.setLibelle("ENSEIGNANT");
-                break;
-            default:
-                newRole.setLibelle("ETUDIANT");
-                break;
-        }
-
-        this.role = newRole;
-    }
-
     public void setRole(Role role) {
         this.role = role;
     }
@@ -133,5 +120,29 @@ public class User {
 
     public String getToken() {
         return tocken;
+    }
+
+    // Custom deserializer pour gérer int ou objet Role
+    public static class RoleDeserializer extends JsonDeserializer<Role> {
+        @Override
+        public Role deserialize(JsonParser p, DeserializationContext ctx) throws IOException {
+            JsonNode node = p.getCodec().readTree(p);
+            Role newRole = new Role();
+
+            if (node.isInt()) { // Cas API
+                int roleId = node.asInt();
+                newRole.setId(roleId);
+                switch (roleId) {
+                    case 1: newRole.setLibelle("ADMIN"); break;
+                    case 2: newRole.setLibelle("ENSEIGNANT"); break;
+                    default: newRole.setLibelle("ETUDIANT"); break;
+                }
+            } else if (node.isObject()) { // Cas JSON local
+                if (node.has("id")) newRole.setId(node.get("id").asInt());
+                if (node.has("libelle")) newRole.setLibelle(node.get("libelle").asText());
+            }
+
+            return newRole;
+        }
     }
 }
