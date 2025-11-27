@@ -1,6 +1,12 @@
 /* Style global pour la sidebar */
+.sidebar {
+    -fx-background-color: #116688;
+    -fx-padding: 10;
+    -fx-alignment: center-left;
+}
+
 .left {
-    -fx-background-color: #82263c;
+    -fx-background-color: #116688;
     -fx-padding: 15px;
 }
 
@@ -14,7 +20,7 @@
 /* Style des boutons dans la sidebar */
 .left Button {
     -fx-background-color: #f4f4f4; /* Couleur de fond des boutons */
-    -fx-text-fill: #82263c; /* Couleur du texte des boutons */
+    -fx-text-fill: #116688; /* Couleur du texte des boutons */
     -fx-font-size: 16px; /* Taille du texte */
     -fx-font-weight: bold; /* Texte en gras */
     -fx-alignment: center-left; /* Aligner le texte à gauche */
@@ -45,7 +51,7 @@
 
 .table-view {
     -fx-background-color: #ffffff;
-    -fx-border-color: #82263c;
+    -fx-border-color: #116688;
     -fx-border-radius: 8px;
     -fx-padding: 5px;
     -fx-table-cell-border-color: #ddd;
@@ -54,7 +60,7 @@
 }
 
 .table-view .column-header-background {
-    -fx-background-color: #82263c;
+    -fx-background-color: #116688;
 }
 
 .table-view .column-header, .table-view .filler {
@@ -99,7 +105,7 @@
 /* Style pour les boutons */
 .button-simple {
     -fx-background-color: #f4f4f4;
-    -fx-text-fill: #82263c;
+    -fx-text-fill: #116688;
     -fx-padding: 10px 20px;
     -fx-font-size: 14px;
     -fx-border-radius: 5px;

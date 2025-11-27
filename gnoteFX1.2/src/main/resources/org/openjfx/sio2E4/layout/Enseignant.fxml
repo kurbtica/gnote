@@ -15,8 +15,7 @@
 
     <!-- Top Bar -->
     <top>
-        <HBox spacing="20"
-            style="-fx-background-color: #82263c; -fx-padding: 10; -fx-alignment: center-left;">
+        <HBox spacing="20" styleClass="sidebar">
             <Label fx:id="usernameLabel" text="Bienvenue, ..."
                 style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" />
 
