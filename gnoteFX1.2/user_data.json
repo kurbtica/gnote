@@ -610,6 +610,45 @@
     },
     "token" : null,
     "appreciations" : { }
+  }, {
+    "id" : 12,
+    "nom" : "nom",
+    "prenom" : "prenom",
+    "email" : "admin@lycee.local",
+    "adresse" : "16 Pl. Saint-Sauveur, 35600 Redon",
+    "telephone" : "06 00 00 00 00",
+    "role" : {
+      "id" : 1,
+      "libelle" : "ADMIN"
+    },
+    "token" : "abc",
+    "appreciations" : { }
+  }, {
+    "id" : 13,
+    "nom" : "nom",
+    "prenom" : "prenom",
+    "email" : "admin@lycee.local",
+    "adresse" : "16 Pl. Saint-Sauveur, 35600 Redon",
+    "telephone" : "06 00 00 00 00",
+    "role" : {
+      "id" : 1,
+      "libelle" : "ADMIN"
+    },
+    "token" : "abc",
+    "appreciations" : { }
+  }, {
+    "id" : 14,
+    "nom" : "nom",
+    "prenom" : "prenom",
+    "email" : "admin@lycee.local",
+    "adresse" : "16 Pl. Saint-Sauveur, 35600 Redon",
+    "telephone" : "06 00 00 00 00",
+    "role" : {
+      "id" : 1,
+      "libelle" : "ADMIN"
+    },
+    "token" : "abc",
+    "appreciations" : { }
   } ],
   "Evaluation" : [ {
     "id" : 0,

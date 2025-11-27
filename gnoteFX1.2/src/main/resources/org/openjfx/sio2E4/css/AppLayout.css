@@ -4,6 +4,12 @@
     -fx-padding: 15px;
 }
 
+/* Theme variables / lookups used by inline styles */
+.root {
+    /* secondary text used by subtitle labels */
+    -fx-secondary-text: #666666;
+}
+
 
 /* Style des boutons dans la sidebar */
 .left Button {
