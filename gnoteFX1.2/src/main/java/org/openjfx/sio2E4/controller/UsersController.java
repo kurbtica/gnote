@@ -18,6 +18,8 @@ import org.openjfx.sio2E4.repository.UserRepository;
 import org.openjfx.sio2E4.util.AlertHelper;
 import org.openjfx.sio2E4.util.UserValidator;
 
+import java.util.Random;
+
 public class UsersController {
 
 	@FXML
@@ -329,7 +331,9 @@ public class UsersController {
 	private void openUserDialog(User inputUser) {
 		// On est en mode "Édition" seulement si l'utilisateur existe ET qu'il a un ID (donc il vient de la BDD)
 		// Si l'ID est 0, c'est que c'est un "brouillon" qu'on réaffiche pour correction.
-		boolean isEditMode = (inputUser != null && inputUser.getId() > 0);
+		boolean isEditMode = (inputUser != null
+				&& inputUser.getId() != null
+				&& inputUser.getId() > 0);
 
 		// Si on a un inputUser (même brouillon), on le reprend, sinon on en crée un vierge
 		User user = (inputUser != null) ? inputUser : new User();
@@ -354,7 +358,7 @@ public class UsersController {
 		roleBox.getItems().addAll("ADMIN", "ENSEIGNANT", "ETUDIANT");
 		// Gestion de sécurité pour éviter le NullPointerException sur le rôle
 		if (user.getRole() != null) {
-			roleBox.setValue(user.getRole().getLibelle());
+			roleBox.setValue(user.getRole().getName());
 		}
 
 		// --- Mise en page (GridPane) ---
@@ -392,7 +396,7 @@ public class UsersController {
 
 				String roleName = roleBox.getValue();
 				if (roleName != null) {
-					user.setRole(new Role(getRoleId(roleName), roleName));
+					user.setRole(Role.valueOf(roleName));
 				}
 
 				// En création/correction, on capture le mot de passe

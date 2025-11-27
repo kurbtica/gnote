@@ -16,12 +16,12 @@ public class User {
     private String email;
     private String adresse;
     private String telephone;
-    private Integer role;
+    private Role role;
 
     User() {
     }
 
-    public User( String nom, String prenom, Integer role, String email,String adresse,String telephone) {
+    public User( String nom, String prenom, Role role, String email,String adresse,String telephone) {
 
         this.nom = nom;
         this.prenom = prenom;
@@ -71,11 +71,11 @@ public class User {
         this.telephone = telephone;
     }
 
-    public void setRole(Integer role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
-    public Integer getRole() {
+    public Role getRole() {
         return role;
     }
 

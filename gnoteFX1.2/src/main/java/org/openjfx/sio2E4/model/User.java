@@ -1,6 +1,8 @@
 package org.openjfx.sio2E4.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -13,9 +15,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
-    private String tocken;
-    private int id;
+    private String token;
+    private Integer id;
     private String nom;
     private String prenom;
     private String email;
@@ -23,19 +26,27 @@ public class User {
     private String telephone;
     @JsonDeserialize(using = RoleDeserializer.class)
     private Role role;
-    private Map<String, String> appreciations;
+    //private Map<String, String> appreciations;
 
-    public User( String tocken ,int id, String nom, String prenom, String emailResponse, Role role, String adresse, String telephone) {
-        this.tocken=tocken;
-        this.id=id;
-        this.nom=nom;
-        this.prenom=  prenom;
-        this.adresse=adresse;
-        this.email=emailResponse;
-        this.telephone=telephone;
-        this.role=role;
-        this.appreciations = new HashMap<>();
-        
+    /*public User( String token ,int id, String nom, String prenom, String emailResponse, Role role, String adresse, String telephone) {
+        this.token = token;
+        this.id = id;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.adresse = adresse;
+        this.email = emailResponse;
+        this.telephone = telephone;
+        this.role = role;
+        //this.appreciations = new HashMap<>();
+    }*/
+
+    public User(String nom, String prenom, String emailResponse, Role role, String adresse, String telephone) {
+        this.nom = nom;
+        this.prenom = prenom;
+        this.adresse = adresse;
+        this.email = emailResponse;
+        this.telephone = telephone;
+        this.role = role;
     }
 
   
@@ -47,11 +58,11 @@ public class User {
 
     public User() {
         // Constructeur par défaut nécessaire pour Jackson
-        this.appreciations = new HashMap<>();
+        //this.appreciations = new HashMap<>();
     }
 
     // Getters et setters
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -107,7 +118,7 @@ public class User {
         this.role = role;
     }
 
-    @JsonProperty("appreciations")
+    /*@JsonProperty("appreciations")
     public Map<String, String> getAppreciations() {
         return appreciations;
     }
@@ -116,10 +127,15 @@ public class User {
     public void setAppreciations(Map<String, String> appreciations) {
         this.appreciations = appreciations;
         if (this.appreciations == null) this.appreciations = new HashMap<>();
+    }*/
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
+    @JsonIgnore
     public String getToken() {
-        return tocken;
+        return token;
     }
 
     // Custom deserializer pour gérer int ou objet Role
@@ -127,22 +143,29 @@ public class User {
         @Override
         public Role deserialize(JsonParser p, DeserializationContext ctx) throws IOException {
             JsonNode node = p.getCodec().readTree(p);
-            Role newRole = new Role();
 
-            if (node.isInt()) { // Cas API
-                int roleId = node.asInt();
-                newRole.setId(roleId);
-                switch (roleId) {
-                    case 1: newRole.setLibelle("ADMIN"); break;
-                    case 2: newRole.setLibelle("ENSEIGNANT"); break;
-                    default: newRole.setLibelle("ETUDIANT"); break;
+            if (node.isInt()) {
+                // Cas où on reçoit l'ID (ex: 1)
+                return Role.getById(node.asInt());
+            } else if (node.isObject()) {
+                // Cas où on reçoit un objet complet (ex: { "id": 1, "libelle": "..." })
+                if (node.has("id")) {
+                    return Role.getById(node.get("id").asInt());
                 }
-            } else if (node.isObject()) { // Cas JSON local
-                if (node.has("id")) newRole.setId(node.get("id").asInt());
-                if (node.has("libelle")) newRole.setLibelle(node.get("libelle").asText());
+            } else if (node.isTextual()) {
+                // Cas où on reçoit le nom (ex: "ADMIN")
+                String roleName = node.asText();
+
+                try {
+                    return Role.valueOf(roleName);
+                } catch (IllegalArgumentException e) {
+                    // Si le texte ne correspond à aucun enum, on gère l'erreur ou on met une valeur par défaut
+                    System.err.println("Role inconnu reçu : " + roleName);
+                    return Role.ETUDIANT; // Valeur par défaut
+                }
             }
 
-            return newRole;
+            return Role.ETUDIANT; // Fallback final
         }
     }
 }

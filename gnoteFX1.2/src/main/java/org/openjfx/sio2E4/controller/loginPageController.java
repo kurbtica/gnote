@@ -41,7 +41,7 @@ public class loginPageController {
 			// Affiche les informations de l'utilisateur (facultatif pour débogage)
 			System.out.println("Token: " + currentUser.getToken());
 			System.out.println("User: " + currentUser.getNom() + " " + currentUser.getPrenom());
-			System.out.println("Role: " + currentUser.getRole().getLibelle());
+			System.out.println("Role: " + currentUser.getRole().getName());
 
 			// Redirige en fonction du rôle
 			try {
@@ -49,7 +49,7 @@ public class loginPageController {
 				Stage stage = (Stage) loginButton.getScene().getWindow();
 				Scene scene;
 
-				switch (currentUser.getRole().getLibelle()) {
+				switch (currentUser.getRole().getName()) {
 					case "ADMIN":
 						loader = new FXMLLoader(getClass().getResource("/org/openjfx/sio2E4/layout/Admin.fxml"));
 						Parent adminRoot = loader.load();

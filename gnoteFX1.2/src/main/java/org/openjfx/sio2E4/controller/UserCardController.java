@@ -1,13 +1,18 @@
 package org.openjfx.sio2E4.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
+import org.openjfx.sio2E4.model.Appreciation;
+import org.openjfx.sio2E4.model.Matiere;
 import org.openjfx.sio2E4.model.table.MatiereRow;
 import org.openjfx.sio2E4.model.Note;
 import org.openjfx.sio2E4.model.User;
@@ -145,42 +150,49 @@ public class UserCardController {
                     setText(item);
                     setOnMouseClicked(event -> {
                         if (event.getClickCount() == 2) {
-                            // autorisation (ADMIN ou ENSEIGNANT)
-                            User current = AuthService.getCurrentUser();
-                            boolean allowed = false;
-                            if (current != null && current.getRole() != null) {
-                                String lib = current.getRole().getLibelle();
-                                allowed = lib != null && (lib.equalsIgnoreCase("ADMIN") || lib.equalsIgnoreCase("ENSEIGNANT"));
-                            }
-                            if (!allowed) {
-                                AlertHelper.showWarning("Vous n'avez pas la permission d'éditer les appréciations.");
-                                return;
-                            }
-
                             int index = getIndex();
                             if (index < 0 || index >= getTableView().getItems().size()) return;
                             String matiere = getTableView().getItems().get(index).getMatiere();
-                                AppreciationDialog.show(matiere, item == null ? "" : item)
+                            AppreciationDialog.show(matiere, item == null ? "" : item)
                                     .ifPresent(value -> {
-                                // Mettre à jour localement
-                                User u = LocalStorageService.findUserById(currentUserId);
-                                if (u != null) {
-                                    Map<String, String> map = u.getAppreciations();
-                                    if (map == null) map = new java.util.HashMap<>();
-                                    map.put(matiere, value);
-                                    u.setAppreciations(map);
-                                    LocalStorageService.update(u);
-                                }
+                                        User u = LocalStorageService.findUserById(currentUserId);
+                                        ArrayList<Appreciation> a = LocalStorageService.loadAppreciations();
+                                        List<Appreciation> userAppreciation = a.stream().filter(appreciation -> {
+                                            return appreciation.getEleve().getPrenom().equals(u.getPrenom()) &&
+                                                    appreciation.getEleve().getNom().equals(u.getNom());
+                                        }).collect(Collectors.toList());
+                                        if (u != null) {
+                                            Map<String, String> map = new HashMap<>();
+                                            for (Appreciation appreciation : userAppreciation) {
+                                                map.put(appreciation.getMatiere().getLibelle(), appreciation.getAppreciation());
+                                            }
+                                            if (map == null) map = new java.util.HashMap<>();
+                                            map.put(matiere, value);
+                                            List<Matiere> toutesLesMatieres = LocalStorageService.loadMatieres();
 
-                                // Mettre à jour l'affichage
-                                getTableView().getItems().set(index,
-                                        new MatiereRow(matiere,
-                                                getTableView().getItems().get(index).getMoyenne(),
-                                                getTableView().getItems().get(index).getNotesHBox(),
-                                                value));
+                                            Matiere matiereObj = toutesLesMatieres.stream()
+                                                    .filter(m -> m.getLibelle().equals(matiere)) // 'matiere' est le String récupéré plus haut
+                                                    .findFirst()
+                                                    .orElse(null);
 
-                                AlertHelper.showInformation("Appréciation enregistrée localement.");
-                            });
+                                            if (matiereObj != null) {
+                                                Appreciation newAppreciation = new Appreciation(0, u, matiereObj, value);
+
+                                                LocalStorageService.update(newAppreciation);
+                                            } else {
+                                                System.err.println("Erreur : Matière introuvable pour le libellé " + matiere);
+                                            }
+                                            LocalStorageService.update(u);
+                                        }
+
+                                        getTableView().getItems().set(index,
+                                                new MatiereRow(matiere,
+                                                        getTableView().getItems().get(index).getMoyenne(),
+                                                        getTableView().getItems().get(index).getNotesHBox(),
+                                                        value));
+
+                                        AlertHelper.showInformation("Appréciation enregistrée localement.");
+                                    });
                         }
                     });
                 }

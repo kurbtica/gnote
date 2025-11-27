@@ -83,6 +83,7 @@ public class UserRepository {
         if (NetworkService.isOnline()) {
             try {
                 String json = mapper.writeValueAsString(user); // Conversion automatique Objet -> JSON
+                System.out.println(json);
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(APIConstants.USERS))

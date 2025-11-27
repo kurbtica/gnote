@@ -8,14 +8,21 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import org.openjfx.sio2E4.model.Appreciation;
+import org.openjfx.sio2E4.model.Matiere;
 import org.openjfx.sio2E4.model.table.MatiereRow;
 import org.openjfx.sio2E4.model.Note;
 import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.repository.UserRepository;
 import org.openjfx.sio2E4.service.LocalStorageService;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.openjfx.sio2E4.util.AppreciationDialog;
 import org.openjfx.sio2E4.service.NoteService;
 import org.openjfx.sio2E4.util.AlertHelper;
@@ -33,7 +40,7 @@ public class EtudiantCardController {
     // Tableau des notes
     @FXML private TableView<MatiereRow> notesTable;
     // container wrapping the notes table and moyenne; used to hide the whole block for non-students
-    @FXML private javafx.scene.layout.VBox notesCard;
+    @FXML private VBox notesCard;
 
     @FXML private TableColumn<MatiereRow, String> matiereColumn;
     @FXML public TableColumn<MatiereRow, Object> moyennes;
@@ -142,11 +149,32 @@ public class EtudiantCardController {
                                 AppreciationDialog.show(matiere, item == null ? "" : item)
                                     .ifPresent(value -> {
                                 User u = LocalStorageService.findUserById(currentUserId);
+                                ArrayList<Appreciation> a = LocalStorageService.loadAppreciations();
+                                List<Appreciation> userAppreciation = a.stream().filter(appreciation -> {
+                                    return appreciation.getEleve().getPrenom().equals(u.getPrenom()) &&
+                                            appreciation.getEleve().getNom().equals(u.getNom());
+                                }).collect(Collectors.toList());
                                 if (u != null) {
-                                    Map<String, String> map = u.getAppreciations();
+                                    Map<String, String> map = new HashMap<>();
+                                    for (Appreciation appreciation : userAppreciation) {
+                                        map.put(appreciation.getMatiere().getLibelle(), appreciation.getAppreciation());
+                                    }
                                     if (map == null) map = new java.util.HashMap<>();
                                     map.put(matiere, value);
-                                    u.setAppreciations(map);
+                                    List<Matiere> toutesLesMatieres = LocalStorageService.loadMatieres();
+
+                                    Matiere matiereObj = toutesLesMatieres.stream()
+                                            .filter(m -> m.getLibelle().equals(matiere)) // 'matiere' est le String récupéré plus haut
+                                            .findFirst()
+                                            .orElse(null);
+
+                                    if (matiereObj != null) {
+                                        Appreciation newAppreciation = new Appreciation(0, u, matiereObj, value);
+
+                                        LocalStorageService.update(newAppreciation);
+                                    } else {
+                                        System.err.println("Erreur : Matière introuvable pour le libellé " + matiere);
+                                    }
                                     LocalStorageService.update(u);
                                 }
 

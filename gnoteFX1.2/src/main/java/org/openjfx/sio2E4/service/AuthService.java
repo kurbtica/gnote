@@ -46,12 +46,12 @@ public class AuthService {
 					String emailResponse = rootNode.path("email").asText();
 					//String role = rootNode.path("role").asText();
                     //Role role = rootNode.path("role");
-                    Role role = new Role(rootNode.path("role").path("id").asInt(), rootNode.path("role").path("libelle").asText());
+                    Role role = Role.valueOf(rootNode.path("role").path("libelle").asText());
 					String adresse = rootNode.path("adresse").asText();
 					String telephone = rootNode.path("telephone").asText();
 
 					// Crée un objet User avec toutes les données reçues
-					currentUser = new User(token, id, nom, prenom, emailResponse, role, adresse, telephone);
+					currentUser = new User(nom, prenom, emailResponse, role, adresse, telephone);
 					sessionToken = token; // Sauvegarde le token pour utilisation future
 					return true; // Authentification réussie
 				} else {
@@ -67,7 +67,7 @@ public class AuthService {
             if (localUsers.isEmpty()) {
 				// Création d'un user hors connexion pour le test TODO a supprimer
 				System.out.println("Création d'un user hors connexion pour le test");
-				currentUser = new User("abc", 0, "nom", "prenom", "admin@lycee.local", new Role(1,"ADMIN"), "16 Pl. Saint-Sauveur, 35600 Redon", "06 00 00 00 00");
+				currentUser = new User("nom", "prenom", "admin@lycee.local", Role.ADMIN, "16 Pl. Saint-Sauveur, 35600 Redon", "06 00 00 00 00");
 				sessionToken = "abc"; // Sauvegarde le token pour utilisation future
 				LocalStorageService.save(currentUser);
 				return true;

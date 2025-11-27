@@ -33,6 +33,7 @@ public class LocalStorageService {
                     "  \"Matiere\": [],\n" +
                     "  \"Note\": [],\n" +
                     "  \"NoteType\": [],\n" +
+                    "  \"Appreciation\" : []" +
                     "  \"Role\": [],\n" +
                     "  \"User\": []\n" +
                     "}";
@@ -110,6 +111,10 @@ public class LocalStorageService {
         saveObject(noteType, "NoteType");
     }
 
+    public static void save(Appreciation appreciation) {
+        saveObject(appreciation, "Appreciation");
+    }
+
     public static void save(Role role) {
         saveObject(role, "Role");
     }
@@ -168,6 +173,10 @@ public class LocalStorageService {
         return findObjectById(id, "NoteType", NoteType.class);
     }
 
+    public static Appreciation findAppreciationById(int id) {
+        return findObjectById(id, "Appreciation", Appreciation.class);
+    }
+
     public static Role findRoleById(int id) {
         return findObjectById(id, "Role", Role.class);
     }
@@ -217,6 +226,10 @@ public class LocalStorageService {
 
     public static ArrayList<NoteType> loadNoteTypes() {
         return loadObjects("NoteType", NoteType.class);
+    }
+
+    public static ArrayList<Appreciation> loadAppreciations() {
+        return loadObjects("Appreciation", Appreciation.class);
     }
 
     public static ArrayList<Role> loadRoles() {
@@ -274,6 +287,10 @@ public class LocalStorageService {
 
     public static void remove(NoteType noteType) {
         removeObject(noteType.getId(), "NoteType");
+    }
+
+    public static void remove(Appreciation appreciation) {
+        removeObject(appreciation.getId(), "Appreciation");
     }
 
     public static void remove(Role role) {
@@ -343,6 +360,10 @@ public class LocalStorageService {
         updateObject(noteType, noteType.getId(), "NoteType");
     }
 
+    public static void update(Appreciation appreciation) {
+        updateObject(appreciation, appreciation.getId(), "Appreciation");
+    }
+
     public static void update(Role role) {
         updateObject(role, role.getId(), "Role");
     }
@@ -387,6 +408,10 @@ public class LocalStorageService {
 
     public static int getNextID(NoteType noteType) {
         return getNextObjectId("NoteType");
+    }
+
+    public static int getNextID(Appreciation appreciation) {
+        return getNextObjectId("Appreciation");
     }
 
     public static int getNextID(Role role) {
