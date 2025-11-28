@@ -1,6 +1,7 @@
-package com.stsau.slam2.API_Gnotes.model;
+package com.stsau.slam2.API_Gnotes.model.assembler;
 
 import com.stsau.slam2.API_Gnotes.controller.NoteController;
+import com.stsau.slam2.API_Gnotes.model.Note;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;

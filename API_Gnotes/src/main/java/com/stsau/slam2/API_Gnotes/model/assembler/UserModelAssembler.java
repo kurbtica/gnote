@@ -1,8 +1,9 @@
-package com.stsau.slam2.API_Gnotes.model;
+package com.stsau.slam2.API_Gnotes.model.assembler;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import com.stsau.slam2.API_Gnotes.controller.UserController;
+import com.stsau.slam2.API_Gnotes.model.User;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;

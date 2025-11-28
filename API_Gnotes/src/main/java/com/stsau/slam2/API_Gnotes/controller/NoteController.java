@@ -3,7 +3,7 @@ package com.stsau.slam2.API_Gnotes.controller;
 
 import com.stsau.slam2.API_Gnotes.exception.UserNotFoundException;
 import com.stsau.slam2.API_Gnotes.model.Note;
-import com.stsau.slam2.API_Gnotes.model.NoteModelAssembler;
+import com.stsau.slam2.API_Gnotes.model.assembler.NoteModelAssembler;
 import com.stsau.slam2.API_Gnotes.repository.NoteRepository;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -67,15 +67,10 @@ public class NoteController { // 1. Changement de nom : EmployeeController -> Us
         Note updatedNote = repository.findById(id)
                 .map(note -> {
                     // Attention: assurez-vous que setName gère bien nom/prénom dans User.java
-                    note.setId_enseignant(newNote.getId_enseignant());
-                    note.setId_eleve(newNote.getId_eleve());
-                    note.setId_matiere(newNote.getId_matiere()); // Ajouté pour cohérence
-                    note.setId_type(newNote.getId_type()); // Ajouté pour cohérence
+                    note.setEleve(newNote.getEleve());
                     note.setValeur(newNote.getValeur());
-                    note.setCoefficient(newNote.getCoefficient());
-                    note.setId_appreciation(newNote.getId_appreciation());
-                    note.setDate(newNote.getDate());
-                    note.setDate_modif(newNote.getDate_modif());// Ajouté pour cohérence
+                    note.setModification(newNote.getModification());
+                    note.setModification(newNote.getModification());
                     return repository.save(note);
                 })
                 .orElseGet(() -> {

@@ -2,7 +2,7 @@ package com.stsau.slam2.API_Gnotes.controller;
 
 
 import com.stsau.slam2.API_Gnotes.model.User;
-import com.stsau.slam2.API_Gnotes.model.UserModelAssembler;
+import com.stsau.slam2.API_Gnotes.model.assembler.UserModelAssembler;
 import com.stsau.slam2.API_Gnotes.exception.UserNotFoundException;
 import com.stsau.slam2.API_Gnotes.repository.UserRepository;
 import org.springframework.hateoas.CollectionModel;
@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -64,7 +65,9 @@ public class UserController { // 1. Changement de nom : EmployeeController -> Us
     @PutMapping("/api/users/{id}")
     ResponseEntity<?> replaceUser(@RequestBody User newUser, @PathVariable Long id) {
 
-        User updatedUser = repository.findById(id)
+        Optional<User> existing = repository.findById(id);
+
+        User updatedUser = existing
                 .map(user -> {
                     // Attention: assurez-vous que setName gère bien nom/prénom dans User.java
                     user.setName(newUser.getName());
@@ -82,9 +85,15 @@ public class UserController { // 1. Changement de nom : EmployeeController -> Us
 
         EntityModel<User> entityModel = assembler.toModel(updatedUser);
 
-        return ResponseEntity
-                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
-                .body(entityModel);
+        if (existing.isPresent()) {
+            // Cas mise à jour → 200 OK
+            return ResponseEntity.ok(entityModel);
+        } else {
+            // Cas création → 201 Created
+            return ResponseEntity
+                    .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                    .body(entityModel);
+        }
     }
 
     @DeleteMapping("/api/users/{id}")
