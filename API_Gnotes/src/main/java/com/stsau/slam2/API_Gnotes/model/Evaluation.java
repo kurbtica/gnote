@@ -1,8 +1,9 @@
 package com.stsau.slam2.API_Gnotes.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Evaluation {
@@ -24,7 +25,8 @@ public class Evaluation {
     @ManyToOne
     private NoteType noteType;
     @OneToMany(mappedBy = "evaluation", cascade = CascadeType.ALL, orphanRemoval = true)
-    private ArrayList<Note> notes;
+    @JsonManagedReference
+    private List<Note> notes;
 
     public Evaluation() {}
 
@@ -92,11 +94,11 @@ public class Evaluation {
         this.noteType = noteType;
     }
 
-    public ArrayList<Note> getNotes() {
+    public List<Note> getNotes() {
         return notes;
     }
 
-    public void setNotes(ArrayList<Note> notes) {
+    public void setNotes(List<Note> notes) {
         this.notes = notes;
     }
 

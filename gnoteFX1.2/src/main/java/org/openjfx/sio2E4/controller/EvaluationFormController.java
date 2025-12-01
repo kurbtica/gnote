@@ -10,6 +10,8 @@ import javafx.scene.control.*;
 import org.openjfx.sio2E4.constants.APIConstants;
 import org.openjfx.sio2E4.model.*;
 import org.openjfx.sio2E4.model.table.EvaluationRow;
+import org.openjfx.sio2E4.repository.EvaluationRepository;
+import org.openjfx.sio2E4.repository.UserRepository;
 import org.openjfx.sio2E4.service.AuthService;
 import org.openjfx.sio2E4.service.LocalStorageService;
 import org.openjfx.sio2E4.service.NetworkService;
@@ -47,6 +49,10 @@ public class EvaluationFormController {
     private final String API_URL = "http://localhost:8080/api/notes";
     private final String BEARER_TOKEN = "Bearer " + AuthService.getToken();
 
+    // Injection du service
+    private final EvaluationRepository evaluationRepository = new EvaluationRepository();
+    private final UserRepository userRepository = new UserRepository();
+
     // TODO implémenter le nouveaux système de repository
 
     private void clearForm() {
@@ -77,6 +83,46 @@ public class EvaluationFormController {
     public void loadViewEvaluation(int evaluationId) {
         if (NetworkService.isOnline()) {
             // TODO Méthode via API a faire
+            System.out.println(evaluationId);
+            evaluationRepository.getEvaluation(evaluationId).
+                    thenAccept(evaluation -> {
+                        // Mise à jour UI Utilisateur
+                        Platform.runLater(() -> {
+                            pageTitle.setText("Évaluation : " + evaluation.getTitre() + " du " + evaluation.getDate());
+
+                            coefField.setText(String.valueOf(evaluation.getCoefficient()));
+                            datePicker.setValue(LocalDate.parse(evaluation.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                            titreField.setText(evaluation.getTitre());
+                            matiereComboBox.setValue(evaluation.getMatiere());
+                            enseignantComboBox.setValue(evaluation.getEnseignant());
+                            noteTypeComboBox.setValue(evaluation.getNoteType());
+
+                            coefField.setDisable(true);
+                            datePicker.setDisable(true);
+                            titreField.setDisable(true);
+                            matiereComboBox.setDisable(true);
+                            enseignantComboBox.setDisable(true);
+                            noteTypeComboBox.setDisable(true);
+                            commentaireField.setDisable(true);
+
+                            etudiantTable.setEditable(false);
+                            noteColumn.setEditable(false);
+
+                            saveButton.setDisable(true);
+                            cancelButton.setDisable(true);
+
+                            ObservableList<EvaluationRow> evaluationRow = FXCollections.observableArrayList();;
+                            for (Note note : evaluation.getNotes()) {
+                                evaluationRow.add(new EvaluationRow(note.getEleve(), note));
+                            }
+                            etudiantTable.setItems(evaluationRow);
+                        });
+
+                    })
+                    .exceptionally(e -> {
+                        e.printStackTrace(); // Gérez l'erreur (ex: afficher une alerte)
+                        return null;
+                    });
         } else {
             Evaluation evaluation = LocalStorageService.findEvaluationById(evaluationId);
             this.currentEvaluation = evaluation;
@@ -123,6 +169,35 @@ public class EvaluationFormController {
     public void loadEditEvaluation(int evaluationId) {
         if (NetworkService.isOnline()) {
             // TODO Méthode via API a faire
+            System.out.println(evaluationId);
+            evaluationRepository.getEvaluation(evaluationId).
+                    thenAccept(evaluation -> {
+                        // Mise à jour UI Utilisateur
+                        Platform.runLater(() -> {
+                            pageTitle.setText("Évaluation : " + evaluation.getTitre() + " du " + evaluation.getDate());
+
+                            coefField.setText(String.valueOf(evaluation.getCoefficient()));
+                            datePicker.setValue(LocalDate.parse(evaluation.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                            titreField.setText(evaluation.getTitre());
+                            matiereComboBox.setValue(evaluation.getMatiere());
+                            enseignantComboBox.setValue(evaluation.getEnseignant());
+                            noteTypeComboBox.setValue(evaluation.getNoteType());
+
+                            saveButton.setOnAction(event -> handleUpdate());
+                            saveButton.setText("Mettre à jour");
+
+                            ObservableList<EvaluationRow> evaluationRow = FXCollections.observableArrayList();;
+                            for (Note note : evaluation.getNotes()) {
+                                evaluationRow.add(new EvaluationRow(note.getEleve(), note));
+                            }
+                            etudiantTable.setItems(evaluationRow);
+                        });
+
+                    })
+                    .exceptionally(e -> {
+                        e.printStackTrace(); // Gérez l'erreur (ex: afficher une alerte)
+                        return null;
+                    });
         } else {
             Evaluation evaluation = LocalStorageService.findEvaluationById(evaluationId);
             this.currentEvaluation = evaluation;
@@ -255,7 +330,7 @@ public class EvaluationFormController {
         });
 
         // Chargement des données du formulaire
-        fetchUsers();
+        loadUsersList();
         fetchMatieres();
         fetchNoteTypes();
     }
@@ -507,7 +582,7 @@ public class EvaluationFormController {
         this.mainLayoutController = controller;
     }
 
-    private void fetchUsers() {
+    /*private void fetchUsers() {
         if (NetworkService.isOnline()) {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.USERS))
@@ -521,9 +596,69 @@ public class EvaluationFormController {
         } else {
             parseUsers("");
         }
+    }*/
+
+    public void loadUsersList() {
+        // Appel au service pour l'utilisateur
+        userRepository.getUsersList()
+                .thenAccept(users -> {
+                    // Mise à jour UI Utilisateur
+                    Platform.runLater(() -> {
+                        // Filtrer les utilisateurs par rôle
+                        List<User> eleves = users.stream().filter(u -> "ETUDIANT".equalsIgnoreCase(u.getRole().getLibelle()))
+                                .collect(Collectors.toList());
+
+                        List<User> enseignants = users.stream().filter(u -> "ENSEIGNANT".equalsIgnoreCase(u.getRole().getLibelle()))
+                                .collect(Collectors.toList());
+
+                        List<EvaluationRow> elevesRow = new ArrayList<>();
+
+                        eleves.forEach(e -> {
+                            Note newNote = new Note();
+                            newNote.setEleve(e);
+                            EvaluationRow evalRow = new EvaluationRow(e, newNote);
+                            elevesRow.add(evalRow);
+                        });
+
+                        // Mettre les utilisateurs dans les ComboBox
+                        enseignantComboBox.getItems().setAll(enseignants);
+
+                        etudiantTable.getItems().setAll(elevesRow);
+
+                        // Personnaliser l'affichage des ComboBox pour afficher le nom complet
+                        enseignantComboBox.setCellFactory(lv -> new ListCell<User>() {
+                            @Override
+                            protected void updateItem(User item, boolean empty) {
+                                super.updateItem(item, empty);
+                                setText(empty || item == null ? null : item.getPrenom() + " " + item.getNom());
+                            }
+                        });
+
+                        // Rendre l'affichage correct pour le bouton du ComboBox (afficher le nom complet)
+                        enseignantComboBox.setButtonCell(enseignantComboBox.getCellFactory().call(null));
+
+                        // Si l'utilisateur est un enseignant connecté, sélectionner son nom dans le ComboBox
+                        if ("ENSEIGNANT".equalsIgnoreCase(AuthService.getCurrentUser().getRole().getLibelle())) {
+                            // Trouver l'objet User correspondant à l'enseignant
+                            User enseignant = enseignants.stream().filter(
+                                            u -> (u.getPrenom() + " " + u.getNom()).equals(AuthService.getCurrentUser().getPrenom() + " " + AuthService.getCurrentUser().getNom()))
+                                    .findFirst().orElse(null);
+
+                            if (enseignant != null) {
+                                enseignantComboBox.setValue(enseignant);
+                                enseignantComboBox.setDisable(true);
+                            }
+                        }
+                    });
+
+                })
+                .exceptionally(e -> {
+                    e.printStackTrace(); // Gérez l'erreur (ex: afficher une alerte)
+                    return null;
+                });
     }
 
-    private void parseUsers(String responseBody) {
+    /*private void parseUsers(String responseBody) {
         User user = AuthService.getCurrentUser();
         ObjectMapper mapper = new ObjectMapper();
         if (NetworkService.isOnline()) {
@@ -617,7 +752,7 @@ public class EvaluationFormController {
                 }
             });
         }
-    }
+    }*/
 
     private void fetchMatieres() {
         if (NetworkService.isOnline()) {

@@ -1,5 +1,6 @@
 package com.stsau.slam2.API_Gnotes.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
@@ -19,6 +20,7 @@ public class Note {
     private Timestamp modification;
     @ManyToOne
     @JoinColumn(name = "evaluation_id")
+    @JsonBackReference
     private Evaluation evaluation;
 
     Note() {
