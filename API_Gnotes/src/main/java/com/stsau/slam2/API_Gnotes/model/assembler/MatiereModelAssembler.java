@@ -1,6 +1,6 @@
 package com.stsau.slam2.API_Gnotes.model.assembler;
 
-import com.stsau.slam2.API_Gnotes.copy.MatiereController;
+import com.stsau.slam2.API_Gnotes.controller.MatiereController;
 import com.stsau.slam2.API_Gnotes.model.Matiere;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;

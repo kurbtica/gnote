@@ -1,13 +1,10 @@
-package com.stsau.slam2.API_Gnotes.copy;
+package com.stsau.slam2.API_Gnotes.controller;
 
 
 import com.stsau.slam2.API_Gnotes.exception.UserNotFoundException;
 import com.stsau.slam2.API_Gnotes.model.Matiere;
-import com.stsau.slam2.API_Gnotes.model.User;
 import com.stsau.slam2.API_Gnotes.model.assembler.MatiereModelAssembler;
-import com.stsau.slam2.API_Gnotes.model.assembler.UserModelAssembler;
 import com.stsau.slam2.API_Gnotes.repository.MatiereRepository;
-import com.stsau.slam2.API_Gnotes.repository.UserRepository;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;

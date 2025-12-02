@@ -13,8 +13,6 @@ import org.openjfx.sio2E4.repository.MatiereRepository;
 import org.openjfx.sio2E4.repository.NoteTypeRepository;
 import org.openjfx.sio2E4.repository.UserRepository;
 import org.openjfx.sio2E4.service.AuthService;
-import org.openjfx.sio2E4.service.LocalStorageService;
-import org.openjfx.sio2E4.service.NetworkService;
 import org.openjfx.sio2E4.util.AlertHelper;
 
 import java.time.*;
@@ -124,6 +122,7 @@ public class EvaluationFormController {
                     // Mise à jour UI Utilisateur
                     Platform.runLater(() -> {
                         pageTitle.setText("Évaluation : " + evaluation.getTitre() + " du " + evaluation.getDate());
+                        this.currentEvaluation = evaluation;
 
                         coefField.setText(String.valueOf(evaluation.getCoefficient()));
                         datePicker.setValue(LocalDate.parse(evaluation.getDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
@@ -376,7 +375,7 @@ public class EvaluationFormController {
 
         double coefficient = Double.parseDouble(coefField.getText());
         String date = datePicker.getValue().toString();
-        String commentaire = commentaireField.getText();
+        String commentaire = commentaireField.getText(); // TODO ignoré ( a implémenter plus tard )
 
         // Récupérer toutes les notes des étudiants
         Map<User, Double> notesMap = new HashMap<>();
@@ -386,45 +385,43 @@ public class EvaluationFormController {
             }
         }
 
+        Evaluation evaluation = new Evaluation();
+        //evaluation.setId(LocalStorageService.getNextID(evaluation));
+        evaluation.setEnseignant(enseignant);
+        evaluation.setMatiere(matiere);
+        evaluation.setNoteType(noteType);
 
-        if (NetworkService.isOnline()) {
-            // TODO revoir le fonctionnement de l'api pour fusionner plusieurs ajout de note en meme temps
-        } else {
-            Evaluation evaluation = new Evaluation();
-            evaluation.setId(LocalStorageService.getNextID(evaluation));
-            evaluation.setEnseignant(enseignant);
-            evaluation.setMatiere(matiere);
-            evaluation.setNoteType(noteType);
+        evaluation.setCoefficient(coefficient);
+        evaluation.setDate(date);
+        evaluation.setTitre(titre);
 
-            evaluation.setCoefficient(coefficient);
-            evaluation.setDate(date);
-            evaluation.setTitre(titre);
+        ArrayList<Note> notes = new ArrayList<>();
+        evaluation.setNotes(notes);
+        notesMap.forEach((user, note) -> {
+            Note newNote = new Note();
+            newNote.setEleve(user);
+            //newNote.setEvaluation(evaluation);
 
-            ArrayList<Note> notes = new ArrayList<>();
-            evaluation.setNotes(notes);
-            LocalStorageService.save(evaluation);
+            newNote.setValeur(note);
+            notes.add(newNote);
+        });
 
-            notesMap.forEach((user, note) -> {
-                Note newNote = new Note();
-                newNote.setEleve(user);
-                newNote.setEvaluation(evaluation);
+        evaluation.setNotes(notes);
 
-                newNote.setValeur(note);
-                notes.add(newNote);
-
-                LocalStorageService.save(newNote);
-            });
-
-            evaluation.setNotes(notes);
-            LocalStorageService.update(evaluation);
-
-
-            Platform.runLater(() -> {
-                AlertHelper.showInformation("Evaluation ajouté en local (mode hors ligne).");
-                mainLayoutController.showEvaluationList();
-                clearForm();
-            });
-        }
+        evaluationRepository.createEvaluation(evaluation)
+                .thenAccept(eval -> {
+                    Platform.runLater(() -> {
+                        AlertHelper.showInformation("Evaluation sauvegardé avec succès.");
+                        mainLayoutController.showEvaluationList();
+                        clearForm();
+                    });
+                }).exceptionally(e -> {
+                    e.printStackTrace();
+                    Platform.runLater(() ->
+                            AlertHelper.showError("Erreur lors de la sauvegarde : " + e.getMessage())
+                    );
+                    return null;
+                });
     }
 
 
@@ -440,36 +437,38 @@ public class EvaluationFormController {
         String date = datePicker.getValue().toString();
         String commentaire = commentaireField.getText();
 
-        if (NetworkService.isOnline()) {
-            // TODO revoir le fonctionnement de l'api pour fusionner plusieurs ajout de note en meme temps
-            // Vérifiez si l'envoi d'une évaluation avec la liste des notes, enregistre les notes dans la base de données API.
-        } else {
-            currentEvaluation.setEnseignant(enseignant);
-            currentEvaluation.setMatiere(matiere);
-            currentEvaluation.setNoteType(noteType);
+        currentEvaluation.setEnseignant(enseignant);
+        currentEvaluation.setMatiere(matiere);
+        currentEvaluation.setNoteType(noteType);
 
-            currentEvaluation.setCoefficient(coefficient);
-            currentEvaluation.setDate(date);
-            currentEvaluation.setTitre(titre);
+        currentEvaluation.setCoefficient(coefficient);
+        currentEvaluation.setDate(date);
+        currentEvaluation.setTitre(titre);
 
-            LocalStorageService.update(currentEvaluation);
-
-            // Récupérer toutes les notes des étudiants et mise a jour de la note
-            for (EvaluationRow evaluationRow : etudiantTable.getItems()) {
-                if (evaluationRow.getNote() != null) {
-                    evaluationRow.getNote().setValeur(evaluationRow.getNoteValeur());
-                }
+        // Récupérer toutes les notes des étudiants et mise a jour de la note
+        for (EvaluationRow evaluationRow : etudiantTable.getItems()) {
+            if (evaluationRow.getNote() != null) {
+                evaluationRow.getNote().setValeur(evaluationRow.getNoteValeur());
             }
-
-            LocalStorageService.update(currentEvaluation);
-
-
-            Platform.runLater(() -> {
-                AlertHelper.showInformation("Evaluation ajouté en local (mode hors ligne).");
-                mainLayoutController.showEvaluationList();
-                clearForm();
-            });
         }
+
+        evaluationRepository.updateEvaluation(currentEvaluation)
+                .thenAccept(eval -> {
+                    Platform.runLater(() -> {
+                        AlertHelper.showInformation("Evaluation mis a jour avec succès.");
+                        mainLayoutController.showEvaluationList();
+                        clearForm();
+                    });
+                })
+                .exceptionally(e -> {
+                    e.printStackTrace();
+                    Platform.runLater(() ->
+                            AlertHelper.showError("Erreur lors de la mise a jour : " + e.getMessage())
+                    );
+                    return null;
+                });
+
+
     }
 
     @FXML
@@ -519,7 +518,6 @@ public class EvaluationFormController {
                         List<EvaluationRow> elevesRow = new ArrayList<>();
 
                         eleves.forEach(e -> {
-                            System.out.println(e);
                             Note newNote = new Note();
                             newNote.setEleve(e);
                             EvaluationRow evalRow = new EvaluationRow(e, newNote);

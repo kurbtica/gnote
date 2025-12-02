@@ -9,7 +9,7 @@ import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Etudiant {
-    private Long id;
+    private Integer id;
     private String nom;
     private String prenom;
     private String email;
@@ -23,7 +23,7 @@ public class Etudiant {
     // Inner class pour le rôle
     public static class Role {
         @JsonIgnore // Ignore le champ id lors de la désérialisation
-        private Long id;
+        private Integer id;
         
         private String libelle;
 
@@ -37,21 +37,21 @@ public class Etudiant {
         }
 
         // Les getters et setters pour l'id sont optionnels si tu ne veux vraiment pas qu'il soit mappé
-        public Long getId() {
+        public Integer getId() {
             return id;
         }
 
-        public void setId(Long id) {
+        public void setId(int id) {
             this.id = id;  // Cette méthode peut être laissée vide si tu ne veux pas que l'id soit modifié
         }
     }
 
     // Getters & Setters pour l'Etudiant
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

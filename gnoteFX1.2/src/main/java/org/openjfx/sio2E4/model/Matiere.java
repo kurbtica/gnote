@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Matiere {
-    private int id;
+    private Integer id;
     private String libelle;
 
     
@@ -18,7 +18,7 @@ public class Matiere {
     }
 
     // Getters et setters
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

@@ -1,12 +1,14 @@
 package org.openjfx.sio2E4.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.ArrayList;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Evaluation {
-    private int id;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer id; // avec Integer a la place de int la valeur peut etre null
     private User enseignant;
     private Matiere matiere;
     private double coefficient;
@@ -18,7 +20,7 @@ public class Evaluation {
 
     // GETTERS / SETTERS
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
     public void setId(int id) {

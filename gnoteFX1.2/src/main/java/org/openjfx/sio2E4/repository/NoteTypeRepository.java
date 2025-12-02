@@ -1,8 +1,11 @@
 package org.openjfx.sio2E4.repository;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openjfx.sio2E4.constants.APIConstants;
+import org.openjfx.sio2E4.model.Matiere;
 import org.openjfx.sio2E4.model.NoteType;
 import org.openjfx.sio2E4.service.AuthService;
 import org.openjfx.sio2E4.service.LocalStorageService;
@@ -13,6 +16,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -57,7 +61,7 @@ public class NoteTypeRepository {
 
     public CompletableFuture<NoteType> fetchNoteTypeFromApi(int noteTypeID) {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(APIConstants.formatUrl(APIConstants.NOTE_BY_ID, noteTypeID)))
+                .uri(URI.create(APIConstants.formatUrl(APIConstants.NOTE_TYPES_BY_ID, noteTypeID)))
                 .header("Authorization", BEARER_TOKEN)
                 .GET()
                 .build();
@@ -69,7 +73,7 @@ public class NoteTypeRepository {
 
     public CompletableFuture<List<NoteType>> fetchNoteTypesListFromApi() {
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(APIConstants.NOTES))
+                .uri(URI.create(APIConstants.NOTE_TYPES))
                 .header("Authorization", BEARER_TOKEN)
                 .GET()
                 .build();
@@ -92,11 +96,18 @@ public class NoteTypeRepository {
 
     private List<NoteType> parseNoteTypesListJson(String json) {
         try {
-            // Utilisation de TypeFactory pour construire une List<NoteType> proprement
-            return mapper.readValue(json, mapper.getTypeFactory().constructCollectionType(List.class, NoteType.class));
+            JsonNode rootNode = mapper.readTree(json);
+            JsonNode usersNode = rootNode.path("_embedded").path("noteTypeList");
+
+            if (!usersNode.isMissingNode() && usersNode.isArray()) {
+                return mapper.readerFor(new TypeReference<List<NoteType>>(){})
+                        .readValue(usersNode);
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+
+        return new ArrayList<>();
     }
 }

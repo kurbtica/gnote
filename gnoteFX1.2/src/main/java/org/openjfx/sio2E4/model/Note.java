@@ -2,11 +2,13 @@ package org.openjfx.sio2E4.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.openjfx.sio2E4.service.LocalStorageService;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Note {
-    private int id;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer id; // avec Integer a la place de int la valeur peut etre null
     private User eleve;
     private double valeur;
     private String modification; // 🔄 nouveau champ
@@ -14,7 +16,7 @@ public class Note {
 
     // GETTERS / SETTERS
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
     public void setId(int id) {
@@ -51,7 +53,7 @@ public class Note {
         this.evaluationId = evaluation.getId();
     }
 
-    public int getEvaluationId() {
+    public Integer getEvaluationId() {
         return evaluationId;
     }
     public void setEvaluationId(int evaluationId) {

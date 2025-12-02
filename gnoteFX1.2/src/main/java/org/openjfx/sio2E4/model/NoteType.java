@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class NoteType {
-    private int id;
+    private Integer id;
     private String libelle;
 
     // Obligatoire si tu utilises des bibliothèques comme Jackson pour le mapping JSON
     public NoteType() {}
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

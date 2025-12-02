@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Appreciation {
-    private int id;
+    private Integer id;
     private User eleve;
     private Matiere matiere;
     private String appreciation;
@@ -12,18 +12,18 @@ public class Appreciation {
     public Appreciation() {
     }
 
-    public Appreciation(int id, User eleve, Matiere matiere, String appreciation) {
+    public Appreciation(Integer id, User eleve, Matiere matiere, String appreciation) {
         this.id = id;
         this.eleve = eleve;
         this.matiere = matiere;
         this.appreciation = appreciation;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

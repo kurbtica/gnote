@@ -52,7 +52,7 @@ public class EtudiantsController {
                                     "ETUDIANT".equalsIgnoreCase(u.getRole().getLibelle()))
                             .map(u -> {
                                 Etudiant e = new Etudiant();
-                                e.setId((long) u.getId());
+                                e.setId(u.getId());
                                 e.setNom(u.getNom());
                                 e.setPrenom(u.getPrenom());
                                 e.setEmail(u.getEmail());

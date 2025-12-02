@@ -1,10 +1,13 @@
 package org.openjfx.sio2E4.repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openjfx.sio2E4.constants.APIConstants;
 import org.openjfx.sio2E4.model.Matiere;
+import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.service.AuthService;
 import org.openjfx.sio2E4.service.LocalStorageService;
 import org.openjfx.sio2E4.service.NetworkService;
@@ -14,6 +17,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -181,11 +185,19 @@ public class MatiereRepository {
 
     private List<Matiere> parseMatieresListJson(String json) {
         try {
-            return mapper.readValue(json, mapper.getTypeFactory().constructCollectionType(List.class, Matiere.class));
+            JsonNode rootNode = mapper.readTree(json);
+            JsonNode usersNode = rootNode.path("_embedded").path("matiereList");
+
+            if (!usersNode.isMissingNode() && usersNode.isArray()) {
+                return mapper.readerFor(new TypeReference<List<Matiere>>(){})
+                        .readValue(usersNode);
+            }
+
         } catch (IOException e) {
-            e.printStackTrace(); // Gérer l'erreur de parsing
+            e.printStackTrace();
         }
-        return null;
+
+        return new ArrayList<>();
     }
 
 }

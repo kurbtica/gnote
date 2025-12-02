@@ -22,6 +22,7 @@ public class APIConstants {
     public static final String NOTES = BASE_URL + "/notes";
     public static final String NOTE_BY_ID = BASE_URL + "/notes/%d";
     public static final String NOTE_TYPES = BASE_URL + "/notes/type";
+    public static final String NOTE_TYPES_BY_ID = BASE_URL + "/notes/type/%d";
 
     // Matieres endpoints
     public static final String MATIERES = BASE_URL + "/matieres";

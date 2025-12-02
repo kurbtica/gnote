@@ -5,16 +5,41 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ba823a25-a383-4a7e-863a-efe8bf233304" name="Changes" comment="Ajout du fichier TeacherCardController">
+      <change afterPath="$PROJECT_DIR$/../API_Gnotes/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../API_Gnotes/.idea/runConfigurations/ApiGnotesApplication.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/discord.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/runConfigurations/App.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../API_Gnotes/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../API_Gnotes/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../API_Gnotes/src/main/java/com/stsau/slam2/API_Gnotes/controller/EvaluationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../API_Gnotes/src/main/java/com/stsau/slam2/API_Gnotes/controller/EvaluationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../API_Gnotes/src/main/java/com/stsau/slam2/API_Gnotes/controller/NoteTypeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../API_Gnotes/src/main/java/com/stsau/slam2/API_Gnotes/controller/NoteTypeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../API_Gnotes/src/main/java/com/stsau/slam2/API_Gnotes/copy/MatiereController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../API_Gnotes/src/main/java/com/stsau/slam2/API_Gnotes/controller/MatiereController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../API_Gnotes/src/main/java/com/stsau/slam2/API_Gnotes/model/assembler/MatiereModelAssembler.java" beforeDir="false" afterPath="$PROJECT_DIR$/../API_Gnotes/src/main/java/com/stsau/slam2/API_Gnotes/model/assembler/MatiereModelAssembler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/sio2E4__javafx_run_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/org/openjfx/sio2E4/css/AppLayout.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/org/openjfx/sio2E4/css/AppLayout.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/org/openjfx/sio2E4/layout/Admin.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/org/openjfx/sio2E4/layout/Admin.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/org/openjfx/sio2E4/layout/App.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/org/openjfx/sio2E4/layout/App.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/org/openjfx/sio2E4/layout/Enseignant.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/org/openjfx/sio2E4/layout/Enseignant.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/constants/APIConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/constants/APIConstants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/controller/EtudiantsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/controller/EtudiantsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/controller/EvaluationFormController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/controller/EvaluationFormController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/model/Appreciation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/model/Appreciation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/model/Etudiant.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/model/Etudiant.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/model/Evaluation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/model/Evaluation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/model/Matiere.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/model/Matiere.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/model/Note.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/model/Note.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/model/NoteType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/model/NoteType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/repository/MatiereRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/repository/MatiereRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/repository/NoteTypeRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/openjfx/sio2E4/repository/NoteTypeRepository.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="module-info" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -25,12 +50,12 @@
     &quot;assignee&quot;: &quot;Talos12675&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/kurbtica/gnote.git&quot;,
-    &quot;accountId&quot;: &quot;99326c8e-9055-46f2-93ba-a9bd3abe9d63&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/kurbtica/gnote.git",
+    "accountId": "6599b8dc-626e-4109-b0fe-bead0d96ba8e"
   }
-}</component>
+}]]></component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -42,17 +67,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.App.executor&quot;: &quot;Run&quot;,
-    &quot;Application.gnote.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/eleves/Documents/Elouan/gnote/gnoteFX1.2&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.App.executor": "Run",
+    "Application.Unnamed.executor": "Run",
+    "Application.gnote.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/eleves/Documents/Elouan/gnote/gnoteFX1.2"
   }
-}</component>
+}]]></component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="ba823a25-a383-4a7e-863a-efe8bf233304" name="Changes" comment="" />

@@ -3,6 +3,7 @@ package com.stsau.slam2.API_Gnotes.controller;
 import com.stsau.slam2.API_Gnotes.exception.EvaluationNotFoundException;
 import com.stsau.slam2.API_Gnotes.model.Evaluation;
 import com.stsau.slam2.API_Gnotes.model.Evaluation;
+import com.stsau.slam2.API_Gnotes.model.Note;
 import com.stsau.slam2.API_Gnotes.model.assembler.EvaluationModelAssembler;
 import com.stsau.slam2.API_Gnotes.model.assembler.EvaluationModelAssembler;
 import com.stsau.slam2.API_Gnotes.repository.EvaluationRepository;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -74,7 +76,8 @@ public class EvaluationController {
                     evaluation.setDate(newEvaluation.getDate());
                     evaluation.setModification(newEvaluation.getModification());
                     evaluation.setNoteType(newEvaluation.getNoteType());
-                    evaluation.setNotes(newEvaluation.getNotes());
+                    //evaluation.setNotes(newEvaluation.getNotes());
+                    updateNotesList(evaluation, newEvaluation.getNotes());
                     return repository.save(evaluation);
                 })
                 .orElseGet(() -> {
@@ -93,6 +96,22 @@ public class EvaluationController {
             return ResponseEntity
                     .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
                     .body(entityModel);
+        }
+    }
+
+
+    private void updateNotesList(Evaluation existingEvaluation, List<Note> incomingNotes) {
+        // Vider la liste existante. Cela marque toutes les notes actuelles comme "orphelines"
+        // et elles seront supprimées de la base de données grâce à orphanRemoval=true.
+        existingEvaluation.getNotes().clear();
+
+        // Ajouter les notes de la requête à la liste (maintenant vide).
+        if (incomingNotes != null) {
+            for (Note incomingNote : incomingNotes) {
+                // S'assurer que la note est bien liée à son évaluation parente
+                incomingNote.setEvaluation(existingEvaluation);
+                existingEvaluation.getNotes().add(incomingNote);
+            }
         }
     }
 

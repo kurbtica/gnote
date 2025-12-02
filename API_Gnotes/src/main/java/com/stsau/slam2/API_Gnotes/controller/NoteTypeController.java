@@ -33,7 +33,7 @@ public class NoteTypeController { // 1. Changement de nom : EmployeeController -
     }
 
     // Aggregate root
-    @GetMapping("/api/notestype")
+    @GetMapping("/api/notes/type")
     public CollectionModel<EntityModel<NoteType>> all() {
         // 3. Utilisation de l'assembler ici pour nettoyer le code
         // Cela remplace votre logique complexe où 'employee' et 'user' se mélangeaient
@@ -48,7 +48,7 @@ public class NoteTypeController { // 1. Changement de nom : EmployeeController -
 
 
     // Single item
-    @GetMapping("/api/notestype/{id}")
+    @GetMapping("/api/notes/type/{id}")
     public EntityModel<NoteType> one(@PathVariable Long id) {
 
         NoteType notetype = repository.findById(id)
