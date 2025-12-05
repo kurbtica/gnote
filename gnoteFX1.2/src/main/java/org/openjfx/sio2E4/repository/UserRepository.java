@@ -237,6 +237,7 @@ public class UserRepository {
 
     private List<Note> parseUserNotesJson(String json) {
         try {
+            System.out.println(json);
             return mapper.readValue(json, mapper.getTypeFactory().constructCollectionType(List.class, Note.class));
         } catch (IOException e) {
             throw new RuntimeException("Erreur parsing Notes", e);

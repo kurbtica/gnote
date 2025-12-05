@@ -3,6 +3,7 @@ package org.openjfx.sio2E4.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.openjfx.sio2E4.service.LocalStorageService;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -12,7 +13,10 @@ public class Note {
     private User eleve;
     private double valeur;
     private String modification; // 🔄 nouveau champ
-    private int evaluationId; // on met pas l'objet pour l'instant car ca crée des boucles infini dans le json
+
+    @JsonProperty("evaluation") // 1. Permet de LIRE le champ "evaluation" du JSON
+    @JsonIgnoreProperties("notes") // 2. Sécurité : Si on renvoie cet objet en JSON, on coupe la boucle
+    private Evaluation evaluation;
 
     // GETTERS / SETTERS
 
@@ -44,19 +48,11 @@ public class Note {
         this.modification = modification;
     }
 
-    @JsonIgnore
     public Evaluation getEvaluation() {
-        return LocalStorageService.findEvaluationById(evaluationId);
-    }
-    @JsonIgnore
-    public void setEvaluation(Evaluation evaluation) {
-        this.evaluationId = evaluation.getId();
+        return evaluation;
     }
 
-    public Integer getEvaluationId() {
-        return evaluationId;
-    }
-    public void setEvaluationId(int evaluationId) {
-        this.evaluationId = evaluationId;
+    public void setEvaluation(Evaluation evaluation) {
+        this.evaluation = evaluation;
     }
 }

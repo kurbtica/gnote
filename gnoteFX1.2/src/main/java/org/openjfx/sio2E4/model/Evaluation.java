@@ -16,6 +16,7 @@ public class Evaluation {
     private String date;
     private String modification; // 🔄 nouveau champ
     private NoteType noteType;
+    @JsonIgnoreProperties("evaluation")
     private ArrayList<Note> notes;
 
     // GETTERS / SETTERS

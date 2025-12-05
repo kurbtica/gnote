@@ -14,6 +14,7 @@ import org.openjfx.sio2E4.model.Matiere;
 import org.openjfx.sio2E4.model.table.MatiereRow;
 import org.openjfx.sio2E4.model.Note;
 import org.openjfx.sio2E4.model.User;
+import org.openjfx.sio2E4.repository.MatiereRepository;
 import org.openjfx.sio2E4.repository.UserRepository;
 import org.openjfx.sio2E4.service.LocalStorageService;
 
@@ -52,6 +53,8 @@ public class EtudiantCardController {
 
     // Injection du service
     private final UserRepository userRepository = new UserRepository();
+    private final MatiereRepository matiereRepository = new MatiereRepository();
+    private ArrayList<Matiere> matiereList = new ArrayList<>();
 
     public void loadUser(int userId) {
         currentUserId = userId;
@@ -113,6 +116,23 @@ public class EtudiantCardController {
         }
     }
 
+
+    public void loadMatieresList() {
+        // Appel au service pour l'utilisateur
+        matiereRepository.getMatieresList()
+                .thenAccept(matieres -> {
+                    // Mise à jour UI Utilisateur
+                    Platform.runLater(() -> {
+                        matiereList.addAll(matieres);
+                    });
+
+                })
+                .exceptionally(e -> {
+                    e.printStackTrace(); // Gérez l'erreur (ex: afficher une alerte)
+                    return null;
+                });
+    }
+
     // Initialiser les colonnes de la TableView
     @FXML
     private void initialize() {
@@ -161,9 +181,9 @@ public class EtudiantCardController {
                                     }
                                     if (map == null) map = new java.util.HashMap<>();
                                     map.put(matiere, value);
-                                    List<Matiere> toutesLesMatieres = LocalStorageService.loadMatieres();
 
-                                    Matiere matiereObj = toutesLesMatieres.stream()
+
+                                    Matiere matiereObj = matiereList.stream()
                                             .filter(m -> m.getLibelle().equals(matiere)) // 'matiere' est le String récupéré plus haut
                                             .findFirst()
                                             .orElse(null);

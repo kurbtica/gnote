@@ -1,6 +1,7 @@
 package com.stsau.slam2.API_Gnotes.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
@@ -18,12 +19,16 @@ public class Note {
     private User eleve;
     private Double valeur;
     private Timestamp modification;
+    //@ManyToOne
+    //@JoinColumn(name = "evaluation_id")
+    //@JsonBackReference
     @ManyToOne
     @JoinColumn(name = "evaluation_id")
-    @JsonBackReference
+    // DIT : "Quand tu affiches cette évaluation, ne montre pas sa liste de notes"
+    @JsonIgnoreProperties("notes")
     private Evaluation evaluation;
 
-    Note() {
+    public Note() {
     }
 
     public Note(Long id, User eleve, Double valeur, Timestamp modification, Evaluation evaluation) {

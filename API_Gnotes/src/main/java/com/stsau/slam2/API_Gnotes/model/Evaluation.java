@@ -24,8 +24,9 @@ public class Evaluation {
     private String modification; // 🔄 nouveau champ
     @ManyToOne
     private NoteType noteType;
+    //@OneToMany(mappedBy = "evaluation", cascade = CascadeType.ALL, orphanRemoval = true)
+    //@JsonManagedReference
     @OneToMany(mappedBy = "evaluation", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<Note> notes;
 
     public Evaluation() {}

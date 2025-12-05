@@ -11,11 +11,9 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
-import org.openjfx.sio2E4.model.Appreciation;
-import org.openjfx.sio2E4.model.Matiere;
+import org.openjfx.sio2E4.model.*;
 import org.openjfx.sio2E4.model.table.MatiereRow;
-import org.openjfx.sio2E4.model.Note;
-import org.openjfx.sio2E4.model.User;
+import org.openjfx.sio2E4.repository.MatiereRepository;
 import org.openjfx.sio2E4.repository.UserRepository;
 import org.openjfx.sio2E4.service.AuthService;
 
@@ -56,6 +54,8 @@ public class UserCardController {
 
     // Injection du service
     private final UserRepository userRepository = new UserRepository();
+    private final MatiereRepository matiereRepository = new MatiereRepository();
+    private ArrayList<Matiere> matiereList = new ArrayList<>();
 
     public void loadUser(int userId) {
         currentUserId = userId;
@@ -66,7 +66,7 @@ public class UserCardController {
                     Platform.runLater(() -> updateUserInfoUI(user));
 
                     // Une fois l'user chargé, on charge ses notes
-                    loadUserNotes(user.getId(), user.getRole().getLibelle());
+                    loadUserNotes(user.getId(), user.getRole().getName());
                 })
                 .exceptionally(e -> {
                     e.printStackTrace(); // Gérez l'erreur (ex: afficher une alerte)
@@ -106,7 +106,7 @@ public class UserCardController {
 
         notesTable.setItems(data);
 
-        boolean isStudent = "ETUDIANT".equalsIgnoreCase(role);
+        boolean isStudent = role.equalsIgnoreCase(Role.ETUDIANT.getName());
         if (notesCard != null) {
             notesCard.setVisible(isStudent);
             notesCard.setManaged(isStudent);
@@ -117,6 +117,22 @@ public class UserCardController {
             double moyenne = NoteService.calculateMoyenne(notes);
             moyenneLabel.setText("Moyenne: " + String.format("%.2f", moyenne));
         }
+    }
+
+    public void loadMatieresList() {
+        // Appel au service pour l'utilisateur
+        matiereRepository.getMatieresList()
+                .thenAccept(matieres -> {
+                    // Mise à jour UI Utilisateur
+                    Platform.runLater(() -> {
+                        matiereList.addAll(matieres);
+                    });
+
+                })
+                .exceptionally(e -> {
+                    e.printStackTrace(); // Gérez l'erreur (ex: afficher une alerte)
+                    return null;
+                });
     }
 
     // Initialiser les colonnes de la TableView
@@ -138,7 +154,7 @@ public class UserCardController {
 
         appreciationsColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getAppreciations()));
         // Permettre l'édition de l'appréciation par double-clic : ouvre une boîte de dialogue (si autorisé)
-        appreciationsColumn.setCellFactory(col -> new TableCell<>() {
+        /*appreciationsColumn.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
@@ -168,9 +184,8 @@ public class UserCardController {
                                             }
                                             if (map == null) map = new java.util.HashMap<>();
                                             map.put(matiere, value);
-                                            List<Matiere> toutesLesMatieres = LocalStorageService.loadMatieres();
 
-                                            Matiere matiereObj = toutesLesMatieres.stream()
+                                            Matiere matiereObj = matiereList.stream()
                                                     .filter(m -> m.getLibelle().equals(matiere)) // 'matiere' est le String récupéré plus haut
                                                     .findFirst()
                                                     .orElse(null);
@@ -197,7 +212,7 @@ public class UserCardController {
                     });
                 }
             }
-        });
+        });*/
 
         // right-hand appreciation editor removed — no selection/save/cancel handlers
 
