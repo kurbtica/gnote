@@ -33,7 +33,7 @@ public class LocalStorageService {
                     "  \"Matiere\": [],\n" +
                     "  \"Note\": [],\n" +
                     "  \"NoteType\": [],\n" +
-                    "  \"Appreciation\" : []" +
+                    "  \"Appreciation\" : [], \n" +
                     "  \"Role\": [],\n" +
                     "  \"User\": []\n" +
                     "}";

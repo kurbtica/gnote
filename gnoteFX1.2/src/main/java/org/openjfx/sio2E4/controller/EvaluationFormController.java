@@ -400,7 +400,7 @@ public class EvaluationFormController {
         notesMap.forEach((user, note) -> {
             Note newNote = new Note();
             newNote.setEleve(user);
-            //newNote.setEvaluation(evaluation);
+            newNote.setEvaluation(evaluation);
 
             newNote.setValeur(note);
             notes.add(newNote);

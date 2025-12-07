@@ -83,7 +83,6 @@ public class UserRepository {
         if (NetworkService.isOnline()) {
             try {
                 String json = mapper.writeValueAsString(user); // Conversion automatique Objet -> JSON
-                System.out.println(json);
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(APIConstants.USERS))
@@ -237,7 +236,6 @@ public class UserRepository {
 
     private List<Note> parseUserNotesJson(String json) {
         try {
-            System.out.println(json);
             return mapper.readValue(json, mapper.getTypeFactory().constructCollectionType(List.class, Note.class));
         } catch (IOException e) {
             throw new RuntimeException("Erreur parsing Notes", e);

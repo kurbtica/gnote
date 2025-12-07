@@ -1,12 +1,14 @@
 package org.openjfx.sio2E4;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.openjfx.sio2E4.service.LocalStorageService;
+import org.openjfx.sio2E4.util.AlertHelper;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -17,6 +19,25 @@ public class App extends Application {
     private static ServerSocket lockSocket;
     @Override
     public void start(Stage stage) throws Exception {
+
+        Thread.currentThread().setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                System.err.println("Exception non gérée sur le thread " + t.getName());
+                e.printStackTrace();
+
+                // Afficher une alerte utilisateur (doit se faire sur le Thread JavaFX)
+                Platform.runLater(() -> {
+                    AlertHelper.showError(
+                            "Exception non gérée sur le thread " + t.getName(),
+                            e.getMessage()); // Méthode à créer pour afficher une fenêtre d'erreur
+                });
+
+                // L'application ne s'arrête pas, mais l'erreur est notifiée.
+            }
+        });
+
+
         Parent root = FXMLLoader.load(getClass().getResource("/org/openjfx/sio2E4/loginPage.fxml"));
 
         Scene scene = new Scene(root);

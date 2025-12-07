@@ -14,7 +14,7 @@ public class Note {
     private double valeur;
     private String modification; // 🔄 nouveau champ
 
-    @JsonProperty("evaluation") // 1. Permet de LIRE le champ "evaluation" du JSON
+    //@JsonProperty("evaluation") // 1. Permet de LIRE le champ "evaluation" du JSON
     @JsonIgnoreProperties("notes") // 2. Sécurité : Si on renvoie cet objet en JSON, on coupe la boucle
     private Evaluation evaluation;
 
