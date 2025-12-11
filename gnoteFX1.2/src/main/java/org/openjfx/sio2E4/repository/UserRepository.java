@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 public class UserRepository {
@@ -92,7 +93,23 @@ public class UserRepository {
                         .build();
 
                 return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-                        .thenApply(response -> response.statusCode() == 200 || response.statusCode() == 201);
+                        .thenApply(
+                                response -> {
+                                    // 1. Vérifier le code de succès (200 OK ou 201 Created)
+                                    if (response.statusCode() == 200 || response.statusCode() == 201) {
+                                        try {
+                                            // 2. Convertir la réponse JSON (qui contient l'ID) en objet User
+                                            User apiUser = mapper.readValue(response.body(), User.class);
+                                            user.setId(apiUser.getId());
+                                            return true;
+                                        } catch (JsonProcessingException e) {
+                                            throw new CompletionException("Erreur de lecture du JSON serveur", e);
+                                        }
+                                    } else {
+                                        // Gérer les erreurs API (400, 500, etc.)
+                                        throw new CompletionException(new RuntimeException("Erreur serveur : " + response.statusCode()));
+                                    }
+                                });
 
             } catch (JsonProcessingException e) {
                 e.printStackTrace();

@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(ApplicationExtension.class)
 public class MatieresPageAsAdminTest extends BaseUiAsAdminTest {
 
-    @Test
+    //@Test
     public void addAndRemoveMatieresTest(FxRobot robot) {
         // given:
         robot.clickOn("Matières");

@@ -33,12 +33,10 @@ public abstract class BaseUiAsAdminTest extends ApplicationTest {
 
         // Simule un admin connecté
         User testUser = new User(
-                "abc",
-                0,
                 "Test",
                 "Admin",
                 "test.admin@lycee.local",
-                new Role(1, "ADMIN"),
+                Role.ADMIN,
                 "",
                 ""
         );

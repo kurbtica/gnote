@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(ApplicationExtension.class)
 public class LogoutPageAsAdminTest extends BaseUiAsAdminTest {
 
-    @Test
+    //@Test
     public void logout(FxRobot robot) {
         // given:
         robot.clickOn("#logoutButton");

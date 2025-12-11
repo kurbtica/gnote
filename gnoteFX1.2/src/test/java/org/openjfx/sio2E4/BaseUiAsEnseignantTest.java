@@ -33,12 +33,10 @@ public abstract class BaseUiAsEnseignantTest extends ApplicationTest {
 
         // Simule un enseignant connecté
         User testUser = new User(
-                "abc",
-                0,
                 "Test",
                 "Enseignant",
                 "test.prof@lycee.local",
-                new Role(2, "ENSEIGNANT"),
+                Role.ETUDIANT,
                 "",
                 ""
         );
