@@ -86,9 +86,15 @@
             GridPane.rowIndex="8" GridPane.columnIndex="1"
             style="-fx-background-color: #4CAF50; -fx-text-fill: white;" />
     </GridPane> -->
-    <!-- Label pour afficher l'élève avec la meilleure moyenne -->
-    <Label fx:id="meilleurEleveLabel" text="Major de promotion :"
+    <!-- TableView pour afficher les majors par semestre -->
+    <Label text="Majors de promotion par semestre"
         style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-alignment: top-left;" />
+    <TableView fx:id="majorsTable" prefHeight="200">
+        <columns>
+            <TableColumn fx:id="semestreColumn" text="Semestre" prefWidth="150" />
+            <TableColumn fx:id="majorsColumn" text="Majors" prefWidth="400" />
+        </columns>
+    </TableView>
 
 
 </VBox>

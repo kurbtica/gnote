@@ -106,5 +106,65 @@
         }
       }
     } ]
+  }, {
+    "id" : 1,
+    "enseignant" : {
+      "id" : 2,
+      "nom" : "Enseignant",
+      "prenom" : "Enseignant",
+      "email" : "enseignant@lycee.local",
+      "adresse" : "test",
+      "telephone" : "0800000000",
+      "role" : "ENSEIGNANT"
+    },
+    "matiere" : {
+      "id" : 0,
+      "libelle" : "test"
+    },
+    "coefficient" : 12.0,
+    "titre" : "test",
+    "date" : "2025-12-15",
+    "modification" : null,
+    "noteType" : {
+      "id" : 1,
+      "libelle" : "ORAL"
+    },
+    "notes" : [ {
+      "eleve" : {
+        "id" : 1,
+        "nom" : "Etudiant",
+        "prenom" : "Etudiant",
+        "email" : "etudiant@lycee.local",
+        "adresse" : "test",
+        "telephone" : "0700000000",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 20.0,
+      "modification" : null,
+      "evaluation" : {
+        "id" : 1,
+        "enseignant" : {
+          "id" : 2,
+          "nom" : "Enseignant",
+          "prenom" : "Enseignant",
+          "email" : "enseignant@lycee.local",
+          "adresse" : "test",
+          "telephone" : "0800000000",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 0,
+          "libelle" : "test"
+        },
+        "coefficient" : 12.0,
+        "titre" : "test",
+        "date" : "2025-12-15",
+        "modification" : null,
+        "noteType" : {
+          "id" : 1,
+          "libelle" : "ORAL"
+        }
+      }
+    } ]
   } ]
 }
