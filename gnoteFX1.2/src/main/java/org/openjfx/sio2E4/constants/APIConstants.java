@@ -2,7 +2,7 @@ package org.openjfx.sio2E4.constants;
 
 public class APIConstants {
     // Base
-    public static final String BASE_URL = "http://localhost:8080/api";
+    public static  String BASE_URL = "http://localhost:8080/api";
 
     // Auth endpoints
     public static final String AUTH_LOGIN = BASE_URL + "/auth/login";
@@ -34,6 +34,14 @@ public class APIConstants {
     // Méthode helper pour formater les URLs avec paramètres
     public static String formatUrl(String template, Object... params) {
         return String.format(template, params);
+    }
+
+    public static String getBaseUrl() {
+        return BASE_URL;
+    }
+
+    public static void setBaseUrl(String baseUrl) {
+        BASE_URL = baseUrl;
     }
 }
 

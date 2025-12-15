@@ -7,10 +7,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.openjfx.sio2E4.constants.APIConstants;
+import org.openjfx.sio2E4.service.ConfIpApi;
+import org.openjfx.sio2E4.service.ConfigLoader;
 import org.openjfx.sio2E4.service.LocalStorageService;
 import org.openjfx.sio2E4.util.AlertHelper;
 
 import java.io.IOException;
+import java.lang.module.Configuration;
 import java.net.ServerSocket;
 /**
  * JavaFX App
@@ -48,8 +52,27 @@ public class App extends Application {
         stage.setResizable(false);
         stage.show();
     }
+    private static void initializeApiConstants() {
+        try {
+            ConfIpApi config = ConfigLoader.loadYamlConfig();
+            String baseUrlFromYaml = config.getApi().getBase_url();
+
+            // Met à jour la constante de base de l'API
+            APIConstants.setBaseUrl(baseUrlFromYaml);
+
+            System.out.println("✅ Configuration API chargée : BASE_URL = " + APIConstants.getBaseUrl());
+
+        } catch (IOException e) {
+            System.err.println("FATAL: Impossible de charger le fichier de configuration API. " + e.getMessage());
+            System.exit(1);
+        } catch (NullPointerException e) {
+            System.err.println("FATAL: Fichier YAML mal structuré. 'api' ou 'base_url' manquant.");
+            System.exit(1);
+        }
+    }
 
     public static void main(String[] args) {
+        initializeApiConstants();
         try {
             lockSocket = new ServerSocket(9999); // port arbitraire
         } catch (IOException e) {

@@ -9,13 +9,16 @@ module org.openjfx.sio2E4 {
     requires com.fasterxml.jackson.annotation;
     requires javafx.graphics;
     requires java.desktop;
+    requires org.yaml.snakeyaml;
+    opens org.openjfx.sio2E4 to javafx.fxml, org.yaml.snakeyaml;
+    exports org.openjfx.sio2E4.service;
     // Exportez le package contenant votre contrôleur
     exports org.openjfx.sio2E4.controller;
 
     // Ouvrez le package du contrôleur pour permettre l'accès depuis javafx.fxml
     opens org.openjfx.sio2E4.controller;
 
-    opens org.openjfx.sio2E4; // Si nécessaire pour l'injection de dépendance avec JavaFX
+    // Si nécessaire pour l'injection de dépendance avec JavaFX
     exports org.openjfx.sio2E4;
 
     exports org.openjfx.sio2E4.model to com.fasterxml.jackson.databind;
