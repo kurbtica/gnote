@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import org.openjfx.sio2E4.model.*;
 import org.openjfx.sio2E4.model.table.EvaluationRow;
 import org.openjfx.sio2E4.repository.EvaluationRepository;
@@ -158,6 +159,15 @@ public class EvaluationFormController {
         prenomColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getPrenom()));
 
         /*----FORMATTAGE DES COMBOBOX----*/
+
+        // Sécurisation du datePicker en empêchant toute saisie invalide
+        datePicker.getEditor().addEventFilter(KeyEvent.KEY_RELEASED, e -> {
+            String text = datePicker.getEditor().getText();
+
+            if (!text.matches("[0-9/]*")) {
+                datePicker.getEditor().setText(text.replaceAll("[^0-9/]", ""));
+            }
+        });
 
         noteTypeComboBox.setCellFactory(lv -> new ListCell<NoteType>() {
             @Override

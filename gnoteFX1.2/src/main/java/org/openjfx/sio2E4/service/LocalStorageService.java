@@ -58,7 +58,7 @@ public class LocalStorageService {
                 root.set(key, array);
             }
 
-            int newId = array.size();
+            int newId = -(array.size() + 1); // on met des identifiants négatifs quand on est en mode local
             // Vérifier si l'objet a déjà un ID
             Integer existingId = null;
             try {
@@ -68,7 +68,7 @@ public class LocalStorageService {
                 System.err.println("Erreur lors de la récupération de l'ID : " + e.getMessage());
             }
 
-            if (existingId == null || existingId <= 0 || existingId >= array.size()) {
+            if (existingId == null || existingId == 0) {
 
                 // Modifier l'ID de l'objet en utilisant la réflexion
                 try {
@@ -79,11 +79,27 @@ public class LocalStorageService {
                 }
             }
 
-            // Ajouter l'objet sérialisé (avec le nouvel ID)
-            array.addPOJO(obj);
+            // Petite sécurité pour ne pas ajouter deux fois le même objet (doublon JSON)
+            boolean alreadyExists = false;
+            if (existingId != null) {
+                for (JsonNode node : array) {
+                    if (node.has("id") && node.get("id").asInt() == existingId) {
+                        alreadyExists = true;
+                        break;
+                    }
+                }
+            }
 
-            // Réécrire le fichier
-            mapper.writerWithDefaultPrettyPrinter().writeValue(filePath.toFile(), root);
+            if (!alreadyExists) {
+                // Ajouter l'objet sérialisé (avec le nouvel ID)
+                array.addPOJO(obj);
+
+                // Réécrire le fichier
+                mapper.writerWithDefaultPrettyPrinter().writeValue(filePath.toFile(), root);
+            } else {
+                // Si l'objet existe déjà, on appelle updateObject pour être sûr d'avoir la dernière version
+                updateObject(obj, existingId, key);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -100,6 +116,27 @@ public class LocalStorageService {
     }
 
     public static void save(Evaluation evaluation) {
+        // 1. Pré-calculer l'ID de l'évaluation
+        // C'est nécessaire car les notes ont besoin de connaître l'ID de leur parent (Clé étrangère)
+        if (evaluation.getId() == null || evaluation.getId() == 0) {
+            int nextId = -(getNextObjectId("Evaluation") + 1);
+            evaluation.setId(nextId);
+        }
+
+        // 2. Sauvegarder les enfants (Les Notes)
+        if (evaluation.getNotes() != null) {
+            for (Note note : evaluation.getNotes()) {
+                // On lie la note à son parent (maintenant qu'il a un ID)
+                note.setEvaluation(evaluation);
+
+                // On sauvegarde la note individuellement
+                // Cela va lui attribuer son propre ID (ex: -10) et l'écrire dans le tableau "Note"
+                save(note);
+            }
+        }
+
+        // 3. Sauvegarder le parent (L'Évaluation)
+        // Maintenant, l'objet evaluation contient une liste de notes qui ont TOUTES des IDs valides.
         saveObject(evaluation, "Evaluation");
     }
 
