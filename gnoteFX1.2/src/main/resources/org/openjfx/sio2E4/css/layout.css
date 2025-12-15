@@ -1,0 +1,35 @@
+/* Sidebar Container */
+.sidebar {
+    -fx-background-color: #116688; /* Tu pourrais utiliser -fx-color-primary ici */
+    -fx-padding: 10;
+    -fx-alignment: center-left;
+}
+
+.left {
+    -fx-background-color: #116688;
+    -fx-padding: 15px;
+}
+
+/* Boutons de navigation (Sidebar) */
+.left .button {
+    -fx-background-color: #f4f4f4;
+    -fx-text-fill: #116688;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-alignment: center-left;
+    -fx-pref-width: 100%;
+    -fx-max-width: Infinity;
+    -fx-padding: 10px;
+    -fx-background-radius: 5px;
+    -fx-effect: innershadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0.0, 1, 1);
+}
+
+.left .button:hover {
+    -fx-background-color: #d4c0c0;
+    -fx-cursor: hand;
+}
+
+.left .button:pressed {
+    -fx-background-color: #a61f29;
+    -fx-text-fill: white;
+}

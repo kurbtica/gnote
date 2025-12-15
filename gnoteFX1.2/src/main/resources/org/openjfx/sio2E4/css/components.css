@@ -1,0 +1,141 @@
+/* --- DASHBOARD CARDS --- */
+.card {
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #f8f2f2);
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 10px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 8, 0.0, 0, 2);
+}
+.card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 10, 0.0, 0, 3);
+}
+.card > Label:first-child {
+    -fx-text-fill: #5a1e2b;
+}
+.home-summary {
+    -fx-font-size: 13px;
+    -fx-padding: 12px;
+    -fx-background-color: rgba(255,255,255,0.85);
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-text-fill: #333333;
+}
+
+/* --- DIALOGS --- */
+.dialog-pane.appreciation-dialog {
+    -fx-background-color: linear-gradient(#ffffff, #fbfbfb);
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 6px;
+}
+.appreciation-dialog .appreciation-header-title { -fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #333; }
+.appreciation-dialog .appreciation-header-subject { -fx-font-size: 13px; -fx-text-fill: #555; }
+.appreciation-dialog .appreciation-textarea {
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-border-color: #e3e3e3;
+    -fx-background-color: #ffffff;
+    -fx-padding: 8px;
+    -fx-font-size: 14px;
+}
+.dialog-pane .button.ok-button {
+    -fx-background-color: #2196F3;
+    -fx-text-fill: white;
+    -fx-background-radius: 6px;
+}
+
+
+/* --- STATUS MENU BUTTON & CIRCLES --- */
+.status-button-neutral {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-background-radius: 20px;
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-radius: 20px;
+    -fx-padding: 4px 12px;
+    -fx-cursor: hand;
+}
+.status-button-neutral:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+}
+.status-button-neutral .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-padding: 0 0 0 5px;
+}
+.status-button-neutral .arrow, .status-button-neutral .arrow-button {
+    -fx-background-color: white;
+}
+
+/* Pastilles */
+.circle-online { -fx-fill: #2ecc71; -fx-stroke: #27ae60; }
+.circle-offline { -fx-fill: #95a5a6; -fx-stroke: #7f8c8d; }
+.circle-sync {
+    -fx-fill: #f39c12;
+    -fx-stroke: #d35400;
+    -fx-effect: dropshadow(three-pass-box, rgba(243, 156, 18, 0.6), 5, 0, 0, 0);
+}
+
+/* Items du menu */
+.menu-item-header .label {
+    -fx-text-fill: #116688;
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
+}
+
+.menu-item-info .label {
+    -fx-text-fill: #555555;
+    -fx-font-size: 12px;
+}
+
+.context-menu {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #116688;
+    -fx-background-radius: 5px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 10, 0.0, 0, 3);
+}
+.menu-item:focused { -fx-background-color: #f6eaea; }
+
+/* Force TOUS les textes dans le menu à être gris foncé par défaut */
+.context-menu .menu-item .label {
+    -fx-text-fill: #333333; /* Gris foncé pour être lisible sur fond blanc */
+}
+
+/* Quand on passe la souris sur un item (hover/focus) */
+.context-menu .menu-item:focused .label {
+    -fx-text-fill: #116688; /* Le texte devient bleu (ta couleur thème) */
+}
+
+.menu-item-header,
+.menu-item-info {
+    -fx-opacity: 1.0 !important;
+    -fx-cursor: default;
+}
+
+/* Cas spécifique : Les items "Header" (ex: "Données en attente :") */
+/* On s'assure qu'ils restent bien visibles et distincts */
+.menu-item-header .label {
+    -fx-opacity: 1.0 !important;
+    -fx-text-fill: #116688 !important; /* Force le bleu */
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
+}
+
+/* Cas spécifique : Les items "Info" (ex: "• Evaluations (3)") */
+.menu-item-info .label {
+    -fx-opacity: 1.0 !important;
+    -fx-text-fill: #555555 !important; /* Force un gris moyen */
+}
+
+
+/* Fond transparent sur le la fleche du bouton dropdown */
+.status-button-neutral .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 8px; /* Un peu d'espace autour */
+}
+
+.status-button-neutral .arrow {
+    -fx-background-color: white;
+    -fx-padding: 3px 4px; /* Définit la taille de la flèche */
+    -fx-shape: "M 0 0 L 4 4 L 8 0 Z"; /* Force une forme triangulaire propre (optionnel) */
+}

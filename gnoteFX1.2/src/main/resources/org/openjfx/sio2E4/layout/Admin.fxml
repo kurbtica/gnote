@@ -23,6 +23,30 @@
 
             <Region fx:id="spacer" HBox.hgrow="ALWAYS" />
 
+            <MenuButton fx:id="statusMenuButton" text="En ligne" styleClass="status-button-neutral">
+
+                <graphic>
+                    <javafx.scene.shape.Circle fx:id="statusIndicator" radius="5" styleClass="circle-online" />
+                </graphic>
+
+                <items>
+                    <MenuItem fx:id="menuGoOffline" text="Passer hors ligne" onAction="#setModeOffline"/>
+
+                    <SeparatorMenuItem fx:id="sepInfo"/>
+                    <MenuItem fx:id="headerPending" text="Données en attente :" disable="true" styleClass="menu-item-header"/>
+                    <MenuItem fx:id="infoEvaluations" text="• Evaluations modifiées (0)" disable="true" styleClass="menu-item-info"/>
+                    <MenuItem fx:id="infoNotes" text="• Notes ajoutées (0)" disable="true" styleClass="menu-item-info"/>
+
+                    <SeparatorMenuItem fx:id="sepActions"/>
+                    <MenuItem fx:id="actionSyncOnline" text="Synchroniser et passer en ligne" onAction="#syncAndGoOnline"/>
+                    <MenuItem fx:id="actionIgnore" text="Ignorer et rester hors ligne" onAction="#stayOffline"/>
+
+                    <MenuItem fx:id="infoNothing" text="Rien à synchroniser" disable="true" styleClass="menu-item-info"/>
+
+                    <MenuItem fx:id="menuGoOnline" text="Passer en ligne" onAction="#setModeOnline"/>
+                </items>
+            </MenuButton>
+
             <Button fx:id="logoutButton"
                 text="Déconnexion"
                 onMouseEntered="#onLogoutHover"

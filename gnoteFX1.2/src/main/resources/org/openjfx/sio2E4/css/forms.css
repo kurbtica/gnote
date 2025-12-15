@@ -1,0 +1,32 @@
+/* Boutons simples (hors sidebar) */
+.button-simple {
+    -fx-background-color: #f4f4f4;
+    -fx-text-fill: #116688;
+    -fx-padding: 10px 20px;
+    -fx-font-size: 14px;
+    -fx-border-radius: 5px;
+    -fx-border-color: #d1d1d1;
+    -fx-border-width: 1px;
+    -fx-cursor: hand;
+    -fx-transition: background-color 0.3s ease;
+    -fx-pref-width: 150px;
+}
+.button-simple:hover {
+    -fx-background-color: #e0e0e0;
+    -fx-text-fill: #5a1e2b;
+}
+
+/* Labels et Champs */
+.label-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.form-field {
+    -fx-border-radius: 5px;
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: #ccc;
+    -fx-padding: 10px;
+    -fx-font-size: 14px;
+    -fx-pref-width: 200px;
+}

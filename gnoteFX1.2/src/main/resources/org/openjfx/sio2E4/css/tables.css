@@ -1,0 +1,106 @@
+.table-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #116688;
+    -fx-border-radius: 8px;
+    -fx-padding: 5px;
+    -fx-table-cell-border-color: #ddd;
+    -fx-font-size: 14px;
+}
+
+/* Header */
+.table-view .column-header-background {
+    -fx-background-color: #116688;
+}
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: transparent;
+}
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 4px;
+    -fx-alignment: center;
+}
+
+/* Cells */
+.table-view .table-column {
+    -fx-alignment: CENTER_LEFT;
+}
+.table-view .table-cell {
+    -fx-wrap-text: true;
+    -fx-max-width: 300px;
+    -fx-min-width: 100px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Rows styling */
+.table-row-cell {
+    -fx-cell-size: 36px;
+}
+.table-row-cell:hover {
+    -fx-background-color: #f0f0f0;
+}
+.table-row-cell:filled:selected {
+    -fx-background-color: #d4c0c0;
+    -fx-text-fill: #ccc;
+}
+.table-row-cell:filled:selected .table-cell {
+    -fx-text-fill: #ccc;
+}
+
+
+
+/* ====  Styles CSS pour la meilleure et la pire note (à ajouter à votre fichier .css)  === */
+
+/* Meilleure note (Max) */
+.best-note-cell {
+    /* Couleur de fond vert clair, pour une performance positive */
+    -fx-background-color: #e6ffed;
+    -fx-text-fill: #1a7f37; /* Texte Vert foncé */
+    -fx-font-weight: bold;
+}
+
+/* Pire note (Min) */
+.worst-note-cell {
+    /* Couleur de fond rouge clair, pour une performance faible */
+    -fx-background-color: #ffe6e6;
+    -fx-text-fill: #cc0000; /* Texte Rouge foncé */
+    -fx-font-weight: bold;
+}
+
+/* Optionnel : Assurer le style lors de la sélection de la ligne */
+.table-row-cell:selected .best-note-cell {
+    -fx-background-color: -fx-selection-bar; /* Couleur de sélection par défaut de la ligne */
+    -fx-text-fill: #1a7f37;
+}
+
+.table-row-cell:selected .worst-note-cell {
+    -fx-background-color: -fx-selection-bar;
+    -fx-text-fill: #cc0000;
+}
+
+/* Styles pour la liste des évaluations (EvaluationListController) */
+.best-note-cell {
+    -fx-background-color: #e6ffed; /* Vert très clair */
+    -fx-text-fill: #1a7f37; /* Texte Vert foncé */
+    -fx-font-weight: bold;
+}
+
+.worst-note-cell {
+    -fx-background-color: #ffe6e6; /* Rouge très clair */
+    -fx-text-fill: #cc0000; /* Texte Rouge foncé */
+    -fx-font-weight: bold;
+}
+
+/* Styles pour le formulaire d'évaluation (EvaluationFormController) */
+/* (Appliqués au Label qui affiche la note en mode consultation) */
+.best-note-text {
+    -fx-text-fill: #1a7f37; /* Vert foncé */
+    -fx-font-weight: bold;
+    -fx-font-size: 1.1em;
+}
+
+.worst-note-text {
+    -fx-text-fill: #cc0000; /* Rouge foncé */
+    -fx-font-weight: bold;
+    -fx-font-size: 1.1em;
+}

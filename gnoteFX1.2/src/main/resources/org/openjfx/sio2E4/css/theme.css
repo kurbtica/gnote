@@ -1,0 +1,13 @@
+/* Theme variables / lookups used by inline styles */
+.root {
+    /* Palette de couleurs */
+    -fx-color-primary: #116688;
+    -fx-color-bg-light: #f4f4f4;
+    -fx-color-hover: #d4c0c0;
+    -fx-color-accent: #a61f29;
+    -fx-text-white: #ffffff;
+
+    /* Variables existantes */
+    -fx-secondary-text: #666666;
+    -fx-font-family: "Segoe UI", sans-serif;
+}

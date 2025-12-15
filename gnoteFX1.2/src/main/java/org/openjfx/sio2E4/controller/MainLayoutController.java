@@ -1,14 +1,16 @@
 package org.openjfx.sio2E4.controller;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import org.openjfx.sio2E4.constants.StyleConstants;
 import org.openjfx.sio2E4.model.Role;
@@ -16,6 +18,8 @@ import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.service.AuthService;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainLayoutController {
 
@@ -47,6 +51,7 @@ public class MainLayoutController {
 
         // Charge la vue par défaut (dashboard)
         showDashboard();
+        updateMenuState();
     }
 
     @FXML
@@ -248,5 +253,126 @@ public class MainLayoutController {
     @FXML
     private void onLogoutHoverExit() {
         logoutButton.setStyle(StyleConstants.LOGOUT_BUTTON_HOVER_EXIT);
+    }
+
+
+
+    @FXML private MenuButton statusMenuButton;
+
+    // Références aux items du FXML
+    @FXML private MenuItem menuGoOffline;
+    @FXML private SeparatorMenuItem sepInfo;
+    @FXML private Circle statusIndicator;
+    @FXML private MenuItem headerPending;
+    @FXML private MenuItem infoEvaluations;
+    @FXML private MenuItem infoNotes;
+    @FXML private SeparatorMenuItem sepActions;
+    @FXML private MenuItem actionSyncOnline;
+    @FXML private MenuItem actionIgnore;
+    @FXML private MenuItem infoNothing;
+    @FXML private MenuItem menuGoOnline;
+
+    // Simulation de données locales
+    private int pendingEvals = 0;
+    private int pendingNotes = 0;
+
+    private enum AppState {
+        ONLINE,
+        OFFLINE_NO_DATA,
+        OFFLINE_PENDING
+    }
+
+    private AppState currentState = AppState.ONLINE;
+
+    /**
+     * Reconstruit le menu dynamiquement selon l'état
+     */
+    private void updateMenuState() {
+        // Vider le menu actuel
+        ObservableList<MenuItem> currentItems = FXCollections.observableArrayList();
+
+        // Nettoyage du style du bouton principal
+        statusIndicator.getStyleClass().removeAll("circle-online", "circle-offline", "circle-sync");
+
+        switch (currentState) {
+            case ONLINE:
+                statusMenuButton.setText("En ligne");
+                statusIndicator.getStyleClass().add("circle-online");
+
+                // Menu : Juste "Passer hors ligne"
+                currentItems.add(menuGoOffline);
+                break;
+
+            case OFFLINE_NO_DATA:
+                statusMenuButton.setText("Hors ligne");
+                statusIndicator.getStyleClass().add("circle-offline");
+
+                // Menu : Info "Rien" + "Passer en ligne"
+                currentItems.add(infoNothing);
+                currentItems.add(menuGoOnline);
+                break;
+
+            case OFFLINE_PENDING:
+                statusMenuButton.setText("Hors ligne – Données à sync");
+                statusIndicator.getStyleClass().add("circle-sync");
+
+                // Mise à jour des textes des compteurs
+                infoEvaluations.setText("• Evaluations modifiées (" + pendingEvals + ")");
+                infoNotes.setText("• Notes ajoutées (" + pendingNotes + ")");
+
+                // Construction du menu complexe
+                currentItems.add(headerPending);
+                if(pendingEvals > 0) currentItems.add(infoEvaluations);
+                if(pendingNotes > 0) currentItems.add(infoNotes);
+
+                currentItems.add(sepActions);
+
+                //currentItems.add(actionSyncStay);
+                currentItems.add(actionSyncOnline);
+                currentItems.add(actionIgnore);
+                break;
+        }
+
+        // Appliquer la nouvelle liste d'items au bouton
+        statusMenuButton.getItems().setAll(currentItems);
+    }
+
+    // --- ACTIONS ---
+
+    @FXML
+    private void setModeOffline() {
+        // Simulation : on vérifie s'il y a des données locales
+        // Pour le test, disons qu'on a des données
+        this.pendingEvals = 3;
+        this.pendingNotes = 12;
+
+        if (pendingEvals > 0 || pendingNotes > 0) {
+            currentState = AppState.OFFLINE_PENDING;
+        } else {
+            currentState = AppState.OFFLINE_NO_DATA;
+        }
+        updateMenuState();
+    }
+
+    @FXML
+    private void setModeOnline() {
+        System.out.println("Passage en ligne...");
+        currentState = AppState.ONLINE;
+        updateMenuState();
+    }
+
+    @FXML
+    private void syncAndGoOnline() {
+        System.out.println("Sync et connexion...");
+        pendingEvals = 0;
+        pendingNotes = 0;
+        currentState = AppState.ONLINE;
+        updateMenuState();
+    }
+
+    @FXML
+    private void stayOffline() {
+        // Juste fermer le menu (automatique)
+        System.out.println("Action ignorée pour le moment");
     }
 }
