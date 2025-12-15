@@ -231,6 +231,11 @@ public class EvaluationFormController {
             protected void updateItem(String note, boolean empty) {
                 super.updateItem(note, empty);
 
+                // Nettoyer les styles de couleur du label
+                label.getStyleClass().removeAll("best-note-text", "worst-note-text");
+                // Nettoyer les styles de couleur de la cellule
+                getStyleClass().removeAll("best-note-cell", "worst-note-cell");
+
                 if (empty) {
                     setGraphic(null);
                 } else {
@@ -238,11 +243,46 @@ public class EvaluationFormController {
 
                     // Vérifier si la table est éditable
                     if (getTableView() != null && getTableView().isEditable()) {
+                        // Mode édition: on affiche le TextField sans coloration
                         textField.setText(note == null ? "" : String.valueOf(note));
                         setGraphic(textField);
+                        setStyle(null);
                     } else {
+                        // Mode lecture (View/Edit après l'initialisation): appliquer la coloration
                         label.setText(displayText);
                         setGraphic(label);
+
+                        // LOGIQUE DE COULEUR
+                        if (note != null) {
+                            try {
+                                double noteValue = Double.parseDouble(note);
+
+                                // On détermine la note max/min parmi toutes les notes visibles
+                                double maxNote = etudiantTable.getItems().stream()
+                                        .map(EvaluationRow::getNoteValeur)
+                                        .filter(Objects::nonNull)
+                                        .mapToDouble(Double::doubleValue)
+                                        .max()
+                                        .orElse(Double.NaN);
+
+                                double minNote = etudiantTable.getItems().stream()
+                                        .map(EvaluationRow::getNoteValeur)
+                                        .filter(Objects::nonNull)
+                                        .mapToDouble(Double::doubleValue)
+                                        .min()
+                                        .orElse(Double.NaN);
+
+                                if (noteValue == maxNote && !Double.isNaN(maxNote)) {
+                                    // Application de la couleur pour le texte de la meilleure note
+                                    label.getStyleClass().add("best-note-text");
+                                } else if (noteValue == minNote && !Double.isNaN(minNote)) {
+                                    // Application de la couleur pour le texte de la pire note
+                                    label.getStyleClass().add("worst-note-text");
+                                }
+                            } catch (NumberFormatException ignored) {
+                                // La note n'est pas un nombre, ignorer la coloration
+                            }
+                        }
                     }
                 }
             }

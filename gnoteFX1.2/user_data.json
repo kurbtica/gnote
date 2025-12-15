@@ -45,6 +45,30 @@
     "adresse" : "test",
     "telephone" : "0600000000",
     "role" : "ADMIN"
+  }, {
+    "id" : 3,
+    "nom" : "test",
+    "prenom" : "test",
+    "email" : "test@gmail.com",
+    "adresse" : "test",
+    "telephone" : "0600000000",
+    "role" : "ETUDIANT"
+  }, {
+    "id" : 4,
+    "nom" : "test2",
+    "prenom" : "test2",
+    "email" : "test2@gmail.com",
+    "adresse" : "test2",
+    "telephone" : "0600000000",
+    "role" : "ETUDIANT"
+  }, {
+    "id" : 5,
+    "nom" : "test3",
+    "prenom" : "test3",
+    "email" : "test3@gmail.com",
+    "adresse" : "test3",
+    "telephone" : "0600000000",
+    "role" : "ETUDIANT"
   } ],
   "Evaluation" : [ {
     "id" : 0,
@@ -79,7 +103,7 @@
         "telephone" : "0700000000",
         "role" : "ETUDIANT"
       },
-      "valeur" : 10.5,
+      "valeur" : 5.0,
       "modification" : null,
       "evaluation" : {
         "id" : 0,
@@ -103,6 +127,330 @@
         "noteType" : {
           "id" : 0,
           "libelle" : "ECRIT"
+        }
+      }
+    } ]
+  }, {
+    "id" : 1,
+    "enseignant" : {
+      "id" : 2,
+      "nom" : "Enseignant",
+      "prenom" : "Enseignant",
+      "email" : "enseignant@lycee.local",
+      "adresse" : "test",
+      "telephone" : "0800000000",
+      "role" : "ENSEIGNANT"
+    },
+    "matiere" : {
+      "id" : 0,
+      "libelle" : "test"
+    },
+    "coefficient" : 12.0,
+    "titre" : "test",
+    "date" : "2025-12-15",
+    "modification" : null,
+    "noteType" : {
+      "id" : 1,
+      "libelle" : "ORAL"
+    },
+    "notes" : [ {
+      "eleve" : {
+        "id" : 1,
+        "nom" : "Etudiant",
+        "prenom" : "Etudiant",
+        "email" : "etudiant@lycee.local",
+        "adresse" : "test",
+        "telephone" : "0700000000",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 20.0,
+      "modification" : null,
+      "evaluation" : {
+        "id" : 1,
+        "enseignant" : {
+          "id" : 2,
+          "nom" : "Enseignant",
+          "prenom" : "Enseignant",
+          "email" : "enseignant@lycee.local",
+          "adresse" : "test",
+          "telephone" : "0800000000",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 0,
+          "libelle" : "test"
+        },
+        "coefficient" : 12.0,
+        "titre" : "test",
+        "date" : "2025-12-15",
+        "modification" : null,
+        "noteType" : {
+          "id" : 1,
+          "libelle" : "ORAL"
+        }
+      }
+    } ]
+  }, {
+    "id" : 2,
+    "enseignant" : {
+      "id" : 2,
+      "nom" : "Enseignant",
+      "prenom" : "Enseignant",
+      "email" : "enseignant@lycee.local",
+      "adresse" : "test",
+      "telephone" : "0800000000",
+      "role" : "ENSEIGNANT"
+    },
+    "matiere" : {
+      "id" : 0,
+      "libelle" : "test"
+    },
+    "coefficient" : 1.0,
+    "titre" : "test2",
+    "date" : "2025-12-15",
+    "modification" : null,
+    "noteType" : {
+      "id" : 2,
+      "libelle" : "TP"
+    },
+    "notes" : [ {
+      "eleve" : {
+        "id" : 3,
+        "nom" : "test",
+        "prenom" : "test",
+        "email" : "test@gmail.com",
+        "adresse" : "test",
+        "telephone" : "0600000000",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 5.0,
+      "modification" : null,
+      "evaluation" : {
+        "id" : 2,
+        "enseignant" : {
+          "id" : 2,
+          "nom" : "Enseignant",
+          "prenom" : "Enseignant",
+          "email" : "enseignant@lycee.local",
+          "adresse" : "test",
+          "telephone" : "0800000000",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 0,
+          "libelle" : "test"
+        },
+        "coefficient" : 1.0,
+        "titre" : "test2",
+        "date" : "2025-12-15",
+        "modification" : null,
+        "noteType" : {
+          "id" : 2,
+          "libelle" : "TP"
+        }
+      }
+    }, {
+      "eleve" : {
+        "id" : 1,
+        "nom" : "Etudiant",
+        "prenom" : "Etudiant",
+        "email" : "etudiant@lycee.local",
+        "adresse" : "test",
+        "telephone" : "0700000000",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 15.0,
+      "modification" : null,
+      "evaluation" : {
+        "id" : 2,
+        "enseignant" : {
+          "id" : 2,
+          "nom" : "Enseignant",
+          "prenom" : "Enseignant",
+          "email" : "enseignant@lycee.local",
+          "adresse" : "test",
+          "telephone" : "0800000000",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 0,
+          "libelle" : "test"
+        },
+        "coefficient" : 1.0,
+        "titre" : "test2",
+        "date" : "2025-12-15",
+        "modification" : null,
+        "noteType" : {
+          "id" : 2,
+          "libelle" : "TP"
+        }
+      }
+    } ]
+  }, {
+    "id" : 3,
+    "enseignant" : {
+      "id" : 2,
+      "nom" : "Enseignant",
+      "prenom" : "Enseignant",
+      "email" : "enseignant@lycee.local",
+      "adresse" : "test",
+      "telephone" : "0800000000",
+      "role" : "ENSEIGNANT"
+    },
+    "matiere" : {
+      "id" : 0,
+      "libelle" : "test"
+    },
+    "coefficient" : 3.0,
+    "titre" : "testnote",
+    "date" : "2025-12-15",
+    "modification" : null,
+    "noteType" : {
+      "id" : 1,
+      "libelle" : "ORAL"
+    },
+    "notes" : [ {
+      "eleve" : {
+        "id" : 4,
+        "nom" : "test2",
+        "prenom" : "test2",
+        "email" : "test2@gmail.com",
+        "adresse" : "test2",
+        "telephone" : "0600000000",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 10.0,
+      "modification" : null,
+      "evaluation" : {
+        "id" : 3,
+        "enseignant" : {
+          "id" : 2,
+          "nom" : "Enseignant",
+          "prenom" : "Enseignant",
+          "email" : "enseignant@lycee.local",
+          "adresse" : "test",
+          "telephone" : "0800000000",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 0,
+          "libelle" : "test"
+        },
+        "coefficient" : 3.0,
+        "titre" : "testnote",
+        "date" : "2025-12-15",
+        "modification" : null,
+        "noteType" : {
+          "id" : 1,
+          "libelle" : "ORAL"
+        }
+      }
+    }, {
+      "eleve" : {
+        "id" : 3,
+        "nom" : "test",
+        "prenom" : "test",
+        "email" : "test@gmail.com",
+        "adresse" : "test",
+        "telephone" : "0600000000",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 12.0,
+      "modification" : null,
+      "evaluation" : {
+        "id" : 3,
+        "enseignant" : {
+          "id" : 2,
+          "nom" : "Enseignant",
+          "prenom" : "Enseignant",
+          "email" : "enseignant@lycee.local",
+          "adresse" : "test",
+          "telephone" : "0800000000",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 0,
+          "libelle" : "test"
+        },
+        "coefficient" : 3.0,
+        "titre" : "testnote",
+        "date" : "2025-12-15",
+        "modification" : null,
+        "noteType" : {
+          "id" : 1,
+          "libelle" : "ORAL"
+        }
+      }
+    }, {
+      "eleve" : {
+        "id" : 5,
+        "nom" : "test3",
+        "prenom" : "test3",
+        "email" : "test3@gmail.com",
+        "adresse" : "test3",
+        "telephone" : "0600000000",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 8.0,
+      "modification" : null,
+      "evaluation" : {
+        "id" : 3,
+        "enseignant" : {
+          "id" : 2,
+          "nom" : "Enseignant",
+          "prenom" : "Enseignant",
+          "email" : "enseignant@lycee.local",
+          "adresse" : "test",
+          "telephone" : "0800000000",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 0,
+          "libelle" : "test"
+        },
+        "coefficient" : 3.0,
+        "titre" : "testnote",
+        "date" : "2025-12-15",
+        "modification" : null,
+        "noteType" : {
+          "id" : 1,
+          "libelle" : "ORAL"
+        }
+      }
+    }, {
+      "eleve" : {
+        "id" : 1,
+        "nom" : "Etudiant",
+        "prenom" : "Etudiant",
+        "email" : "etudiant@lycee.local",
+        "adresse" : "test",
+        "telephone" : "0700000000",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 20.0,
+      "modification" : null,
+      "evaluation" : {
+        "id" : 3,
+        "enseignant" : {
+          "id" : 2,
+          "nom" : "Enseignant",
+          "prenom" : "Enseignant",
+          "email" : "enseignant@lycee.local",
+          "adresse" : "test",
+          "telephone" : "0800000000",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 0,
+          "libelle" : "test"
+        },
+        "coefficient" : 3.0,
+        "titre" : "testnote",
+        "date" : "2025-12-15",
+        "modification" : null,
+        "noteType" : {
+          "id" : 1,
+          "libelle" : "ORAL"
         }
       }
     } ]

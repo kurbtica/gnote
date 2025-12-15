@@ -17,6 +17,14 @@ import org.openjfx.sio2E4.repository.NoteRepository;
 import org.openjfx.sio2E4.service.AuthService;
 import org.openjfx.sio2E4.service.NoteService;
 import org.openjfx.sio2E4.util.AlertHelper;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.lang.StringBuilder;
 
 public class EvaluationListController {
 
@@ -53,6 +61,13 @@ public class EvaluationListController {
 
 	@FXML
 	private TableColumn actionsColumn;
+
+	@FXML
+	private TableView<MajorEntry> majorsTable;
+	@FXML
+	private TableColumn<MajorEntry, String> semestreColumn;
+	@FXML
+	private TableColumn<MajorEntry, String> majorsColumn;
 
 	// Injection du service
 	private final EvaluationRepository evaluationRepository = new EvaluationRepository();
@@ -235,6 +250,10 @@ public class EvaluationListController {
 		);
 		evaluationTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
+		// Mapping des colonnes pour le tableau des majors
+		semestreColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getSemestre()));
+		majorsColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getMajors()));
+
 		// Chargement des données du tableau
 		loadEvaluationsList();
 	}
@@ -246,6 +265,7 @@ public class EvaluationListController {
 					// Mise à jour UI Utilisateur
 					Platform.runLater(() -> {
 						evaluationTable.getItems().setAll(user);
+						afficherMajorsParSemestre(user);
 					});
 
 				})
@@ -282,6 +302,106 @@ public class EvaluationListController {
 				});
 	}
 
+	private void afficherMajorsParSemestre(List<Evaluation> evaluations) {
+		// Grouper les évaluations par semestre
+		Map<String, List<Evaluation>> evaluationsParSemestre = evaluations.stream()
+				.collect(Collectors.groupingBy(this::getSemestre));
+
+		List<MajorEntry> entries = new ArrayList<>();
+
+		for (Map.Entry<String, List<Evaluation>> entry : evaluationsParSemestre.entrySet()) {
+			String semestre = entry.getKey();
+			List<Evaluation> evals = entry.getValue();
+
+			// Collecter toutes les notes de ce semestre
+			List<Note> notesSemestre = evals.stream()
+					.flatMap(eval -> eval.getNotes().stream())
+					.collect(Collectors.toList());
+
+			if (!notesSemestre.isEmpty()) {
+				List<User> majors = calculerMajors(notesSemestre);
+				if (!majors.isEmpty()) {
+					StringBuilder majorsStr = new StringBuilder();
+					for (User major : majors) {
+						majorsStr.append(major.getPrenom()).append(" ").append(major.getNom()).append(", ");
+					}
+					if (majorsStr.length() > 0) {
+						majorsStr.setLength(majorsStr.length() - 2); // remove last comma and space
+					}
+					entries.add(new MajorEntry(semestre, majorsStr.toString()));
+				}
+			}
+		}
+
+		// Mettre à jour le tableau
+		Platform.runLater(() -> {
+			majorsTable.getItems().setAll(entries);
+		});
+	}
+
+	private String getSemestre(Evaluation eval) {
+		try {
+			String dateStr = eval.getDate();
+			if (dateStr.contains("T")) {
+				dateStr = dateStr.split("T")[0];
+			}
+			LocalDate date = LocalDate.parse(dateStr);
+			int year = date.getYear();
+			int month = date.getMonthValue();
+			String sem = month <= 6 ? "Semestre 1" : "Semestre 2";
+			return sem + "-" + year;
+		} catch (DateTimeParseException e) {
+			return "Inconnu";
+		}
+	}
+
+	private List<User> calculerMajors(List<Note> notes) {
+		// Map pour stocker les totaux des valeurs pondérées et des coefficients par élève
+		Map<Integer, Double> totalNotes = new HashMap<>();
+		Map<Integer, Double> totalCoefficients = new HashMap<>();
+
+		// Parcours des notes pour calculer les totaux
+		for (Note note : notes) {
+			int eleveId = note.getEleve().getId();
+			double valeur = note.getValeur();
+			double coefficient = note.getEvaluation().getCoefficient();
+
+			// Ajoute la valeur pondérée à l'élève
+			totalNotes.put(eleveId, totalNotes.getOrDefault(eleveId, 0.0) + (valeur * coefficient));
+			totalCoefficients.put(eleveId, totalCoefficients.getOrDefault(eleveId, 0.0) + coefficient);
+		}
+
+		// Calculer la moyenne pondérée pour chaque élève
+		Map<Integer, Double> moyennes = new HashMap<>();
+		for (int eleveId : totalNotes.keySet()) {
+			double moyenne = totalNotes.get(eleveId) / totalCoefficients.get(eleveId);
+			moyennes.put(eleveId, moyenne);
+		}
+
+		// Trouver la meilleure moyenne
+		double meilleureMoyenne = -1;
+		for (double moy : moyennes.values()) {
+			if (moy > meilleureMoyenne) {
+				meilleureMoyenne = moy;
+			}
+		}
+
+		// Trouver tous les élèves avec cette moyenne
+		List<User> majors = new ArrayList<>();
+		for (Map.Entry<Integer, Double> entry : moyennes.entrySet()) {
+			if (entry.getValue() == meilleureMoyenne) {
+				int eleveId = entry.getKey();
+				for (Note note : notes) {
+					if (note.getEleve().getId() == eleveId) {
+						majors.add(note.getEleve());
+						break;
+					}
+				}
+			}
+		}
+		return majors;
+	}
+
 	private MainLayoutController mainLayoutController;
 
 	public void setMainLayoutController(MainLayoutController controller) {
@@ -305,5 +425,18 @@ public class EvaluationListController {
 		if (evaluation != null && mainLayoutController != null) {
 			mainLayoutController.showEditEvaluationFormPage(evaluation.getId());
 		}
+	}
+
+	public static class MajorEntry {
+		private final String semestre;
+		private final String majors;
+
+		public MajorEntry(String semestre, String majors) {
+			this.semestre = semestre;
+			this.majors = majors;
+		}
+
+		public String getSemestre() { return semestre; }
+		public String getMajors() { return majors; }
 	}
 }
