@@ -11,6 +11,7 @@ import org.openjfx.sio2E4.constants.APIConstants;
 import org.openjfx.sio2E4.service.ConfIpApi;
 import org.openjfx.sio2E4.service.ConfigLoader;
 import org.openjfx.sio2E4.service.LocalStorageService;
+import org.openjfx.sio2E4.service.SyncService;
 import org.openjfx.sio2E4.util.AlertHelper;
 
 import java.io.IOException;
@@ -83,6 +84,8 @@ public class App extends Application {
         try {
             // Initialisation du fichier json pour le mode hors ligne
             LocalStorageService.setup();
+            SyncService syncService = new SyncService();
+            syncService.init();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

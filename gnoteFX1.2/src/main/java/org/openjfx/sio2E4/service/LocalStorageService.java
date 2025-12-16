@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 public class LocalStorageService {
 
@@ -29,7 +30,6 @@ public class LocalStorageService {
         if (!Files.exists(filePath)) {
             String initialJson = "{\n" +
                     "  \"Etudiant\": [],\n" +
-                    "  \"LocalUser\": [],\n" +
                     "  \"Matiere\": [],\n" +
                     "  \"Note\": [],\n" +
                     "  \"NoteType\": [],\n" +
@@ -457,6 +457,71 @@ public class LocalStorageService {
 
     public static int getNextID(User user) {
         return getNextObjectId("User");
+    }
+
+    /*
+     * Méthode pour ÉCRASER une liste complète (Utilisé lors du Pull serveur)
+     */
+    public static synchronized <T> void replaceAllObject(List<T> objects, String key) {
+        try {
+            // Lire le fichier actuel
+            ObjectNode root;
+            if (Files.exists(filePath)) {
+                root = (ObjectNode) mapper.readTree(Files.readString(filePath));
+            } else {
+                root = mapper.createObjectNode();
+            }
+
+            // Créer un nouveau tableau vide et le remplir avec les données venant du serveur
+            ArrayNode newArray = mapper.createArrayNode();
+
+            for (T obj : objects) {
+                newArray.addPOJO(obj);
+            }
+
+            // Remplacer l'ancienne liste par la nouvelle dans le JSON et sauvegarder
+            root.set(key, newArray);
+
+            mapper.writerWithDefaultPrettyPrinter().writeValue(filePath.toFile(), root);
+            System.out.println("✅ Liste '" + key + "' mise à jour localement (" + objects.size() + " éléments).");
+
+        } catch (IOException e) {
+            System.err.println("❌ Erreur lors du remplacement de la liste " + key);
+            e.printStackTrace();
+        }
+    }
+
+    // Méthodes spécifiques
+    public static void replaceEtudiants(List<Etudiant> etudiant) {
+        replaceAllObject(etudiant, "Etudiant");
+    }
+
+    public static void replaceMatieres(List<Matiere> matiere) {
+        replaceAllObject(matiere, "Matiere");
+    }
+
+    public static void replaceEvaluations(List<Evaluation> evaluation) {
+        replaceAllObject(evaluation, "Evaluation");
+    }
+
+    public static void replaceNotes(List<Note> note) {
+        replaceAllObject(note, "Note");
+    }
+
+    public static void replaceNoteTypes(List<NoteType> noteType) {
+        replaceAllObject(noteType, "NoteType");
+    }
+
+    public static void replaceAppreciations(List<Appreciation> appreciation) {
+        replaceAllObject(appreciation, "Appreciation");
+    }
+
+    public static void replaceRoles(List<Role> role) {
+        replaceAllObject(role, "Role");
+    }
+
+    public static void replaceUsers(List<User> user) {
+        replaceAllObject(user, "User");
     }
 
     // Getter / Setter filePath

@@ -3,6 +3,9 @@ package org.openjfx.sio2E4.service;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
+import org.yaml.snakeyaml.nodes.Tag;
+import org.yaml.snakeyaml.representer.Representer;
+
 import java.io.*;
 
 
@@ -57,14 +60,22 @@ public class ConfigLoader {
      */
     private static void saveConfigToFile(ConfIpApi config, File file) throws IOException {
         DumperOptions options = new DumperOptions();
-        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK); // Formatage lisible
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK); // Formatage lisible (blocs)
         options.setPrettyFlow(true);
 
-        Yaml yaml = new Yaml(options);
+        // --- CORRECTION ---
+        // On configure un Representer pour dire : "Traite ConfIpApi comme une simple Map"
+        // Cela supprime le tag !!org.openjfx... au début du fichier
+        Representer representer = new Representer(options);
+        representer.addClassTag(ConfIpApi.class, Tag.MAP);
 
-        // La classe Map/Object est nécessaire pour sérialiser notre modèle Java en YAML
+        // On passe le representer au constructeur de Yaml
+        Yaml yaml = new Yaml(representer, options);
+        // ------------------
+
         try (FileWriter writer = new FileWriter(file)) {
-            // Serialise l'objet ConfIpApi en YAML et l'écrit
             yaml.dump(config, writer);
         }
-    }}
+    }
+
+}

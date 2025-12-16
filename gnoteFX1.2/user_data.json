@@ -1,132 +1,658 @@
 {
   "Etudiant" : [ ],
-  "LocalUser" : [ ],
   "Matiere" : [ {
-    "id" : 0,
-    "libelle" : "test"
-  } ],
-  "Note" : [ {
-    "id" : -1,
-    "eleve" : {
-      "id" : -3,
-      "nom" : "testidnegatif",
-      "prenom" : "testidnegatif",
-      "email" : "testidnegatif@test.com",
-      "adresse" : "testidnegatif",
-      "telephone" : "0102030405",
-      "role" : "ETUDIANT"
-    },
-    "valeur" : 12.0,
-    "modification" : null,
-    "evaluation" : {
-      "id" : -1,
-      "enseignant" : {
-        "id" : 2,
-        "nom" : "Enseignant",
-        "prenom" : "Enseignant",
-        "email" : "enseignant@lycee.local",
-        "adresse" : "test",
-        "telephone" : "0800000000",
-        "role" : "ENSEIGNANT"
-      },
-      "matiere" : {
-        "id" : 0,
-        "libelle" : "test"
-      },
-      "coefficient" : 2.0,
-      "titre" : "test",
-      "date" : "2025-12-17",
-      "modification" : null,
-      "noteType" : {
-        "id" : 1,
-        "libelle" : "ORAL"
-      }
-    }
-  }, {
-    "id" : -2,
-    "eleve" : {
-      "id" : -3,
-      "nom" : "testidnegatif",
-      "prenom" : "testidnegatif",
-      "email" : "testidnegatif@test.com",
-      "adresse" : "testidnegatif",
-      "telephone" : "0102030405",
-      "role" : "ETUDIANT"
-    },
-    "valeur" : 12.0,
-    "modification" : null,
-    "evaluation" : {
-      "id" : -1,
-      "enseignant" : {
-        "id" : 2,
-        "nom" : "Enseignant",
-        "prenom" : "Enseignant",
-        "email" : "enseignant@lycee.local",
-        "adresse" : "test",
-        "telephone" : "0800000000",
-        "role" : "ENSEIGNANT"
-      },
-      "matiere" : {
-        "id" : 0,
-        "libelle" : "test"
-      },
-      "coefficient" : 2.0,
-      "titre" : "test",
-      "date" : "2025-12-17",
-      "modification" : null,
-      "noteType" : {
-        "id" : 1,
-        "libelle" : "ORAL"
-      }
-    }
-  } ],
-  "NoteType" : [ {
-    "id" : 0,
-    "libelle" : "ECRIT"
-  }, {
     "id" : 1,
-    "libelle" : "ORAL"
+    "libelle" : "MATH"
+  }, {
+    "id" : 2,
+    "libelle" : "CYBER"
+  }, {
+    "id" : 3,
+    "libelle" : "ANGLAIS"
+  }, {
+    "id" : 4,
+    "libelle" : "CEJMA"
+  }, {
+    "id" : 5,
+    "libelle" : "SUP DISPO"
+  }, {
+    "id" : 6,
+    "libelle" : "ATELIER PRO"
+  }, {
+    "id" : 7,
+    "libelle" : "CEJM"
+  }, {
+    "id" : 8,
+    "libelle" : "CULTURE G"
+  } ],
+  "Note" : [ ],
+  "NoteType" : [ {
+    "id" : 1,
+    "libelle" : "Devoir Surveillé"
   }, {
     "id" : 2,
     "libelle" : "TP"
   }, {
     "id" : 3,
-    "libelle" : "DS"
+    "libelle" : "Exposé/Oral"
+  }, {
+    "id" : 4,
+    "libelle" : "Devoir Maison"
   } ],
   "Appreciation" : [ ],
   "Role" : [ ],
   "User" : [ {
     "id" : 1,
-    "nom" : "Etudiant",
-    "prenom" : "Etudiant",
-    "email" : "etudiant@lycee.local",
-    "adresse" : "test",
-    "telephone" : "0700000000",
-    "role" : "ETUDIANT"
+    "nom" : "Bernard",
+    "prenom" : "Sophie",
+    "email" : "sophie.bernard@example.com",
+    "adresse" : "Boulevard de la Gare",
+    "telephone" : "0611223344",
+    "role" : "ENSEIGNANT"
   }, {
     "id" : 2,
     "nom" : "Enseignant",
-    "prenom" : "Enseignant",
-    "email" : "enseignant@lycee.local",
-    "adresse" : "test",
-    "telephone" : "0800000000",
+    "prenom" : "Durand",
+    "email" : "pierre.durand@example.com",
+    "adresse" : "Avenue Victor Hugo",
+    "telephone" : "0605060708",
     "role" : "ENSEIGNANT"
   }, {
     "id" : 3,
-    "nom" : "Admin",
-    "prenom" : "Admin",
-    "email" : "admin@lycee.local",
+    "nom" : "Petit",
+    "prenom" : "Claire",
+    "email" : "claire.petit@example.com",
+    "adresse" : "Rue Nationale",
+    "telephone" : "0622334455",
+    "role" : "ENSEIGNANT"
+  }, {
+    "id" : 4,
+    "nom" : "Guerin",
+    "prenom" : "Alice",
+    "email" : "alice.guerin@example.com",
+    "adresse" : "Rue du Parc",
+    "telephone" : "0612121212",
+    "role" : "ENSEIGNANT"
+  }, {
+    "id" : 5,
+    "nom" : "Test",
+    "prenom" : "prof",
+    "email" : "prof@lycee.local",
     "adresse" : "test",
-    "telephone" : "0600000000",
+    "telephone" : "0102030405",
+    "role" : "ENSEIGNANT"
+  }, {
+    "id" : 6,
+    "nom" : "Admin",
+    "prenom" : "Martin",
+    "email" : "martin.admin@example.com",
+    "adresse" : "Rue de la Liberté",
+    "telephone" : "0708091011",
     "role" : "ADMIN"
   }, {
-    "id" : -3,
-    "nom" : "testidnegatif",
-    "prenom" : "testidnegatif",
-    "email" : "testidnegatif@test.com",
-    "adresse" : "testidnegatif",
+    "id" : 7,
+    "nom" : "Renard",
+    "prenom" : "Maxime",
+    "email" : "maxime.renard@example.com",
+    "adresse" : "Impasse des Pins",
+    "telephone" : "0688997788",
+    "role" : "ADMIN"
+  }, {
+    "id" : 8,
+    "nom" : "Test",
+    "prenom" : "admin",
+    "email" : "admin@lycee.local",
+    "adresse" : "test",
+    "telephone" : "0102030405",
+    "role" : "ADMIN"
+  }, {
+    "id" : 9,
+    "nom" : "Leclerc",
+    "prenom" : "Emma",
+    "email" : "emma.leclerc@example.com",
+    "adresse" : "Rue des Acacias",
+    "telephone" : "0602030405",
+    "role" : "ETUDIANT"
+  }, {
+    "id" : 10,
+    "nom" : "Morel",
+    "prenom" : "Lucas",
+    "email" : "lucas.morel@example.com",
+    "adresse" : "Rue des Érables",
+    "telephone" : "0677889900",
+    "role" : "ETUDIANT"
+  }, {
+    "id" : 11,
+    "nom" : "Dupont",
+    "prenom" : "Nicolas",
+    "email" : "nicolas.dupont@example.com",
+    "adresse" : "Rue de la Mairie",
+    "telephone" : "0644556677",
+    "role" : "ETUDIANT"
+  }, {
+    "id" : 12,
+    "nom" : "Test",
+    "prenom" : "etudiant",
+    "email" : "etudiant@lycee.local",
+    "adresse" : "test",
     "telephone" : "0102030405",
     "role" : "ETUDIANT"
   } ],
-  "Evaluation" : [ ]
+  "Evaluation" : [ {
+    "id" : 1,
+    "enseignant" : {
+      "id" : 1,
+      "nom" : "Bernard",
+      "prenom" : "Sophie",
+      "email" : "sophie.bernard@example.com",
+      "adresse" : "Boulevard de la Gare",
+      "telephone" : "0611223344",
+      "role" : "ENSEIGNANT"
+    },
+    "matiere" : {
+      "id" : 1,
+      "libelle" : "MATH"
+    },
+    "coefficient" : 2.0,
+    "titre" : "Contrôle sur les matrices",
+    "date" : "2023-10-15",
+    "modification" : null,
+    "noteType" : {
+      "id" : 1,
+      "libelle" : "Devoir Surveillé"
+    },
+    "notes" : [ {
+      "id" : 1,
+      "eleve" : {
+        "id" : 9,
+        "nom" : "Leclerc",
+        "prenom" : "Emma",
+        "email" : "emma.leclerc@example.com",
+        "adresse" : "Rue des Acacias",
+        "telephone" : "0602030405",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 15.0,
+      "modification" : "2025-12-05T07:50:14.336Z",
+      "evaluation" : {
+        "id" : 1,
+        "enseignant" : {
+          "id" : 1,
+          "nom" : "Bernard",
+          "prenom" : "Sophie",
+          "email" : "sophie.bernard@example.com",
+          "adresse" : "Boulevard de la Gare",
+          "telephone" : "0611223344",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 1,
+          "libelle" : "MATH"
+        },
+        "coefficient" : 2.0,
+        "titre" : "Contrôle sur les matrices",
+        "date" : "2023-10-15",
+        "modification" : null,
+        "noteType" : {
+          "id" : 1,
+          "libelle" : "Devoir Surveillé"
+        }
+      }
+    }, {
+      "id" : 2,
+      "eleve" : {
+        "id" : 10,
+        "nom" : "Morel",
+        "prenom" : "Lucas",
+        "email" : "lucas.morel@example.com",
+        "adresse" : "Rue des Érables",
+        "telephone" : "0677889900",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 12.5,
+      "modification" : "2025-12-05T07:50:14.347Z",
+      "evaluation" : {
+        "id" : 1,
+        "enseignant" : {
+          "id" : 1,
+          "nom" : "Bernard",
+          "prenom" : "Sophie",
+          "email" : "sophie.bernard@example.com",
+          "adresse" : "Boulevard de la Gare",
+          "telephone" : "0611223344",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 1,
+          "libelle" : "MATH"
+        },
+        "coefficient" : 2.0,
+        "titre" : "Contrôle sur les matrices",
+        "date" : "2023-10-15",
+        "modification" : null,
+        "noteType" : {
+          "id" : 1,
+          "libelle" : "Devoir Surveillé"
+        }
+      }
+    }, {
+      "id" : 3,
+      "eleve" : {
+        "id" : 11,
+        "nom" : "Dupont",
+        "prenom" : "Nicolas",
+        "email" : "nicolas.dupont@example.com",
+        "adresse" : "Rue de la Mairie",
+        "telephone" : "0644556677",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 18.0,
+      "modification" : "2025-12-05T07:50:14.353Z",
+      "evaluation" : {
+        "id" : 1,
+        "enseignant" : {
+          "id" : 1,
+          "nom" : "Bernard",
+          "prenom" : "Sophie",
+          "email" : "sophie.bernard@example.com",
+          "adresse" : "Boulevard de la Gare",
+          "telephone" : "0611223344",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 1,
+          "libelle" : "MATH"
+        },
+        "coefficient" : 2.0,
+        "titre" : "Contrôle sur les matrices",
+        "date" : "2023-10-15",
+        "modification" : null,
+        "noteType" : {
+          "id" : 1,
+          "libelle" : "Devoir Surveillé"
+        }
+      }
+    }, {
+      "id" : 4,
+      "eleve" : {
+        "id" : 12,
+        "nom" : "Test",
+        "prenom" : "etudiant",
+        "email" : "etudiant@lycee.local",
+        "adresse" : "test",
+        "telephone" : "0102030405",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 8.0,
+      "modification" : "2025-12-05T07:50:14.364Z",
+      "evaluation" : {
+        "id" : 1,
+        "enseignant" : {
+          "id" : 1,
+          "nom" : "Bernard",
+          "prenom" : "Sophie",
+          "email" : "sophie.bernard@example.com",
+          "adresse" : "Boulevard de la Gare",
+          "telephone" : "0611223344",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 1,
+          "libelle" : "MATH"
+        },
+        "coefficient" : 2.0,
+        "titre" : "Contrôle sur les matrices",
+        "date" : "2023-10-15",
+        "modification" : null,
+        "noteType" : {
+          "id" : 1,
+          "libelle" : "Devoir Surveillé"
+        }
+      }
+    } ]
+  }, {
+    "id" : 2,
+    "enseignant" : {
+      "id" : 2,
+      "nom" : "Enseignant",
+      "prenom" : "Durand",
+      "email" : "pierre.durand@example.com",
+      "adresse" : "Avenue Victor Hugo",
+      "telephone" : "0605060708",
+      "role" : "ENSEIGNANT"
+    },
+    "matiere" : {
+      "id" : 2,
+      "libelle" : "CYBER"
+    },
+    "coefficient" : 1.0,
+    "titre" : "TP Firewall",
+    "date" : "2023-11-05",
+    "modification" : null,
+    "noteType" : {
+      "id" : 2,
+      "libelle" : "TP"
+    },
+    "notes" : [ {
+      "id" : 5,
+      "eleve" : {
+        "id" : 9,
+        "nom" : "Leclerc",
+        "prenom" : "Emma",
+        "email" : "emma.leclerc@example.com",
+        "adresse" : "Rue des Acacias",
+        "telephone" : "0602030405",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 16.0,
+      "modification" : "2025-12-05T07:50:14.380Z",
+      "evaluation" : {
+        "id" : 2,
+        "enseignant" : {
+          "id" : 2,
+          "nom" : "Enseignant",
+          "prenom" : "Durand",
+          "email" : "pierre.durand@example.com",
+          "adresse" : "Avenue Victor Hugo",
+          "telephone" : "0605060708",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 2,
+          "libelle" : "CYBER"
+        },
+        "coefficient" : 1.0,
+        "titre" : "TP Firewall",
+        "date" : "2023-11-05",
+        "modification" : null,
+        "noteType" : {
+          "id" : 2,
+          "libelle" : "TP"
+        }
+      }
+    }, {
+      "id" : 6,
+      "eleve" : {
+        "id" : 10,
+        "nom" : "Morel",
+        "prenom" : "Lucas",
+        "email" : "lucas.morel@example.com",
+        "adresse" : "Rue des Érables",
+        "telephone" : "0677889900",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 14.0,
+      "modification" : "2025-12-05T07:50:14.384Z",
+      "evaluation" : {
+        "id" : 2,
+        "enseignant" : {
+          "id" : 2,
+          "nom" : "Enseignant",
+          "prenom" : "Durand",
+          "email" : "pierre.durand@example.com",
+          "adresse" : "Avenue Victor Hugo",
+          "telephone" : "0605060708",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 2,
+          "libelle" : "CYBER"
+        },
+        "coefficient" : 1.0,
+        "titre" : "TP Firewall",
+        "date" : "2023-11-05",
+        "modification" : null,
+        "noteType" : {
+          "id" : 2,
+          "libelle" : "TP"
+        }
+      }
+    }, {
+      "id" : 7,
+      "eleve" : {
+        "id" : 11,
+        "nom" : "Dupont",
+        "prenom" : "Nicolas",
+        "email" : "nicolas.dupont@example.com",
+        "adresse" : "Rue de la Mairie",
+        "telephone" : "0644556677",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 19.5,
+      "modification" : "2025-12-05T07:50:14.388Z",
+      "evaluation" : {
+        "id" : 2,
+        "enseignant" : {
+          "id" : 2,
+          "nom" : "Enseignant",
+          "prenom" : "Durand",
+          "email" : "pierre.durand@example.com",
+          "adresse" : "Avenue Victor Hugo",
+          "telephone" : "0605060708",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 2,
+          "libelle" : "CYBER"
+        },
+        "coefficient" : 1.0,
+        "titre" : "TP Firewall",
+        "date" : "2023-11-05",
+        "modification" : null,
+        "noteType" : {
+          "id" : 2,
+          "libelle" : "TP"
+        }
+      }
+    }, {
+      "id" : 8,
+      "eleve" : {
+        "id" : 12,
+        "nom" : "Test",
+        "prenom" : "etudiant",
+        "email" : "etudiant@lycee.local",
+        "adresse" : "test",
+        "telephone" : "0102030405",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 10.0,
+      "modification" : "2025-12-05T07:50:14.393Z",
+      "evaluation" : {
+        "id" : 2,
+        "enseignant" : {
+          "id" : 2,
+          "nom" : "Enseignant",
+          "prenom" : "Durand",
+          "email" : "pierre.durand@example.com",
+          "adresse" : "Avenue Victor Hugo",
+          "telephone" : "0605060708",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 2,
+          "libelle" : "CYBER"
+        },
+        "coefficient" : 1.0,
+        "titre" : "TP Firewall",
+        "date" : "2023-11-05",
+        "modification" : null,
+        "noteType" : {
+          "id" : 2,
+          "libelle" : "TP"
+        }
+      }
+    } ]
+  }, {
+    "id" : 3,
+    "enseignant" : {
+      "id" : 3,
+      "nom" : "Petit",
+      "prenom" : "Claire",
+      "email" : "claire.petit@example.com",
+      "adresse" : "Rue Nationale",
+      "telephone" : "0622334455",
+      "role" : "ENSEIGNANT"
+    },
+    "matiere" : {
+      "id" : 3,
+      "libelle" : "ANGLAIS"
+    },
+    "coefficient" : 3.0,
+    "titre" : "Présentation Stage",
+    "date" : "2023-12-01",
+    "modification" : null,
+    "noteType" : {
+      "id" : 3,
+      "libelle" : "Exposé/Oral"
+    },
+    "notes" : [ {
+      "id" : 9,
+      "eleve" : {
+        "id" : 9,
+        "nom" : "Leclerc",
+        "prenom" : "Emma",
+        "email" : "emma.leclerc@example.com",
+        "adresse" : "Rue des Acacias",
+        "telephone" : "0602030405",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 14.5,
+      "modification" : "2025-12-05T07:50:14.402Z",
+      "evaluation" : {
+        "id" : 3,
+        "enseignant" : {
+          "id" : 3,
+          "nom" : "Petit",
+          "prenom" : "Claire",
+          "email" : "claire.petit@example.com",
+          "adresse" : "Rue Nationale",
+          "telephone" : "0622334455",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 3,
+          "libelle" : "ANGLAIS"
+        },
+        "coefficient" : 3.0,
+        "titre" : "Présentation Stage",
+        "date" : "2023-12-01",
+        "modification" : null,
+        "noteType" : {
+          "id" : 3,
+          "libelle" : "Exposé/Oral"
+        }
+      }
+    }, {
+      "id" : 10,
+      "eleve" : {
+        "id" : 10,
+        "nom" : "Morel",
+        "prenom" : "Lucas",
+        "email" : "lucas.morel@example.com",
+        "adresse" : "Rue des Érables",
+        "telephone" : "0677889900",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 13.0,
+      "modification" : "2025-12-05T07:50:14.406Z",
+      "evaluation" : {
+        "id" : 3,
+        "enseignant" : {
+          "id" : 3,
+          "nom" : "Petit",
+          "prenom" : "Claire",
+          "email" : "claire.petit@example.com",
+          "adresse" : "Rue Nationale",
+          "telephone" : "0622334455",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 3,
+          "libelle" : "ANGLAIS"
+        },
+        "coefficient" : 3.0,
+        "titre" : "Présentation Stage",
+        "date" : "2023-12-01",
+        "modification" : null,
+        "noteType" : {
+          "id" : 3,
+          "libelle" : "Exposé/Oral"
+        }
+      }
+    }, {
+      "id" : 11,
+      "eleve" : {
+        "id" : 11,
+        "nom" : "Dupont",
+        "prenom" : "Nicolas",
+        "email" : "nicolas.dupont@example.com",
+        "adresse" : "Rue de la Mairie",
+        "telephone" : "0644556677",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 11.0,
+      "modification" : "2025-12-05T07:50:14.410Z",
+      "evaluation" : {
+        "id" : 3,
+        "enseignant" : {
+          "id" : 3,
+          "nom" : "Petit",
+          "prenom" : "Claire",
+          "email" : "claire.petit@example.com",
+          "adresse" : "Rue Nationale",
+          "telephone" : "0622334455",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 3,
+          "libelle" : "ANGLAIS"
+        },
+        "coefficient" : 3.0,
+        "titre" : "Présentation Stage",
+        "date" : "2023-12-01",
+        "modification" : null,
+        "noteType" : {
+          "id" : 3,
+          "libelle" : "Exposé/Oral"
+        }
+      }
+    }, {
+      "id" : 12,
+      "eleve" : {
+        "id" : 12,
+        "nom" : "Test",
+        "prenom" : "etudiant",
+        "email" : "etudiant@lycee.local",
+        "adresse" : "test",
+        "telephone" : "0102030405",
+        "role" : "ETUDIANT"
+      },
+      "valeur" : 12.0,
+      "modification" : "2025-12-05T07:50:14.414Z",
+      "evaluation" : {
+        "id" : 3,
+        "enseignant" : {
+          "id" : 3,
+          "nom" : "Petit",
+          "prenom" : "Claire",
+          "email" : "claire.petit@example.com",
+          "adresse" : "Rue Nationale",
+          "telephone" : "0622334455",
+          "role" : "ENSEIGNANT"
+        },
+        "matiere" : {
+          "id" : 3,
+          "libelle" : "ANGLAIS"
+        },
+        "coefficient" : 3.0,
+        "titre" : "Présentation Stage",
+        "date" : "2023-12-01",
+        "modification" : null,
+        "noteType" : {
+          "id" : 3,
+          "libelle" : "Exposé/Oral"
+        }
+      }
+    } ]
+  } ]
 }

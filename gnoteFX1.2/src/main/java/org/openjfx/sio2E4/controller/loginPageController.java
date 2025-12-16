@@ -13,6 +13,11 @@ import org.openjfx.sio2E4.constants.StyleConstants;
 
 import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.service.AuthService;
+import org.openjfx.sio2E4.service.LocalStorageService;
+import org.openjfx.sio2E4.service.NetworkService;
+import org.openjfx.sio2E4.util.AlertHelper;
+
+import java.util.ArrayList;
 
 public class loginPageController {
 
@@ -32,6 +37,12 @@ public class loginPageController {
 	private void GoToHome() {
 		String email = usernameField.getText();
 		String password = passwordField.getText();
+
+        ArrayList<User> localUsers = LocalStorageService.loadUsers();
+        if (localUsers.isEmpty() && !NetworkService.isOnline()) {
+            AlertHelper.showWarning("Connection API", "Connection impossible, l'API ne répond pas et aucune donnée en local n'est enregistrée.");
+            return;
+        }
 
 		// Vérifie si l'utilisateur est authentifié
 		if (AuthService.login(email, password)) {
