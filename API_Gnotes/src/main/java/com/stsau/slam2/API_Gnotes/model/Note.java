@@ -25,6 +25,7 @@ public class Note {
     @ManyToOne
     @JoinColumn(name = "evaluation_id")
     // DIT : "Quand tu affiches cette évaluation, ne montre pas sa liste de notes"
+    //@JsonBackReference
     @JsonIgnoreProperties("notes")
     private Evaluation evaluation;
 
@@ -83,26 +84,24 @@ public class Note {
     public String toString() {
         return "Note{" +
                 "id=" + id +
-                ", eleve=" + eleve +
                 ", valeur=" + valeur +
-                ", modification=" + modification +
-                ", evaluation=" + evaluation +
+                ", eleve=" + (eleve != null ? eleve.getNom() : "null") +
+                // SURTOUT PAS de ", evaluation=" + evaluation +
                 '}';
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Note note = (Note) o;
-        return Objects.equals(id, note.id) &&
-                Objects.equals(eleve, note.eleve) &&
-                Objects.equals(valeur, note.valeur) &&
-                Objects.equals(modification, note.modification) &&
-                Objects.equals(evaluation, note.evaluation);
+    public int hashCode() {
+        // Retirez 'evaluation' du hash pour éviter la récursion
+        return Objects.hash(id, eleve, valeur, modification);
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(id, eleve, valeur, modification, evaluation);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Note note = (Note) o;
+        return Objects.equals(id, note.id) &&
+                Objects.equals(valeur, note.valeur);
     }
 }

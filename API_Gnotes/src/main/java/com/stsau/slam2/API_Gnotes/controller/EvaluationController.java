@@ -45,7 +45,18 @@ public class EvaluationController {
 
     @PostMapping("/api/evaluations")
     ResponseEntity<?> newEvaluation(@RequestBody Evaluation newEvaluation) {
-        EntityModel<Evaluation> entityModel = assembler.toModel(repository.save(newEvaluation));
+        // 1. Re-maillage : On lie chaque note à l'évaluation parente
+        if (newEvaluation.getNotes() != null) {
+            for (Note note : newEvaluation.getNotes()) {
+                note.setEvaluation(newEvaluation);
+            }
+        }
+
+        // 2. Sauvegarde (Hibernate verra maintenant les liens et ne jettera plus d'exception)
+        Evaluation savedEvaluation = repository.save(newEvaluation);
+
+        // 3. Transformation en modèle HATEOAS
+        EntityModel<Evaluation> entityModel = assembler.toModel(savedEvaluation);
 
         return ResponseEntity
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())

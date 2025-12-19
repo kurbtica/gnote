@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openjfx.sio2E4.constants.APIConstants;
 import org.openjfx.sio2E4.model.Evaluation;
+import org.openjfx.sio2E4.model.Note;
 import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.service.AuthService;
 import org.openjfx.sio2E4.service.LocalStorageService;
@@ -179,7 +180,15 @@ public class EvaluationRepository {
 
     private Evaluation parseEvaluationJson(String response) {
         try {
-            return mapper.readValue(response, Evaluation.class);
+            Evaluation eval = mapper.readValue(response, Evaluation.class);
+
+            // Rétablir le lien Parent -> Enfant
+            if (eval != null && eval.getNotes() != null) {
+                for (Note note : eval.getNotes()) {
+                    note.setEvaluation(eval); // On injecte l'objet eval dans chaque note
+                }
+            }
+            return eval;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -188,17 +197,24 @@ public class EvaluationRepository {
 
     private List<Evaluation> parseEvaluationsListJson(String json) {
         try {
-            // 1. On lit l'arbre JSON complet
             JsonNode rootNode = mapper.readTree(json);
-
-            // 2. On navigue jusqu'au noeud qui contient la liste
-            // Le chemin est : racine -> _embedded -> evaluationList
             JsonNode evaluationsNode = rootNode.path("_embedded").path("evaluationList");
 
-            // 3. Si le noeud existe et est un tableau, on le convertit
             if (!evaluationsNode.isMissingNode() && evaluationsNode.isArray()) {
-                return mapper.readerFor(new TypeReference<List<Evaluation>>(){})
+                List<Evaluation> evaluations = mapper.readerFor(new TypeReference<List<Evaluation>>(){})
                         .readValue(evaluationsNode);
+
+                // On parcourt chaque évaluation et chaque note pour recréer les liens
+                if (evaluations != null) {
+                    for (Evaluation eval : evaluations) {
+                        if (eval.getNotes() != null) {
+                            for (Note note : eval.getNotes()) {
+                                note.setEvaluation(eval);
+                            }
+                        }
+                    }
+                }
+                return evaluations;
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,5 +1,6 @@
 package com.stsau.slam2.API_Gnotes.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -25,8 +26,9 @@ public class Evaluation {
     @ManyToOne
     private NoteType noteType;
     //@OneToMany(mappedBy = "evaluation", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@JsonManagedReference
     @OneToMany(mappedBy = "evaluation", cascade = CascadeType.ALL, orphanRemoval = true)
+    //@JsonManagedReference
+    @JsonIgnoreProperties("evaluation")
     private List<Note> notes;
 
     public Evaluation() {}
@@ -106,15 +108,8 @@ public class Evaluation {
     @Override
     public String toString() {
         return "Evaluation{" +
-                "id=" + id +
-                ", enseignant=" + enseignant +
-                ", matiere=" + matiere +
-                ", coefficient=" + coefficient +
-                ", titre='" + titre + '\'' +
-                ", date='" + date + '\'' +
-                ", modification='" + modification + '\'' +
-                ", noteType=" + noteType +
-                ", notes=" + notes +
+                "id=" + id + ", " +
+                "titre='" + titre + '\'' +
                 '}';
     }
 }
