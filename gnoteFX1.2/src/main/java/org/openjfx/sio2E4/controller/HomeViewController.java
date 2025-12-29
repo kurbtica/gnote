@@ -30,6 +30,7 @@ public class HomeViewController {
     @FXML
     private Label homeMessageLabel;
 
+
     public void initialize() {
         User current = AuthService.getCurrentUser();
 

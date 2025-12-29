@@ -26,7 +26,7 @@ public class AuthService {
 				HttpClient client = HttpClient.newHttpClient();
 				HttpRequest request = HttpRequest.newBuilder().uri(URI.create(APIConstants.AUTH_LOGIN))
 						.header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers
-								.ofString("{\"email\":\"" + email + "\", \"password\":\"" + password + "\"}"))
+								.ofString("{\"username\":\"" + email + "\", \"password\":\"" + password + "\"}"))
 						.build();
 
 				// Envoyer la requête et obtenir la réponse
@@ -40,13 +40,20 @@ public class AuthService {
 
 					// Extraire les informations
 					String token = rootNode.path("token").asText();
+
 					int id = rootNode.path("id").asInt();
 					String nom = rootNode.path("nom").asText();
 					String prenom = rootNode.path("prenom").asText();
 					String emailResponse = rootNode.path("email").asText();
 					//String role = rootNode.path("role").asText();
                     //Role role = rootNode.path("role");
-                    Role role = Role.valueOf(rootNode.path("role").path("libelle").asText());
+					String roleString = rootNode.path("role").asText("USER");
+					Role role;
+					try {
+						role = Role.valueOf(roleString);
+					} catch (IllegalArgumentException e) {
+						role = Role.ENSEIGNANT; // Valeur par défaut si erreur
+					}
 					String adresse = rootNode.path("adresse").asText();
 					String telephone = rootNode.path("telephone").asText();
 
@@ -55,12 +62,17 @@ public class AuthService {
 					sessionToken = token; // Sauvegarde le token pour utilisation future
 					return true; // Authentification réussie
 				} else {
-					return false; // Erreur dans la réponse
+					System.out.println("Erreur Login: " + response.statusCode());
+					return false;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false; // En cas d'erreur
 			}
+
+
+
+			//zone local
 		} else {
 			ArrayList<User> localUsers = LocalStorageService.loadUsers();
 			if(currentUser != null) localUsers.add(currentUser);

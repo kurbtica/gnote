@@ -3,6 +3,7 @@ package com.stsau.slam2.API_Gnotes.model;
 import java.util.Objects;
 
 import jakarta.persistence.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 public class User {
@@ -17,8 +18,9 @@ public class User {
     private String adresse;
     private String telephone;
     private Role role;
+    private String password;
 
-    User() {
+    public User() {
     }
 
     public User( String nom, String prenom, Role role, String email,String adresse,String telephone) {
@@ -87,6 +89,14 @@ public class User {
         this.id = id;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public void setName(String name) {
         String[] parts = name.split(" ");
         this.prenom = parts[0];
@@ -118,7 +128,6 @@ public class User {
                 && Objects.equals(prenom, user.prenom)
                 && Objects.equals(role, user.role);
     }
-
     @Override
     public int hashCode() {
         return Objects.hash(id, nom, prenom, role);

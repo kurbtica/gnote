@@ -3,7 +3,7 @@
 **Base** : http://localhost:8080/api
 
 **Auth endpoints** :
- - /auth/login
+ - /login (obtien un token a utiliser dans les requetes)
  - /auth/logout
 
 **Users endpoints** :

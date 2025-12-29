@@ -5,7 +5,7 @@ public class APIConstants {
     public static  String BASE_URL = "http://localhost:8080/api";
 
     // Auth endpoints
-    public static final String AUTH_LOGIN = BASE_URL + "/auth/login";
+    public static final String AUTH_LOGIN = BASE_URL + "/login";
     public static final String AUTH_LOGOUT = BASE_URL + "/auth/logout";
 
     // Users endpoints
