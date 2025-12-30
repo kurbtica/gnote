@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers( "/api").permitAll()
+                        .requestMatchers( "/api/logout").permitAll()
                         .anyRequest().authenticated()
                 )
                 // AJOUT CRUCIAL ICI : On place notre filtre JWT avant le filtre standard

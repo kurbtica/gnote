@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.openjfx.sio2E4.constants.APIConstants;
 import org.openjfx.sio2E4.model.Role;
 import org.openjfx.sio2E4.model.User;
-
+import org.openjfx.sio2E4.service.LocalStorageService;
+import org.openjfx.sio2E4.service.SyncService;
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -60,7 +62,15 @@ public class AuthService {
 					// Crée un objet User avec toutes les données reçues
 					currentUser = new User(nom, prenom, emailResponse, role, adresse, telephone);
 					sessionToken = token; // Sauvegarde le token pour utilisation future
-					return true; // Authentification réussie
+					try {
+						// Initialisation du fichier json pour le mode hors ligne
+						LocalStorageService.setup();
+						SyncService syncService = new SyncService();
+						syncService.init();
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}return true; // Authentification réussie
+
 				} else {
 					System.out.println("Erreur Login: " + response.statusCode());
 					return false;

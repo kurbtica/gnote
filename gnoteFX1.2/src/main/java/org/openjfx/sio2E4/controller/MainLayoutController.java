@@ -289,6 +289,11 @@ public class MainLayoutController {
      */
     private void updateMenuState() {
         // Vider le menu actuel
+
+        if (statusIndicator == null || statusMenuButton == null) {
+            return;
+        } //ces lignes font sauter le style s'il n'existe pas (cas pour enseignant)
+
         ObservableList<MenuItem> currentItems = FXCollections.observableArrayList();
 
         // Nettoyage du style du bouton principal

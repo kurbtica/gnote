@@ -81,14 +81,6 @@ public class App extends Application {
             System.exit(0);
             return; // on quitte sans lancer JavaFX
         }
-        try {
-            // Initialisation du fichier json pour le mode hors ligne
-            LocalStorageService.setup();
-            SyncService syncService = new SyncService();
-            syncService.init();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
         launch(args);
     }

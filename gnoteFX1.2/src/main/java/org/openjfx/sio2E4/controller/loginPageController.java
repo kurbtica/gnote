@@ -50,7 +50,7 @@ public class loginPageController {
 			User currentUser = AuthService.getCurrentUser();
 
 			// Affiche les informations de l'utilisateur (facultatif pour débogage)
-			System.out.println("Token: " + currentUser.getToken());
+			System.out.println("Token: " + AuthService.getToken());
 			System.out.println("User: " + currentUser.getNom() + " " + currentUser.getPrenom());
 			System.out.println("Role: " + currentUser.getRole().getName());
 

@@ -1,6 +1,7 @@
 package com.stsau.slam2.API_Gnotes.config;
 
 import com.stsau.slam2.API_Gnotes.service.JwtService;
+import com.stsau.slam2.API_Gnotes.service.TokenBlacklistService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,12 +19,14 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private final TokenBlacklistService blacklistService;
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
-    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) {
+    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService, TokenBlacklistService blacklistService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.blacklistService = blacklistService;
     }
 
 
@@ -32,7 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String path = request.getRequestURI();
-        System.out.println("🔍 Filtre JWT appelé pour : " + path);
+        System.out.println(" Filtre JWT appelé pour : " + path);
 
         final String authHeader = request.getHeader("Authorization");
 
@@ -47,11 +50,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String jwt;
         final String userEmail;
-
-
-
-        // 3. Extraire le token (on enlève "Bearer ")
         jwt = authHeader.substring(7);
+
+        if (blacklistService.isBlacklisted(jwt)) {
+            System.out.println("⛔ Tentative d'accès avec un token blacklisté !");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN); // 403
+            return; // On arrête tout ici
+        }
+
         userEmail = jwtService.extractUsername(jwt);
 
         // 4. Si on a un email et que l'utilisateur n'est pas encore connecté

@@ -6,7 +6,7 @@ public class APIConstants {
 
     // Auth endpoints
     public static final String AUTH_LOGIN = BASE_URL + "/login";
-    public static final String AUTH_LOGOUT = BASE_URL + "/auth/logout";
+    public static final String AUTH_LOGOUT = BASE_URL + "/logout";
 
     // Users endpoints
     public static final String USERS = BASE_URL + "/users";

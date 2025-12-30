@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Service
 public class JwtService {
-    private static final String SECRET_KEY = "TaCleSecreteTresLonguePourEncoderLeTokenDeManiereSecurisee123456";
+    private final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     public String generateToken(Authentication authentication) {
         Map<String, Object> claims = new HashMap<>();
         // Tu peux ajouter des infos dans le token (ex: le rôle)
@@ -37,10 +37,9 @@ public class JwtService {
     }
 
     private Key getSignKey() {
-
-        byte[] keyBytes = SECRET_KEY.getBytes();
-        return Keys.hmacShaKeyFor(keyBytes);
-    }public String extractUsername(String token) {
+        return SECRET_KEY;
+    }
+    public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -69,7 +68,7 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    private Date extractExpiration(String token) {
+    Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 }

@@ -7,9 +7,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
+@EnableScheduling
 public class ApiGnotesApplication {
 
 	public static void main(String[] args) {
@@ -18,7 +20,7 @@ public class ApiGnotesApplication {
 	@Bean
 	public CommandLineRunner repairAdminPassword(UserRepository userRepository, PasswordEncoder passwordEncoder) {
 		return args -> {
-			User admin = userRepository.findByEmail("admin@lycee.local").orElse(null);
+			User admin = userRepository.findByEmail("prof@lycee.local").orElse(null);
 			if (admin != null) {
 				String newHash = passwordEncoder.encode("password");
 				admin.setPassword(newHash);
