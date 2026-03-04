@@ -23,14 +23,24 @@ public class User {
     public User() {
     }
 
-    public User( String nom, String prenom, Role role, String email,String adresse,String telephone) {
+    public User(String nom, String prenom, Role role, String email, String adresse, String telephone) {
 
         this.nom = nom;
         this.prenom = prenom;
-        this.email=email;
-        this.adresse=adresse;
-        this.telephone=telephone;
+        this.email = email;
+        this.adresse = adresse;
+        this.telephone = telephone;
         this.role = role;
+    }
+
+    public User(String nom, String prenom, Role role, String email,String adresse,String telephone, String password) {
+        this.nom = nom;
+        this.prenom = prenom;
+        this.email = email;
+        this.adresse = adresse;
+        this.telephone = telephone;
+        this.role = role;
+        this.password = password;
     }
 
     public String getNom() {

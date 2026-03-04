@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -23,9 +24,11 @@ class LoadDatabase {
                                    MatiereRepository matiereRepository,
                                    NoteTypeRepository noteTypeRepository,
                                    EvaluationRepository evaluationRepository, // Ajout
-                                   NoteRepository noteRepository) {       // Ajout
+                                   NoteRepository noteRepository,
+                                   PasswordEncoder passwordEncoder) {       // Ajout
 
         return args -> {
+            String defaultPassword = passwordEncoder.encode("password");
 
             // --- 1. Création des MATIERES ---
             Matiere math = new Matiere("MATH");
@@ -79,22 +82,22 @@ class LoadDatabase {
             // --- 3. Création des UTILISATEURS ---
             // On prépare des listes pour stocker nos objets afin de les utiliser plus bas
             List<User> etudiants = new ArrayList<>();
-            User profMath = new User("Bernard", "Sophie", Role.ENSEIGNANT, "sophie.bernard@example.com", "Boulevard de la Gare", "0611223344");
-            User profCyber = new User("Enseignant", "Durand", Role.ENSEIGNANT, "pierre.durand@example.com", "Avenue Victor Hugo", "0605060708");
-            User profAnglais = new User("Petit", "Claire", Role.ENSEIGNANT, "claire.petit@example.com", "Rue Nationale", "0622334455");
+            User profMath = new User("Bernard", "Sophie", Role.ENSEIGNANT, "sophie.bernard@example.com", "Boulevard de la Gare", "0611223344", defaultPassword);
+            User profCyber = new User("Enseignant", "Durand", Role.ENSEIGNANT, "pierre.durand@example.com", "Avenue Victor Hugo", "0605060708", defaultPassword);
+            User profAnglais = new User("Petit", "Claire", Role.ENSEIGNANT, "claire.petit@example.com", "Rue Nationale", "0622334455", defaultPassword);
 
             if (userRepository.count() == 0) {
                 // Sauvegarde des profs
                 profMath = userRepository.save(profMath);
                 profCyber = userRepository.save(profCyber);
                 profAnglais = userRepository.save(profAnglais);
-                userRepository.save(new User("Guerin", "Alice", Role.ENSEIGNANT, "alice.guerin@example.com", "Rue du Parc", "0612121212"));
-                userRepository.save(new User("Test", "prof", Role.ENSEIGNANT, "prof@lycee.local", "test", "0102030405"));
+                userRepository.save(new User("Guerin", "Alice", Role.ENSEIGNANT, "alice.guerin@example.com", "Rue du Parc", "0612121212", defaultPassword));
+                userRepository.save(new User("Test", "prof", Role.ENSEIGNANT, "prof@lycee.local", "test", "0102030405", defaultPassword));
 
                 // Sauvegarde des admins
-                userRepository.save(new User("Admin", "Martin", Role.ADMIN, "martin.admin@example.com", "Rue de la Liberté", "0708091011"));
-                userRepository.save(new User("Renard", "Maxime", Role.ADMIN, "maxime.renard@example.com", "Impasse des Pins", "0688997788"));
-                userRepository.save(new User("Test", "admin", Role.ADMIN, "admin@lycee.local", "test", "0102030405"));
+                userRepository.save(new User("Admin", "Martin", Role.ADMIN, "martin.admin@example.com", "Rue de la Liberté", "0708091011", defaultPassword));
+                userRepository.save(new User("Renard", "Maxime", Role.ADMIN, "maxime.renard@example.com", "Impasse des Pins", "0688997788", defaultPassword));
+                userRepository.save(new User("Test", "admin", Role.ADMIN, "admin@lycee.local", "test", "0102030405", defaultPassword));
 
                 // Sauvegarde des étudiants et ajout à la liste
                 etudiants.add(userRepository.save(new User("Leclerc", "Emma", Role.ETUDIANT, "emma.leclerc@example.com", "Rue des Acacias", "0602030405")));
