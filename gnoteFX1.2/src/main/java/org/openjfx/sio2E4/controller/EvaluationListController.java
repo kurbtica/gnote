@@ -262,12 +262,13 @@ public class EvaluationListController {
 		// Appel au service pour l'utilisateur
 		evaluationRepository.getEvaluationsList()
 				.thenAccept(user -> {
-					// Mise à jour UI Utilisateur
-					Platform.runLater(() -> {
-						evaluationTable.getItems().setAll(user);
-						afficherMajorsParSemestre(user);
-					});
-
+					if (user != null) {
+						// Mise à jour UI Utilisateur
+						Platform.runLater(() -> {
+							evaluationTable.getItems().setAll(user);
+							afficherMajorsParSemestre(user);
+						});
+					}
 				})
 				.exceptionally(e -> {
 					e.printStackTrace(); // Gérez l'erreur (ex: afficher une alerte)

@@ -1,11 +1,13 @@
 package org.openjfx.sio2E4.service;
 
+import org.openjfx.sio2E4.constants.APIConstants;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class NetworkService {
-    private static final String API_URL = "http://localhost:8080/api";
+    private static final String API_URL = APIConstants.BASE_URL;
 
     /**
      * Vérifie si l'accès à l'API est disponible.
