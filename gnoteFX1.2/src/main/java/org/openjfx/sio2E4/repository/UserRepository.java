@@ -44,6 +44,9 @@ public class UserRepository {
     // Récupérer un utilisateur (Online ou Offline)
     public CompletableFuture<User> getUser(int userId) {
         if (NetworkService.isOnline()) {
+            if (userId < 0) {
+                return CompletableFuture.supplyAsync(() -> LocalStorageService.findUserById(userId));
+            }
             return fetchUserFromApi(userId);
         } else {
             // On enveloppe l'appel local dans un Future pour garder la cohérence async
@@ -53,7 +56,11 @@ public class UserRepository {
 
     public CompletableFuture<List<User>> getUsersList() {
         if (NetworkService.isOnline()) {
-            return fetchUsersListFromApi();
+            return fetchUsersListFromApi().thenApply(list -> {
+                if (list == null) list = new ArrayList<>();
+                list.addAll(LocalStorageService.loadSyncObjects("User", User.class));
+                return list;
+            });
         } else {
             // On enveloppe l'appel local dans un Future pour garder la cohérence async
             return CompletableFuture.supplyAsync(LocalStorageService::loadUsers);

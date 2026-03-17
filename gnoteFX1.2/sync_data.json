@@ -1,0 +1,152 @@
+{
+  "Note" : [ {
+    "id" : -1,
+    "eleve" : {
+      "id" : 9,
+      "nom" : "Leclerc",
+      "prenom" : "Emma",
+      "email" : "emma.leclerc@example.com",
+      "adresse" : "Rue des Acacias",
+      "telephone" : "0602030405",
+      "role" : "ETUDIANT"
+    },
+    "valeur" : 10.0,
+    "modification" : null,
+    "evaluation" : {
+      "id" : -1,
+      "enseignant" : {
+        "id" : 2,
+        "nom" : "Enseignant",
+        "prenom" : "Durand",
+        "email" : "pierre.durand@example.com",
+        "adresse" : "Avenue Victor Hugo",
+        "telephone" : "0605060708",
+        "role" : "ENSEIGNANT"
+      },
+      "matiere" : {
+        "id" : 3,
+        "libelle" : "ANGLAIS"
+      },
+      "coefficient" : 10.0,
+      "titre" : "10",
+      "date" : "2026-03-20",
+      "modification" : null,
+      "noteType" : {
+        "id" : 2,
+        "libelle" : "TP"
+      }
+    }
+  }, {
+    "id" : -2,
+    "eleve" : {
+      "id" : 10,
+      "nom" : "Morel",
+      "prenom" : "Lucas",
+      "email" : "lucas.morel@example.com",
+      "adresse" : "Rue des Érables",
+      "telephone" : "0677889900",
+      "role" : "ETUDIANT"
+    },
+    "valeur" : 10.0,
+    "modification" : null,
+    "evaluation" : {
+      "id" : -1,
+      "enseignant" : {
+        "id" : 2,
+        "nom" : "Enseignant",
+        "prenom" : "Durand",
+        "email" : "pierre.durand@example.com",
+        "adresse" : "Avenue Victor Hugo",
+        "telephone" : "0605060708",
+        "role" : "ENSEIGNANT"
+      },
+      "matiere" : {
+        "id" : 3,
+        "libelle" : "ANGLAIS"
+      },
+      "coefficient" : 10.0,
+      "titre" : "10",
+      "date" : "2026-03-20",
+      "modification" : null,
+      "noteType" : {
+        "id" : 2,
+        "libelle" : "TP"
+      }
+    }
+  }, {
+    "id" : -3,
+    "eleve" : {
+      "id" : 12,
+      "nom" : "Test",
+      "prenom" : "etudiant",
+      "email" : "etudiant@lycee.local",
+      "adresse" : "test",
+      "telephone" : "0102030405",
+      "role" : "ETUDIANT"
+    },
+    "valeur" : 10.0,
+    "modification" : null,
+    "evaluation" : {
+      "id" : -1,
+      "enseignant" : {
+        "id" : 2,
+        "nom" : "Enseignant",
+        "prenom" : "Durand",
+        "email" : "pierre.durand@example.com",
+        "adresse" : "Avenue Victor Hugo",
+        "telephone" : "0605060708",
+        "role" : "ENSEIGNANT"
+      },
+      "matiere" : {
+        "id" : 3,
+        "libelle" : "ANGLAIS"
+      },
+      "coefficient" : 10.0,
+      "titre" : "10",
+      "date" : "2026-03-20",
+      "modification" : null,
+      "noteType" : {
+        "id" : 2,
+        "libelle" : "TP"
+      }
+    }
+  }, {
+    "id" : -4,
+    "eleve" : {
+      "id" : 11,
+      "nom" : "Dupont",
+      "prenom" : "Nicolas",
+      "email" : "nicolas.dupont@example.com",
+      "adresse" : "Rue de la Mairie",
+      "telephone" : "0644556677",
+      "role" : "ETUDIANT"
+    },
+    "valeur" : 10.0,
+    "modification" : null,
+    "evaluation" : {
+      "id" : -1,
+      "enseignant" : {
+        "id" : 2,
+        "nom" : "Enseignant",
+        "prenom" : "Durand",
+        "email" : "pierre.durand@example.com",
+        "adresse" : "Avenue Victor Hugo",
+        "telephone" : "0605060708",
+        "role" : "ENSEIGNANT"
+      },
+      "matiere" : {
+        "id" : 3,
+        "libelle" : "ANGLAIS"
+      },
+      "coefficient" : 10.0,
+      "titre" : "10",
+      "date" : "2026-03-20",
+      "modification" : null,
+      "noteType" : {
+        "id" : 2,
+        "libelle" : "TP"
+      }
+    }
+  } ],
+  "Evaluation" : [ ]
+}

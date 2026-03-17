@@ -41,7 +41,7 @@ public class Etudiant {
             return id;
         }
 
-        public void setId(int id) {
+        public void setId(Integer id) {
             this.id = id;  // Cette méthode peut être laissée vide si tu ne veux pas que l'id soit modifié
         }
     }
@@ -51,7 +51,7 @@ public class Etudiant {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
