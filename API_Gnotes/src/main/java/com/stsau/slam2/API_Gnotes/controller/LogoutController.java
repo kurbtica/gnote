@@ -9,23 +9,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LogoutController {
 
-    private final TokenBlacklistService blacklistService;
+	private final TokenBlacklistService blacklistService;
 
-    public LogoutController(TokenBlacklistService blacklistService) {
-        this.blacklistService = blacklistService;
-    }
+	public LogoutController(TokenBlacklistService blacklistService) {
+		this.blacklistService = blacklistService;
+	}
 
-    @PostMapping("/api/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
+	@PostMapping("/api/logout")
+	public ResponseEntity<String> logout(HttpServletRequest request) {
+		String authHeader = request.getHeader("Authorization");
 
-        if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
-            String token = authHeader.substring(7);
+		if (StringUtils.hasText(authHeader) && authHeader.startsWith("Bearer ")) {
+			String token = authHeader.substring(7);
 
-            blacklistService.blacklistToken(token);
-            return ResponseEntity.ok("Token invalidé avec succès.");
-        }
+			blacklistService.blacklistToken(token);
+			return ResponseEntity.ok("Token invalidé avec succès.");
+		}
 
-        return ResponseEntity.badRequest().body("Pas de token fourni");
-    }
+		return ResponseEntity.badRequest().body("Pas de token fourni");
+	}
 }

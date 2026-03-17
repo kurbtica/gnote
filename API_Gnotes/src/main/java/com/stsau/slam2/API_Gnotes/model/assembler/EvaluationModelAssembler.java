@@ -10,13 +10,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Component
-public class EvaluationModelAssembler implements RepresentationModelAssembler<Evaluation, EntityModel<Evaluation>>  {
+public class EvaluationModelAssembler implements RepresentationModelAssembler<Evaluation, EntityModel<Evaluation>> {
 
-    @Override
-    public EntityModel<Evaluation> toModel(Evaluation evaluation) {
+	@Override
+	public EntityModel<Evaluation> toModel(Evaluation evaluation) {
 
-        return EntityModel.of(evaluation, //
-                linkTo(methodOn(EvaluationController.class).one(evaluation.getId())).withSelfRel(),
-                linkTo(methodOn(EvaluationController.class).all()).withRel("evaluation"));
-    }
+		return EntityModel.of(evaluation, //
+				linkTo(methodOn(EvaluationController.class).one(evaluation.getId())).withSelfRel(),
+				linkTo(methodOn(EvaluationController.class).all()).withRel("evaluation"));
+	}
 }

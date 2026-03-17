@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class EvaluationNotFoundAdvice {
 
-    @ExceptionHandler(EvaluationNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    String EvaluationNotFoundHandler(EvaluationNotFoundException ex) {
-            return ex.getMessage();
-        }
+	@ExceptionHandler(EvaluationNotFoundException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	String EvaluationNotFoundHandler(EvaluationNotFoundException ex) {
+		return ex.getMessage();
+	}
 }

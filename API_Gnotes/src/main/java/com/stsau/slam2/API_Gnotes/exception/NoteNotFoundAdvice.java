@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 class NoteNotFoundAdvice {
 
-    @ExceptionHandler(NoteNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    String NoteNotFoundHandler(NoteNotFoundException ex) {
-        return ex.getMessage();
-    }
+	@ExceptionHandler(NoteNotFoundException.class)
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	String NoteNotFoundHandler(NoteNotFoundException ex) {
+		return ex.getMessage();
+	}
 }
