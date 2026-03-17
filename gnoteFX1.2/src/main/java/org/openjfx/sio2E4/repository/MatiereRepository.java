@@ -42,6 +42,9 @@ public class MatiereRepository {
     // Récupérer une matière (Online ou Offline)
     public CompletableFuture<Matiere> getMatiere(int matiereID) {
         if (NetworkService.isOnline()) {
+            if (matiereID < 0) {
+                return CompletableFuture.supplyAsync(() -> LocalStorageService.findMatiereById(matiereID));
+            }
             return fetchMatiereFromApi(matiereID);
         } else {
             // On enveloppe l'appel local dans un Future pour garder la cohérence async
@@ -51,7 +54,11 @@ public class MatiereRepository {
 
     public CompletableFuture<List<Matiere>> getMatieresList() {
         if (NetworkService.isOnline()) {
-            return fetchMatieresListFromApi();
+            return fetchMatieresListFromApi().thenApply(list -> {
+                if (list == null) list = new ArrayList<>();
+                list.addAll(LocalStorageService.loadSyncObjects("Matiere", Matiere.class));
+                return list;
+            });
         } else {
             // On enveloppe l'appel local dans un Future pour garder la cohérence async
             return CompletableFuture.supplyAsync(LocalStorageService::loadMatieres);

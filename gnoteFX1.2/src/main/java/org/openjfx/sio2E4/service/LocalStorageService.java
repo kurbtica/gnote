@@ -16,6 +16,7 @@ import java.util.List;
 public class LocalStorageService {
 
     private static Path filePath = Paths.get("user_data.json");
+    private static Path syncFilePath = Paths.get("sync_data.json");
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -27,18 +28,23 @@ public class LocalStorageService {
     private static final ArrayList<User> users = new ArrayList<User>();
 
     public static void setup() throws IOException {
+        String initialJson = "{\n" +
+                "  \"Etudiant\": [],\n" +
+                "  \"Matiere\": [],\n" +
+                "  \"Note\": [],\n" +
+                "  \"NoteType\": [],\n" +
+                "  \"Appreciation\" : [], \n" +
+                "  \"Role\": [],\n" +
+                "  \"User\": []\n" +
+                "}";
+
         if (!Files.exists(filePath)) {
-            String initialJson = "{\n" +
-                    "  \"Etudiant\": [],\n" +
-                    "  \"Matiere\": [],\n" +
-                    "  \"Note\": [],\n" +
-                    "  \"NoteType\": [],\n" +
-                    "  \"Appreciation\" : [], \n" +
-                    "  \"Role\": [],\n" +
-                    "  \"User\": []\n" +
-                    "}";
             Files.writeString(filePath, initialJson);
             System.out.println("Fichier 'user_data.json' créé car il n'existait pas.");
+        }
+        if (!Files.exists(syncFilePath)) {
+            Files.writeString(syncFilePath, initialJson);
+            System.out.println("Fichier 'sync_data.json' créé car il n'existait pas.");
         }
     }
 
@@ -48,8 +54,8 @@ public class LocalStorageService {
 
     private static <T> void saveObject(T obj, String key) {
         try {
-            // Lire le JSON existant
-            ObjectNode root = (ObjectNode) mapper.readTree(Files.readString(filePath));
+            // Lire le JSON existant dans sync_data
+            ObjectNode root = (ObjectNode) mapper.readTree(Files.readString(syncFilePath));
 
             // Récupérer le tableau correspondant
             ArrayNode array = (ArrayNode) root.get(key);
@@ -72,7 +78,12 @@ public class LocalStorageService {
 
                 // Modifier l'ID de l'objet en utilisant la réflexion
                 try {
-                    java.lang.reflect.Method setIdMethod = obj.getClass().getMethod("setId", int.class);
+                    java.lang.reflect.Method setIdMethod;
+                    try {
+                        setIdMethod = obj.getClass().getMethod("setId", Integer.class);
+                    } catch (NoSuchMethodException e) {
+                        setIdMethod = obj.getClass().getMethod("setId", int.class);
+                    }
                     setIdMethod.invoke(obj, newId);
                 } catch (Exception e) {
                     System.err.println("Erreur lors de la modification de l'ID : " + e.getMessage());
@@ -94,8 +105,8 @@ public class LocalStorageService {
                 // Ajouter l'objet sérialisé (avec le nouvel ID)
                 array.addPOJO(obj);
 
-                // Réécrire le fichier
-                mapper.writerWithDefaultPrettyPrinter().writeValue(filePath.toFile(), root);
+                // Réécrire le fichier sync_data
+                mapper.writerWithDefaultPrettyPrinter().writeValue(syncFilePath.toFile(), root);
             } else {
                 // Si l'objet existe déjà, on appelle updateObject pour être sûr d'avoir la dernière version
                 updateObject(obj, existingId, key);
@@ -165,8 +176,17 @@ public class LocalStorageService {
      */
 
     private static <T> T findObjectById(Number id, String key, Class<T> clazz) {
+        T found = findObjectByIdInFile(id, key, clazz, filePath);
+        if (found == null) {
+            found = findObjectByIdInFile(id, key, clazz, syncFilePath);
+        }
+        return found;
+    }
+
+    private static <T> T findObjectByIdInFile(Number id, String key, Class<T> clazz, Path path) {
         try {
-            JsonNode root = mapper.readTree(Files.readString(filePath));
+            if (!Files.exists(path)) return null;
+            JsonNode root = mapper.readTree(Files.readString(path));
             JsonNode arrayNode = root.get(key);
 
             if (arrayNode != null && arrayNode.isArray()) {
@@ -228,8 +248,16 @@ public class LocalStorageService {
 
     private static <T> ArrayList<T> loadObjects(String key, Class<T> clazz) {
         ArrayList<T> result = new ArrayList<>();
+        result.addAll(loadObjectsFromFile(key, clazz, filePath));
+        result.addAll(loadObjectsFromFile(key, clazz, syncFilePath));
+        return result;
+    }
+
+    private static <T> ArrayList<T> loadObjectsFromFile(String key, Class<T> clazz, Path path) {
+        ArrayList<T> result = new ArrayList<>();
         try {
-            JsonNode root = mapper.readTree(Files.readString(filePath));
+            if (!Files.exists(path)) return result;
+            JsonNode root = mapper.readTree(Files.readString(path));
             JsonNode arrayNode = root.get(key);
 
             if (arrayNode != null && arrayNode.isArray()) {
@@ -242,6 +270,10 @@ public class LocalStorageService {
             e.printStackTrace();
         }
         return result;
+    }
+
+    public static <T> ArrayList<T> loadSyncObjects(String key, Class<T> clazz) {
+        return loadObjectsFromFile(key, clazz, syncFilePath);
     }
 
     // Méthodes spécifiques pour récupérer les objets
@@ -282,8 +314,9 @@ public class LocalStorageService {
      */
 
     private static <T> void removeObject(Number id, String key) {
+        Path targetPath = (id.longValue() < 0) ? syncFilePath : filePath;
         try {
-            ObjectNode root = (ObjectNode) mapper.readTree(Files.readString(filePath));
+            ObjectNode root = (ObjectNode) mapper.readTree(Files.readString(targetPath));
             ArrayNode array = (ArrayNode) root.get(key);
             if (array == null) return;
 
@@ -297,7 +330,7 @@ public class LocalStorageService {
                 }
             }
 
-            mapper.writerWithDefaultPrettyPrinter().writeValue(filePath.toFile(), root);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(targetPath.toFile(), root);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -343,9 +376,10 @@ public class LocalStorageService {
      */
 
     private static <T> void updateObject(T obj, Number id, String key) {
+        Path targetPath = (id.longValue() < 0) ? syncFilePath : filePath;
         try {
             // Lire le JSON existant
-            ObjectNode root = (ObjectNode) mapper.readTree(Files.readString(filePath));
+            ObjectNode root = (ObjectNode) mapper.readTree(Files.readString(targetPath));
             ArrayNode array = (ArrayNode) root.get(key);
             if (array == null) return;
 
@@ -366,7 +400,7 @@ public class LocalStorageService {
             }
 
             if (updated) {
-                mapper.writerWithDefaultPrettyPrinter().writeValue(filePath.toFile(), root);
+                mapper.writerWithDefaultPrettyPrinter().writeValue(targetPath.toFile(), root);
             } else {
                 System.out.println("⚠️ Aucun objet trouvé avec l'ID " + id + " dans " + key);
             }
@@ -412,14 +446,15 @@ public class LocalStorageService {
 
     private static int getNextObjectId(String key) {
         try {
-            JsonNode root = mapper.readTree(Files.readString(filePath));
-            JsonNode arrayNode = root.get(key);
-
-            if (arrayNode != null && arrayNode.isArray()) {
-                return arrayNode.size();
+            int maxId = 0;
+            if (Files.exists(syncFilePath)) {
+                JsonNode rootSync = mapper.readTree(Files.readString(syncFilePath));
+                JsonNode arrayNodeSync = rootSync.get(key);
+                if (arrayNodeSync != null && arrayNodeSync.isArray()) {
+                    maxId = arrayNodeSync.size();
+                }
             }
-            return 0; // Si le tableau n'existe pas encore
-
+            return maxId; // the id uses negative based on sync size
         } catch (IOException e) {
             e.printStackTrace();
             return 0;

@@ -3,6 +3,7 @@ package org.openjfx.sio2E4.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.JsonNode;
 
+@Deprecated
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PendingAction {
     private String entityType; // Ex: "Evaluation", "Etudiant"

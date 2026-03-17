@@ -45,6 +45,9 @@ public class EvaluationRepository {
     // Récupérer une evaluation (Online ou Offline)
     public CompletableFuture<Evaluation> getEvaluation(int evaluationID) {
         if (NetworkService.isOnline()) {
+            if (evaluationID < 0) {
+                return CompletableFuture.supplyAsync(() -> LocalStorageService.findEvaluationById(evaluationID));
+            }
             return fetchEvaluationFromApi(evaluationID);
         } else {
             // On enveloppe l'appel local dans un Future pour garder la cohérence async
@@ -54,7 +57,11 @@ public class EvaluationRepository {
 
     public CompletableFuture<List<Evaluation>> getEvaluationsList() {
         if (NetworkService.isOnline()) {
-            return fetchEvaluationsListFromApi();
+            return fetchEvaluationsListFromApi().thenApply(list -> {
+                if (list == null) list = new ArrayList<>();
+                list.addAll(LocalStorageService.loadSyncObjects("Evaluation", Evaluation.class));
+                return list;
+            });
         } else {
             // On enveloppe l'appel local dans un Future pour garder la cohérence async
             return CompletableFuture.supplyAsync(LocalStorageService::loadEvaluations);
@@ -70,7 +77,34 @@ public class EvaluationRepository {
     public CompletableFuture<Boolean> createEvaluation(Evaluation evaluation) {
         if (NetworkService.isOnline()) {
             try {
-                String json = mapper.writeValueAsString(evaluation); // Conversion automatique Objet -> JSON
+                // Si l'ID est négatif, on le met à null pour l'API (ID local temporaire)
+                Integer originalId = evaluation.getId();
+                if (originalId != null && originalId < 0) {
+                    evaluation.setId(null);
+                }
+
+                // On fait de même pour les notes si elles ont des IDs négatifs
+                List<Integer> originalNoteIds = new ArrayList<>();
+                if (evaluation.getNotes() != null) {
+                    for (Note note : evaluation.getNotes()) {
+                        originalNoteIds.add(note.getId());
+                        if (note.getId() != null && note.getId() < 0) {
+                            note.setId(null);
+                        }
+                    }
+                }
+
+                String json = mapper.writeValueAsString(evaluation);
+
+                // Restaurer les IDs originaux pour permettre la suppression locale après succès
+                if (originalId != null && originalId < 0) {
+                    evaluation.setId(originalId);
+                }
+                if (evaluation.getNotes() != null) {
+                    for (int i = 0; i < evaluation.getNotes().size(); i++) {
+                        evaluation.getNotes().get(i).setId(originalNoteIds.get(i));
+                    }
+                }
 
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(APIConstants.EVALUATIONS))

@@ -18,7 +18,7 @@ public class NoteType {
         return libelle;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

@@ -15,6 +15,8 @@ import org.openjfx.sio2E4.model.*;
 import org.openjfx.sio2E4.repository.EvaluationRepository;
 import org.openjfx.sio2E4.repository.NoteRepository;
 import org.openjfx.sio2E4.service.AuthService;
+import org.openjfx.sio2E4.service.LocalStorageService;
+import org.openjfx.sio2E4.service.NetworkService;
 import org.openjfx.sio2E4.service.NoteService;
 import org.openjfx.sio2E4.util.AlertHelper;
 import java.time.LocalDate;
@@ -135,9 +137,23 @@ public class EvaluationListController {
 			private final Button viewButton = new Button();
 			private final Button editButton = new Button();
 			private final Button deleteButton = new Button();
+			private final Button pushButton = new Button(); // Push to API button
 			private final HBox buttonsBox = new HBox(8);
 
 			{
+				// Push Button Icon (Upload)
+				SVGPath pushIcon = new SVGPath();
+				pushIcon.setContent("M8 2a5.53 5.53 0 0 0-3.594 1.342c-.766.66-1.321 1.52-1.464 2.383C1.266 6.095 0 7.555 0 9.318 0 11.366 1.708 13 3.781 13h8.906C14.502 13 16 11.57 16 9.773c0-1.636-1.242-2.969-2.834-3.194C12.923 3.999 10.69 2 8 2zm2.354 5.146a.5.5 0 0 1-.708.708L8.5 6.707V10.5a.5.5 0 0 1-1 0V6.707L6.354 7.854a.5.5 0 1 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2z");
+				pushIcon.setScaleX(0.8);
+				pushIcon.setScaleY(0.8);
+				pushIcon.setStyle("-fx-fill: #1E90FF;");
+				pushButton.setGraphic(pushIcon);
+				pushButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
+				pushButton.setTooltip(new Tooltip("Pousser vers l'API"));
+				
+				pushButton.setOnMouseEntered(e -> pushButton.setStyle("-fx-background-color: #E6F3FF; -fx-cursor: hand; -fx-background-radius: 5px;"));
+				pushButton.setOnMouseExited(e -> pushButton.setStyle("-fx-background-color: transparent; -fx-cursor: hand;"));
+
 				// Icône SVG Eye (Voir)
 				SVGPath viewIcon = new SVGPath();
 				viewIcon.setContent("M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z");
@@ -213,6 +229,16 @@ public class EvaluationListController {
 					viewButton.setOnAction(event -> showViewEvaluationPage(evaluation));
 					editButton.setOnAction(event -> showEditEvaluationPage(evaluation));
 					deleteButton.setOnAction(event -> handleDeleteEvaluation(evaluation));
+					pushButton.setOnAction(event -> handlePushEvaluation(evaluation));
+
+					buttonsBox.getChildren().clear();
+					
+					// If the evaluation is pending sync, show the push button
+					if (evaluation.getId() < 0 && NetworkService.isOnline()) {
+						buttonsBox.getChildren().addAll(pushButton, viewButton, editButton, deleteButton);
+					} else {
+						buttonsBox.getChildren().addAll(viewButton, editButton, deleteButton);
+					}
 
 					setGraphic(buttonsBox);
 				}
@@ -253,6 +279,22 @@ public class EvaluationListController {
 		// Mapping des colonnes pour le tableau des majors
 		semestreColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getSemestre()));
 		majorsColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getMajors()));
+
+		// Définir la couleur de la ligne si pending sync (ID négatif)
+		evaluationTable.setRowFactory(tv -> new TableRow<Evaluation>() {
+			@Override
+			protected void updateItem(Evaluation item, boolean empty) {
+				super.updateItem(item, empty);
+				if (item == null || empty) {
+					setStyle("");
+				} else if (item.getId() < 0) {
+					// Pending sync, color en jaune pâle
+					setStyle("-fx-background-color: #ffffe0; -fx-text-inner-color: #333;");
+				} else {
+					setStyle("");
+				}
+			}
+		});
 
 		// Chargement des données du tableau
 		loadEvaluationsList();
@@ -439,5 +481,32 @@ public class EvaluationListController {
 
 		public String getSemestre() { return semestre; }
 		public String getMajors() { return majors; }
+	}
+
+	@FXML
+	public void handlePushEvaluation(Evaluation evaluation) {
+		if (!NetworkService.isOnline()) {
+			AlertHelper.showError("Vous devez être en ligne pour pousser les modifications.");
+			return;
+		}
+
+		// Push to API
+		evaluationRepository.createEvaluation(evaluation)
+				.thenAccept(success -> {
+					Platform.runLater(() -> {
+						if (success) {
+							// Push succeed: remove it from sync_data.json
+							LocalStorageService.remove(evaluation);
+							AlertHelper.showInformation("Évaluation synchronisée avec succès !");
+							loadEvaluationsList(); // Reload
+						} else {
+							AlertHelper.showError("Erreur lors de la synchronisation de l'évaluation.");
+						}
+					});
+				})
+				.exceptionally(e -> {
+					Platform.runLater(() -> AlertHelper.showError("Erreur technique : " + e.getMessage()));
+					return null;
+				});
 	}
 }
