@@ -17,6 +17,7 @@ public class LocalStorageService {
 
     private static Path filePath = Paths.get("user_data.json");
     private static Path syncFilePath = Paths.get("sync_data.json");
+    private static Path authCachePath = Paths.get("auth_cache.json");
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
@@ -169,6 +170,38 @@ public class LocalStorageService {
 
     public static void save(User user) {
         saveObject(user, "User");
+    }
+
+    /**
+     * Sauvegarde une empreinte salée de l'utilisateur qui vient de se connecter ONLINE
+     * pour autoriser une future session OFFLINE sécurisée.
+     */
+    public static void saveOfflineCredentials(String email, String salt, String hash) {
+        try {
+            ObjectNode root = mapper.createObjectNode();
+            root.put("email", email);
+            root.put("salt", salt);
+            root.put("hash", hash);
+
+            mapper.writerWithDefaultPrettyPrinter().writeValue(authCachePath.toFile(), root);
+            System.out.println("✅ Cache d'authentification hors-ligne mis à jour.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Récupère les credentials du cache (email, salt, hash).
+     */
+    public static JsonNode getOfflineCredentials() {
+        try {
+            if (Files.exists(authCachePath)) {
+                return mapper.readTree(Files.readString(authCachePath));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /*

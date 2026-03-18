@@ -6,46 +6,34 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.AnchorPane?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml/1"
-    xmlns="http://javafx.com/javafx"
-    fx:controller="org.openjfx.sio2E4.controller.MainLayoutController"
-    stylesheets="@../css/AppLayout.css">
+            xmlns="http://javafx.com/javafx"
+            fx:controller="org.openjfx.sio2E4.controller.MainLayoutController"
+            stylesheets="@../css/AppLayout.css">
 
     <!-- Top Bar -->
     <top>
         <HBox spacing="20" styleClass="sidebar">
             <Label fx:id="usernameLabel" text="Bienvenue, ..."
-                style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" />
+                   style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;"/>
 
-            <Region fx:id="spacer" HBox.hgrow="ALWAYS" />
+            <Region fx:id="spacer" HBox.hgrow="ALWAYS"/>
 
-            <MenuButton fx:id="statusMenuButton" text="En ligne" styleClass="btn-mode-online">
-                <items>
-                    <MenuItem fx:id="menuGoOffline" text="Passer hors ligne" onAction="#setModeOffline"/>
-
-                    <SeparatorMenuItem fx:id="sepInfo"/>
-                    <MenuItem fx:id="headerPending" text="Données en attente :" disable="true" styleClass="menu-item-header"/>
-                    <MenuItem fx:id="infoEvaluations" text="• Evaluations modifiées (0)" disable="true" styleClass="menu-item-info"/>
-                    <MenuItem fx:id="infoNotes" text="• Notes ajoutées (0)" disable="true" styleClass="menu-item-info"/>
-
-                    <SeparatorMenuItem fx:id="sepActions"/>
-                    <MenuItem fx:id="actionSyncOnline" text="Synchroniser et passer en ligne" onAction="#syncAndGoOnline"/>
-                    <MenuItem fx:id="actionIgnore" text="Ignorer et rester hors ligne" onAction="#stayOffline"/>
-
-                    <MenuItem fx:id="infoNothing" text="Rien à synchroniser" disable="true" styleClass="menu-item-info"/>
-
-                    <MenuItem fx:id="menuGoOnline" text="Passer en ligne" onAction="#setModeOnline"/>
-                </items>
-            </MenuButton>
+            <HBox fx:id="statusBadge" styleClass="status-button-neutral" alignment="CENTER_LEFT" spacing="5">
+                <children>
+                    <javafx.scene.shape.Circle fx:id="statusIndicator" radius="5" styleClass="circle-online"/>
+                    <Label fx:id="statusLabel" text="En ligne"
+                           style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px;"/>
+                </children>
+            </HBox>
 
             <Button fx:id="logoutButton"
-                text="Déconnexion"
-                onMouseEntered="#onLogoutHover"
-                onMouseExited="#onLogoutHoverExit"
-                onAction="#handleLogout"
-                style="-fx-background-color: #f4f4f4; -fx-text-fill: #82263c;">
+                    text="Déconnexion"
+                    onMouseEntered="#onLogoutHover"
+                    onMouseExited="#onLogoutHoverExit"
+                    onAction="#handleLogout"
+                    style="-fx-background-color: #f4f4f4; -fx-text-fill: #82263c;">
             </Button>
         </HBox>
     </top>
@@ -54,16 +42,16 @@
     <!-- Sidebar Navigation -->
     <left>
         <VBox fx:id="leftSidebar" spacing="10" styleClass="left" prefWidth="200">
-            <Button text="Accueil" onAction="#showDashboard" maxWidth="Infinity" />
-            <Button text="Étudiants" onAction="#showEtudiants" maxWidth="Infinity" />
-            <Button text="Évaluations" onAction="#showEvaluationList" maxWidth="Infinity" />
+            <Button text="Accueil" onAction="#showDashboard" maxWidth="Infinity"/>
+            <Button text="Étudiants" onAction="#showEtudiants" maxWidth="Infinity"/>
+            <Button text="Évaluations" onAction="#showEvaluationList" maxWidth="Infinity"/>
         </VBox>
     </left>
 
 
     <!-- Contenu principal -->
     <center>
-        <StackPane fx:id="contentArea" />
+        <StackPane fx:id="contentArea"/>
     </center>
 
 </BorderPane>
