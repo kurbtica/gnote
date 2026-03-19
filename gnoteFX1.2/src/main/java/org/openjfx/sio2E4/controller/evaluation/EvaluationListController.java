@@ -1,4 +1,4 @@
-package org.openjfx.sio2E4.controller;
+package org.openjfx.sio2E4.controller.evaluation;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -6,10 +6,10 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.SVGPath;
 import org.openjfx.sio2E4.constants.StyleConstants;
+import org.openjfx.sio2E4.controller.MainLayoutController;
 import org.openjfx.sio2E4.model.*;
 
 import org.openjfx.sio2E4.repository.EvaluationRepository;

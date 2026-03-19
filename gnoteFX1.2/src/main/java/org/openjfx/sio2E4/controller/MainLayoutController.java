@@ -16,6 +16,10 @@ import org.openjfx.sio2E4.model.Role;
 import org.openjfx.sio2E4.model.User;
 import org.openjfx.sio2E4.service.AuthService;
 import org.openjfx.sio2E4.service.NetworkService;
+import org.openjfx.sio2E4.controller.user.*;
+import org.openjfx.sio2E4.controller.user.cards.*;
+import org.openjfx.sio2E4.controller.evaluation.*;
+import org.openjfx.sio2E4.controller.auth.*;
 
 import java.io.IOException;
 

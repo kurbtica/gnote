@@ -1,4 +1,4 @@
-package org.openjfx.sio2E4.controller;
+package org.openjfx.sio2E4.controller.auth;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,7 +19,7 @@ import org.openjfx.sio2E4.util.AlertHelper;
 
 import java.util.ArrayList;
 
-public class loginPageController {
+public class LoginPageController {
 
 	@FXML
 	private TextField usernameField;

@@ -1,4 +1,4 @@
-package org.openjfx.sio2E4.controller;
+package org.openjfx.sio2E4.controller.auth;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -7,7 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
-public class logoutPageController {
+public class LogoutPageController {
 	
 	@FXML
     private Button actiontarget;

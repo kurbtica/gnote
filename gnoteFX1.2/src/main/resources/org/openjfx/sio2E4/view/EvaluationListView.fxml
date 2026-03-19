@@ -3,22 +3,26 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.scene.text.Font?>
-<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.sio2E4.controller.EvaluationListController" spacing="20" alignment="TOP_CENTER" style="-fx-padding: 20;">
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.sio2E4.controller.evaluation.EvaluationListController"
+      spacing="20" alignment="TOP_CENTER" style="-fx-padding: 20;">
 
     <!-- En-tête avec titre et bouton d'ajout -->
     <HBox alignment="CENTER_LEFT" spacing="20">
         <VBox spacing="5" HBox.hgrow="ALWAYS">
             <Label style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;" text="Évaluations">
                 <font>
-                    <Font name="System Bold" size="28" />
+                    <Font name="System Bold" size="28"/>
                 </font>
             </Label>
-            <Label style="-fx-font-size: 14px; -fx-text-fill: #6c757d;" text="Gérez les évaluations de chaque étudiant de l'établissement." />
+            <Label style="-fx-font-size: 14px; -fx-text-fill: #6c757d;"
+                   text="Gérez les évaluations de chaque étudiant de l'établissement."/>
         </VBox>
 
-        <Button fx:id="addNoteButton" onAction="#showCreateEvaluationPage" style="-fx-background-color: #82263c; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 6; -fx-cursor: hand;" text="+ Ajouter une évaluation">
+        <Button fx:id="addNoteButton" onAction="#showCreateEvaluationPage"
+                style="-fx-background-color: #82263c; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 6; -fx-cursor: hand;"
+                text="+ Ajouter une évaluation">
             <font>
-                <Font name="System Bold" size="14" />
+                <Font name="System Bold" size="14"/>
             </font>
         </Button>
     </HBox>
@@ -26,9 +30,9 @@
     <!-- TableView pour afficher les notes -->
     <TableView fx:id="evaluationTable" prefWidth="951">
         <columns>
-            <TableColumn fx:id="titleColumn" text="Titre" prefWidth="150" />
-            <TableColumn fx:id="enseignantColumn" text="Enseignant" prefWidth="150" />
-            <TableColumn fx:id="matiereColumn" text="Matière" prefWidth="120" />
+            <TableColumn fx:id="titleColumn" text="Titre" prefWidth="150"/>
+            <TableColumn fx:id="enseignantColumn" text="Enseignant" prefWidth="150"/>
+            <TableColumn fx:id="matiereColumn" text="Matière" prefWidth="120"/>
             <TableColumn fx:id="moyennes" text="Moyennes" prefWidth="300">
                 <columns>
                     <TableColumn fx:id="moyenneColumn" text="Classe" prefWidth="100"/>
@@ -36,63 +40,22 @@
                     <TableColumn fx:id="moyenneMaxColumn" text="Max" prefWidth="100"/>
                 </columns>
             </TableColumn>
-            <TableColumn fx:id="coefficientColumn" text="Coef" prefWidth="70" />
-            <TableColumn fx:id="noteTypeColumn" text="Type note" prefWidth="170" />
-            <TableColumn fx:id="dateColumn" text="Date" prefWidth="100" />
+            <TableColumn fx:id="coefficientColumn" text="Coef" prefWidth="70"/>
+            <TableColumn fx:id="noteTypeColumn" text="Type note" prefWidth="170"/>
+            <TableColumn fx:id="dateColumn" text="Date" prefWidth="100"/>
 
-            <TableColumn fx:id="modificationColumn" text="Modification" prefWidth="150" />
-            <TableColumn fx:id="actionsColumn" prefWidth="120" sortable="false" text="Actions" />
+            <TableColumn fx:id="modificationColumn" text="Modification" prefWidth="150"/>
+            <TableColumn fx:id="actionsColumn" prefWidth="120" sortable="false" text="Actions"/>
         </columns>
     </TableView>
-    <!--<HBox spacing="10">
-        <Button text="Supprimer" onAction="#handleDeleteNote" />
-        <Button text="Modifier" onAction="#handleUpdateNote" />
-    </HBox>-->
-    <!-- Formulaire d'ajout d'une note
-    <Label text="Ajouter une Note"
-        style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-alignment: top-left;" />
 
-    <GridPane hgap="10" vgap="10">
-
-        <Label text="Élève :" GridPane.rowIndex="0" GridPane.columnIndex="0" />
-        <ComboBox fx:id="eleveComboBox" GridPane.rowIndex="0" GridPane.columnIndex="1" />
-
-        <Label text="Enseignant :" GridPane.rowIndex="1" GridPane.columnIndex="0" />
-        <ComboBox fx:id="enseignantComboBox" GridPane.rowIndex="1" GridPane.columnIndex="1" />
-
-        <Label text="Matière :" GridPane.rowIndex="2" GridPane.columnIndex="0" />
-        <ComboBox fx:id="matiereComboBox" GridPane.rowIndex="2" GridPane.columnIndex="1" />
-
-        <Label text="Note (valeur) :" GridPane.rowIndex="3" GridPane.columnIndex="0" />
-        <TextField fx:id="valeurField" GridPane.rowIndex="3" GridPane.columnIndex="1" />
-
-        <Label text="Coef (valeur) :" GridPane.rowIndex="4" GridPane.columnIndex="0" />
-        <TextField fx:id="coefficientField" GridPane.rowIndex="4" GridPane.columnIndex="1" />
-
-        <Label text="Type de Note :" GridPane.rowIndex="5" GridPane.columnIndex="0" />
-        <ComboBox fx:id="noteTypeComboBox" prefWidth="200" GridPane.rowIndex="5"
-            GridPane.columnIndex="1" />
-
-        <Label text="Date :" GridPane.rowIndex="6" GridPane.columnIndex="0" />
-        <DatePicker fx:id="datePicker" GridPane.rowIndex="6" GridPane.columnIndex="1" />
-
-        <Label text="Commentaire :" GridPane.rowIndex="7" GridPane.columnIndex="0" />
-        <TextArea fx:id="commentaireField" prefRowCount="3" GridPane.rowIndex="7"
-            GridPane.columnIndex="1" />
-
-        <Button text="Ajouter la Note"
-            fx:id="ajouterNoteButton"
-            onAction="#ajouterNote"
-            GridPane.rowIndex="8" GridPane.columnIndex="1"
-            style="-fx-background-color: #4CAF50; -fx-text-fill: white;" />
-    </GridPane> -->
     <!-- TableView pour afficher les majors par semestre -->
     <Label text="Majors de promotion par semestre"
-        style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-alignment: top-left;" />
+           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-alignment: top-left;"/>
     <TableView fx:id="majorsTable" prefHeight="200">
         <columns>
-            <TableColumn fx:id="semestreColumn" text="Semestre" prefWidth="150" />
-            <TableColumn fx:id="majorsColumn" text="Majors" prefWidth="400" />
+            <TableColumn fx:id="semestreColumn" text="Semestre" prefWidth="150"/>
+            <TableColumn fx:id="majorsColumn" text="Majors" prefWidth="400"/>
         </columns>
     </TableView>
 

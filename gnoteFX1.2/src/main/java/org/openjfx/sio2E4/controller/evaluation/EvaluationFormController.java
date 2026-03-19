@@ -1,4 +1,4 @@
-package org.openjfx.sio2E4.controller;
+package org.openjfx.sio2E4.controller.evaluation;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import org.openjfx.sio2E4.controller.MainLayoutController;
 import org.openjfx.sio2E4.model.*;
 import org.openjfx.sio2E4.model.table.EvaluationRow;
 import org.openjfx.sio2E4.repository.EvaluationRepository;
@@ -173,11 +174,10 @@ public class EvaluationFormController {
             @Override
             protected void updateItem(NoteType item, boolean empty) {
                 super.updateItem(item, empty);
-                // Affiche le libellé ou "vide" si l'élément est null ou la cellule vide
                 setText(empty || item == null ? null : item.getLibelle());
             }
         });
-        noteTypeComboBox.setButtonCell(noteTypeComboBox.getCellFactory().call(null)); // Rendu du bouton du ComboBox
+        noteTypeComboBox.setButtonCell(noteTypeComboBox.getCellFactory().call(null));
 
         enseignantComboBox.setCellFactory(lv -> new ListCell<User>() {
             @Override
@@ -186,7 +186,7 @@ public class EvaluationFormController {
                 setText(empty || item == null ? null : item.getPrenom() + " " + item.getNom());
             }
         });
-        enseignantComboBox.setButtonCell(enseignantComboBox.getCellFactory().call(null)); // Rendu du bouton du ComboBox
+        enseignantComboBox.setButtonCell(enseignantComboBox.getCellFactory().call(null));
 
         // Rendre la colonne éditable
         etudiantTable.setEditable(true);
@@ -304,95 +304,53 @@ public class EvaluationFormController {
         loadNoteTypesList();
     }
 
-    /*@FXML
-    private Label meilleurEleveLabel; // Le Label qui affichera l'élève avec la meilleure moyenne
-
-    private void eleveAvecMeilleureMoyenne(List<Note> notes) {
-        // Map pour stocker les totaux des valeurs pondérées et des coefficients par élève
-        Map<Integer, Double> totalNotes = new HashMap<>();
-        Map<Integer, Double> totalCoefficients = new HashMap<>();
-
-        // Parcours des notes pour calculer les totaux
-        for (Note note : notes) {
-            int eleveId = note.getEleve().getId();
-            double valeur = note.getValeur();
-            double coefficient = note.getEvaluation().getCoefficient();
-
-            // Ajoute la valeur pondérée à l'élève
-            totalNotes.put(eleveId, totalNotes.getOrDefault(eleveId, 0.0) + (valeur * coefficient));
-            totalCoefficients.put(eleveId, totalCoefficients.getOrDefault(eleveId, 0.0) + coefficient);
-        }
-
-        // Calculer la moyenne pondérée pour chaque élève
-        Map<Integer, Double> moyennes = new HashMap<>();
-        for (int eleveId : totalNotes.keySet()) {
-            double moyenne = totalNotes.get(eleveId) / totalCoefficients.get(eleveId);
-            moyennes.put(eleveId, moyenne);
-        }
-
-        // Trouver l'élève avec la meilleure moyenne
-        int meilleurEleveId = -1;
-        double meilleureMoyenne = -1;
-        for (Map.Entry<Integer, Double> entry : moyennes.entrySet()) {
-            if (entry.getValue() > meilleureMoyenne) {
-                meilleureMoyenne = entry.getValue();
-                meilleurEleveId = entry.getKey();
+    /**
+     * Regroupe la configuration des 3 ComboBox (rendu personnalisé).
+     * Extrait de initialize() pour alléger la méthode principale.
+     */
+    private void configureComboBoxes() {
+        noteTypeComboBox.setCellFactory(lv -> new ListCell<NoteType>() {
+            @Override
+            protected void updateItem(NoteType item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item.getLibelle());
             }
-        }
+        });
+        noteTypeComboBox.setButtonCell(noteTypeComboBox.getCellFactory().call(null));
 
-        // Trouver l'élève correspondant à l'ID avec la meilleure moyenne
-        User meilleurEleve = null;
-        for (Note note : notes) {
-            if (note.getEleve().getId() == meilleurEleveId) {
-                meilleurEleve = note.getEleve();
-                break;
+        enseignantComboBox.setCellFactory(lv -> new ListCell<User>() {
+            @Override
+            protected void updateItem(User item, boolean empty) {
+                super.updateItem(item, empty);
+                setText(empty || item == null ? null : item.getPrenom() + " " + item.getNom());
             }
-        }
+        });
+        enseignantComboBox.setButtonCell(enseignantComboBox.getCellFactory().call(null));
+    }
 
-        // Trouver la date la plus récente parmi les notes
-        Instant dateRecenteInstant = null;
-        DateTimeFormatter formatterAffichage = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    /**
+     * Construit un objet Evaluation à partir des valeurs saisies dans le formulaire.
+     * Utilisé à la fois par handleSave() et handleUpdate() pour éviter la duplication.
+     *
+     * @param base Evaluation de base à remplir (new Evaluation() pour une création,
+     *             currentEvaluation pour une mise à jour)
+     * @return l'objet Evaluation rempli avec les données du formulaire
+     */
+    private Evaluation buildEvaluationFromForm(Evaluation base) {
+        base.setTitre(titreField.getText());
+        base.setEnseignant(enseignantComboBox.getValue());
+        base.setMatiere(matiereComboBox.getValue());
+        base.setNoteType(noteTypeComboBox.getValue());
+        base.setCoefficient(Double.parseDouble(coefField.getText()));
+        base.setDate(datePicker.getValue().toString());
+        return base;
+    }
 
-        for (Note note : notes) {
-            String dateStr = note.getEvaluation().getDate();
 
-            try {
-                Instant instantNote;
-
-                if (dateStr.contains("T")) {
-                    // Cas avec date + heure + offset, ex: "2025-05-23T12:26:22.884+00:00"
-                    instantNote = OffsetDateTime.parse(dateStr).toInstant();
-                } else {
-                    // Cas avec date seule, ex: "2024-03-17"
-                    LocalDate ld = LocalDate.parse(dateStr);
-                    instantNote = ld.atStartOfDay(ZoneId.systemDefault()).toInstant();
-                }
-
-                if (dateRecenteInstant == null || instantNote.isAfter(dateRecenteInstant)) {
-                    dateRecenteInstant = instantNote;
-                }
-            } catch (DateTimeParseException e) {
-                System.err.println("Erreur de parsing date : " + dateStr);
-            }
-        }
-
-        // Mettre à jour le Label avec l'élève ayant la meilleure moyenne et la date la plus récente
-        if (meilleurEleve != null) {
-            String texte = "Major de promotion : " + meilleurEleve.getPrenom() + " " + meilleurEleve.getNom()
-                    + " avec une moyenne de " + String.format("%.2f", meilleureMoyenne);
-
-            if (dateRecenteInstant != null) {
-                ZonedDateTime dateRecenteLocal = dateRecenteInstant.atZone(ZoneId.systemDefault());
-                texte += " | Date la plus récente : " + dateRecenteLocal.format(formatterAffichage);
-            }
-
-            final String texteFinal = texte; // variable finale pour la lambda
-            Platform.runLater(() -> meilleurEleveLabel.setText(texteFinal));
-        }
-    }*/
 
 
     /* Formulaire de saisie de note */
+
     @FXML
     private TextField titreField;
     @FXML
@@ -417,59 +375,30 @@ public class EvaluationFormController {
 
     @FXML
     private void handleSave() {
-        // Récupérer les données du formulaire
-        String titre = titreField.getText();
-        User enseignant = enseignantComboBox.getValue();
-        Matiere matiere = matiereComboBox.getValue();
-        NoteType noteType = noteTypeComboBox.getValue();
+        Evaluation evaluation = buildEvaluationFromForm(new Evaluation());
 
-        double coefficient = Double.parseDouble(coefField.getText());
-        String date = datePicker.getValue().toString();
-        String commentaire = commentaireField.getText(); // TODO ignoré ( a implémenter plus tard )
-
-        // Récupérer toutes les notes des étudiants
-        Map<User, Double> notesMap = new HashMap<>();
-        for (EvaluationRow etudiant : etudiantTable.getItems()) {
-            if (etudiant.getNote() != null) {
-                notesMap.put(etudiant.getEleve(), etudiant.getNoteValeur());
+        // Récupérer les notes saisies dans le tableau
+        ArrayList<Note> notes = new ArrayList<>();
+        for (EvaluationRow row : etudiantTable.getItems()) {
+            if (row.getNote() != null) {
+                Note note = new Note();
+                note.setEleve(row.getEleve());
+                note.setEvaluation(evaluation);
+                note.setValeur(row.getNoteValeur());
+                notes.add(note);
             }
         }
-
-        Evaluation evaluation = new Evaluation();
-        //evaluation.setId(LocalStorageService.getNextID(evaluation));
-        evaluation.setEnseignant(enseignant);
-        evaluation.setMatiere(matiere);
-        evaluation.setNoteType(noteType);
-
-        evaluation.setCoefficient(coefficient);
-        evaluation.setDate(date);
-        evaluation.setTitre(titre);
-
-        ArrayList<Note> notes = new ArrayList<>();
-        evaluation.setNotes(notes);
-        notesMap.forEach((user, note) -> {
-            Note newNote = new Note();
-            newNote.setEleve(user);
-            newNote.setEvaluation(evaluation);
-
-            newNote.setValeur(note);
-            notes.add(newNote);
-        });
-
         evaluation.setNotes(notes);
 
         evaluationRepository.createEvaluation(evaluation)
-                .thenAccept(eval -> {
-                    Platform.runLater(() -> {
-                        AlertHelper.showInformation("Evaluation sauvegardé avec succès.");
-                        mainLayoutController.showEvaluationList();
-                        clearForm();
-                    });
-                }).exceptionally(e -> {
+                .thenAccept(eval -> Platform.runLater(() -> {
+                    AlertHelper.showInformation("Evaluation sauvegardé avec succès.");
+                    mainLayoutController.showEvaluationList();
+                    clearForm();
+                }))
+                .exceptionally(e -> {
                     e.printStackTrace();
-                    Platform.runLater(() ->
-                            AlertHelper.showError("Erreur lors de la sauvegarde : " + e.getMessage())
-                    );
+                    Platform.runLater(() -> AlertHelper.showError("Erreur lors de la sauvegarde : " + e.getMessage()));
                     return null;
                 });
     }
@@ -477,48 +406,26 @@ public class EvaluationFormController {
 
     @FXML
     private void handleUpdate() {
-        // Récupérer les données du formulaire
-        String titre = titreField.getText();
-        User enseignant = enseignantComboBox.getValue();
-        Matiere matiere = matiereComboBox.getValue();
-        NoteType noteType = noteTypeComboBox.getValue();
+        buildEvaluationFromForm(currentEvaluation);
 
-        double coefficient = Double.parseDouble(coefField.getText());
-        String date = datePicker.getValue().toString();
-        String commentaire = commentaireField.getText();
-
-        currentEvaluation.setEnseignant(enseignant);
-        currentEvaluation.setMatiere(matiere);
-        currentEvaluation.setNoteType(noteType);
-
-        currentEvaluation.setCoefficient(coefficient);
-        currentEvaluation.setDate(date);
-        currentEvaluation.setTitre(titre);
-
-        // Récupérer toutes les notes des étudiants et mise a jour de la note
-        for (EvaluationRow evaluationRow : etudiantTable.getItems()) {
-            if (evaluationRow.getNote() != null) {
-                evaluationRow.getNote().setValeur(evaluationRow.getNoteValeur());
+        // Mise à jour des notes existantes depuis le tableau
+        for (EvaluationRow row : etudiantTable.getItems()) {
+            if (row.getNote() != null) {
+                row.getNote().setValeur(row.getNoteValeur());
             }
         }
 
         evaluationRepository.updateEvaluation(currentEvaluation)
-                .thenAccept(eval -> {
-                    Platform.runLater(() -> {
-                        AlertHelper.showInformation("Evaluation mis a jour avec succès.");
-                        mainLayoutController.showEvaluationList();
-                        clearForm();
-                    });
-                })
+                .thenAccept(eval -> Platform.runLater(() -> {
+                    AlertHelper.showInformation("Evaluation mise à jour avec succès.");
+                    mainLayoutController.showEvaluationList();
+                    clearForm();
+                }))
                 .exceptionally(e -> {
                     e.printStackTrace();
-                    Platform.runLater(() ->
-                            AlertHelper.showError("Erreur lors de la mise a jour : " + e.getMessage())
-                    );
+                    Platform.runLater(() -> AlertHelper.showError("Erreur lors de la mise à jour : " + e.getMessage()));
                     return null;
                 });
-
-
     }
 
     @FXML

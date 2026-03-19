@@ -9,7 +9,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Button?>
 <StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="org.openjfx.sio2E4.controller.loginPageController"
+           fx:controller="org.openjfx.sio2E4.controller.auth.LoginPageController"
            prefWidth="600" prefHeight="400">
 
     <!-- Contenu principal -->

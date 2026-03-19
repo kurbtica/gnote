@@ -5,34 +5,35 @@
 <?import javafx.geometry.Pos?>
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.openjfx.sio2E4.controller.TeacherCardController"
+      fx:controller="org.openjfx.sio2E4.controller.user.cards.TeacherCardController"
       spacing="15" alignment="TOP_CENTER" style="-fx-padding: 20; -fx-background-color: #f4f4f9;">
 
-    <Label text="Fiche Enseignant" style="-fx-font-size: 24px; -fx-font-weight: bold;" />
+    <Label text="Fiche Enseignant" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
 
     <GridPane hgap="15" vgap="10">
-        <Label text="Nom:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
-        <Label fx:id="nomLabel" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+        <Label text="Nom:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Label fx:id="nomLabel" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-        <Label text="Prénom:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
-        <Label fx:id="prenomLabel" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+        <Label text="Prénom:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <Label fx:id="prenomLabel" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-        <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
-        <Label fx:id="emailLabel" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+        <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <Label fx:id="emailLabel" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-        <Label text="Téléphone:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
-        <Label fx:id="telephoneLabel" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+        <Label text="Téléphone:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <Label fx:id="telephoneLabel" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-        <Label text="Adresse:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
-        <Label fx:id="adresseLabel" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+        <Label text="Adresse:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <Label fx:id="adresseLabel" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
-        <Label text="Rôle:" GridPane.rowIndex="5" GridPane.columnIndex="0" />
-        <Label fx:id="roleLabel" GridPane.rowIndex="5" GridPane.columnIndex="1" />
+        <Label text="Rôle:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <Label fx:id="roleLabel" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
     </GridPane>
 
     <!-- Evaluations table for this teacher -->
-    <VBox spacing="10" style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 6, 0, 0, 2);">
-        <Label text="Évaluations" style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+    <VBox spacing="10"
+          style="-fx-background-color: white; -fx-background-radius: 10; -fx-padding: 20; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 6, 0, 0, 2);">
+        <Label text="Évaluations" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
 
         <TableView fx:id="evaluationTable" prefHeight="420">
             <columns>

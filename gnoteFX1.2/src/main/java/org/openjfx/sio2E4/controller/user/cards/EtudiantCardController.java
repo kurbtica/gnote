@@ -1,4 +1,4 @@
-package org.openjfx.sio2E4.controller;
+package org.openjfx.sio2E4.controller.user.cards;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;

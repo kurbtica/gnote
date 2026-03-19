@@ -14,9 +14,17 @@ module org.openjfx.sio2E4 {
     exports org.openjfx.sio2E4.service;
     // Exportez le package contenant votre contrôleur
     exports org.openjfx.sio2E4.controller;
+    exports org.openjfx.sio2E4.controller.auth;
+    exports org.openjfx.sio2E4.controller.user;
+    exports org.openjfx.sio2E4.controller.user.cards;
+    exports org.openjfx.sio2E4.controller.evaluation;
 
     // Ouvrez le package du contrôleur pour permettre l'accès depuis javafx.fxml
-    opens org.openjfx.sio2E4.controller;
+    opens org.openjfx.sio2E4.controller to javafx.fxml;
+    opens org.openjfx.sio2E4.controller.auth to javafx.fxml;
+    opens org.openjfx.sio2E4.controller.user to javafx.fxml;
+    opens org.openjfx.sio2E4.controller.user.cards to javafx.fxml;
+    opens org.openjfx.sio2E4.controller.evaluation to javafx.fxml;
 
     // Si nécessaire pour l'injection de dépendance avec JavaFX
     exports org.openjfx.sio2E4;

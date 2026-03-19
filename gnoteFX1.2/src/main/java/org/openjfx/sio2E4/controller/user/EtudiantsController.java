@@ -1,10 +1,11 @@
-package org.openjfx.sio2E4.controller;
+package org.openjfx.sio2E4.controller.user;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import org.openjfx.sio2E4.controller.MainLayoutController;
 import org.openjfx.sio2E4.model.Etudiant;
 import org.openjfx.sio2E4.repository.UserRepository;
 

@@ -7,22 +7,25 @@
 <VBox spacing="20"
       style="-fx-background-color: #f8f9fa; -fx-padding: 20;"
       xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12"
-      fx:controller="org.openjfx.sio2E4.controller.UsersController">
+      fx:controller="org.openjfx.sio2E4.controller.user.UsersController">
 
     <!-- En-tête avec titre et bouton d'ajout -->
     <HBox alignment="CENTER_LEFT" spacing="20">
         <VBox spacing="5" HBox.hgrow="ALWAYS">
             <Label style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;" text="Utilisateurs">
                 <font>
-                    <Font name="System Bold" size="28" />
+                    <Font name="System Bold" size="28"/>
                 </font>
             </Label>
-            <Label style="-fx-font-size: 14px; -fx-text-fill: #6c757d;" text="Gérez les étudiants et enseignants de l'établissement." />
+            <Label style="-fx-font-size: 14px; -fx-text-fill: #6c757d;"
+                   text="Gérez les étudiants et enseignants de l'établissement."/>
         </VBox>
 
-        <Button fx:id="addUserButton" onAction="#showCreateDialog" style="-fx-background-color: #82263c; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 6; -fx-cursor: hand;" text="+ Ajouter un utilisateur">
+        <Button fx:id="addUserButton" onAction="#showCreateDialog"
+                style="-fx-background-color: #82263c; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 6; -fx-cursor: hand;"
+                text="+ Ajouter un utilisateur">
             <font>
-                <Font name="System Bold" size="14" />
+                <Font name="System Bold" size="14"/>
             </font>
         </Button>
     </HBox>
@@ -61,21 +64,23 @@
 
         <TableView fx:id="usersTable"
                    style="-fx-background-radius: 8; -fx-border-color: #e5e7eb; -fx-border-radius: 8; -fx-border-width: 1;"
-                   VBox.vgrow="ALWAYS" > <!--style="-fx-background-color: transparent; -fx-table-cell-border-color: transparent;"-->
+                   VBox.vgrow="ALWAYS"> <!--style="-fx-background-color: transparent; -fx-table-cell-border-color: transparent;"-->
             <columns>
-                <TableColumn fx:id="nomColumn" prefWidth="150" style="-fx-font-weight: bold;" text="Nom" />
-                <TableColumn fx:id="prenomColumn" prefWidth="150" style="-fx-font-weight: bold;" text="Prenom" />
-                <TableColumn fx:id="emailColumn" prefWidth="200" text="Email" />
-                <TableColumn fx:id="roleColumn" prefWidth="120" text="Rôle" />
-                <TableColumn fx:id="telephoneColumn" prefWidth="150" text="Téléphone" />
-                <TableColumn fx:id="adresseColumn" prefWidth="100" text="Adresse" />
-                <TableColumn fx:id="actionsColumn" prefWidth="120" sortable="false" text="Actions" />
+                <TableColumn fx:id="nomColumn" prefWidth="150" style="-fx-font-weight: bold;" text="Nom"/>
+                <TableColumn fx:id="prenomColumn" prefWidth="150" style="-fx-font-weight: bold;" text="Prenom"/>
+                <TableColumn fx:id="emailColumn" prefWidth="200" text="Email"/>
+                <TableColumn fx:id="roleColumn" prefWidth="120" text="Rôle"/>
+                <TableColumn fx:id="telephoneColumn" prefWidth="150" text="Téléphone"/>
+                <TableColumn fx:id="adresseColumn" prefWidth="100" text="Adresse"/>
+                <TableColumn fx:id="actionsColumn" prefWidth="120" sortable="false" text="Actions"/>
             </columns>
 
             <placeholder>
                 <VBox alignment="CENTER" spacing="10" style="-fx-padding: 50;">
-                    <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #6c757d;" text="Aucun résultat" />
-                    <Label style="-fx-font-size: 14px; -fx-text-fill: #9ca3af;" text="Ajustez les filtres ou ajoutez un utilisateur." />
+                    <Label style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #6c757d;"
+                           text="Aucun résultat"/>
+                    <Label style="-fx-font-size: 14px; -fx-text-fill: #9ca3af;"
+                           text="Ajustez les filtres ou ajoutez un utilisateur."/>
                 </VBox>
             </placeholder>
         </TableView>
@@ -83,7 +88,8 @@
 
     <!-- Pied de page avec compteur -->
     <HBox alignment="CENTER_LEFT" spacing="10">
-        <Label fx:id="resultCountLabel" style="-fx-font-size: 14px; -fx-text-fill: #6c757d;" text="0 résultat" HBox.hgrow="ALWAYS" />
+        <Label fx:id="resultCountLabel" style="-fx-font-size: 14px; -fx-text-fill: #6c757d;" text="0 résultat"
+               HBox.hgrow="ALWAYS"/>
     </HBox>
 
 </VBox>

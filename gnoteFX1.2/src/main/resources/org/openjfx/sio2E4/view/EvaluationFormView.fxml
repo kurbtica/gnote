@@ -6,17 +6,19 @@
 <?import javafx.scene.text.*?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.openjfx.sio2E4.controller.EvaluationFormController"
+      fx:controller="org.openjfx.sio2E4.controller.evaluation.EvaluationFormController"
       spacing="20" style="-fx-padding: 20;">
 
     <!-- Header Section -->
     <VBox spacing="5" HBox.hgrow="ALWAYS">
-        <Label fx:id="pageTitle" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;" text="Nouvelle évaluation">
+        <Label fx:id="pageTitle" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;"
+               text="Nouvelle évaluation">
             <font>
-                <Font name="System Bold" size="28" />
+                <Font name="System Bold" size="28"/>
             </font>
         </Label>
-        <Label style="-fx-font-size: 14px; -fx-text-fill: #6c757d;" text="Saisissez les notes des étudiants et les paramètres de l'évaluation." />
+        <Label style="-fx-font-size: 14px; -fx-text-fill: #6c757d;"
+               text="Saisissez les notes des étudiants et les paramètres de l'évaluation."/>
     </VBox>
 
     <!-- Main Grid Layout -->

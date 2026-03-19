@@ -1,4 +1,4 @@
-package org.openjfx.sio2E4.controller;
+package org.openjfx.sio2E4.controller.user.cards;
 
 import java.util.ArrayList;
 import java.util.HashMap;

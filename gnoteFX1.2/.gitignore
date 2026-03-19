@@ -1,2 +1,9 @@
 /target/
 /.idea
+
+# Fichiers de données locales — ne jamais versionner (données sensibles)
+# auth_cache.json contient le hash du mot de passe pour la connexion hors-ligne
+auth_cache.json
+# user_data.json et sync_data.json contiennent les données utilisateurs/scolaires en cache local
+user_data.json
+sync_data.json
