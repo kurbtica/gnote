@@ -112,6 +112,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version> <!-- Dernière version connue -->
                 <configuration>
+                    <useModulePath>false</useModulePath>
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
