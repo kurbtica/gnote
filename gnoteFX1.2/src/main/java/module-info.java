@@ -18,6 +18,7 @@ module org.openjfx.sio2E4 {
     exports org.openjfx.sio2E4.controller.user;
     exports org.openjfx.sio2E4.controller.user.cards;
     exports org.openjfx.sio2E4.controller.evaluation;
+    exports org.openjfx.sio2E4.util;
 
     // Ouvrez le package du contrôleur pour permettre l'accès depuis javafx.fxml
     opens org.openjfx.sio2E4.controller to javafx.fxml;
