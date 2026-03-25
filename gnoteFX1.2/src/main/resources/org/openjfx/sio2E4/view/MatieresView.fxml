@@ -1,37 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 
-<HBox spacing="30" alignment="CENTER"
-      xmlns="http://javafx.com/javafx/8.0.171"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.openjfx.sio2E4.controller.MatieresController"
-      style="-fx-padding: 20; -fx-background-color: #f0f0f0;">
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.openjfx.sio2E4.controller.MatieresController"
+      spacing="20" alignment="TOP_CENTER" style="-fx-padding: 20;">
 
-    <!-- Tableau des matières -->
-    <VBox spacing="10" alignment="TOP_LEFT" prefWidth="400">
-        <Label text="Liste des matières" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
-        <TableView fx:id="matieresTable" prefWidth="350" prefHeight="300">
+    <!-- En-tête avec titre et bouton d'ajout -->
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <VBox spacing="5" HBox.hgrow="ALWAYS">
+            <Label style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1a1a1a;" text="Matières">
+                <font>
+                    <Font name="System Bold" size="28"/>
+                </font>
+            </Label>
+            <Label style="-fx-font-size: 14px; -fx-text-fill: #6c757d;"
+                   text="Gérez les matières enseignées et visualisez les statistiques de réussite."/>
+        </VBox>
 
-            <columns>
-                <TableColumn fx:id="libelleColumn" text="Matière" prefWidth="300"/>
-                <TableColumn text="Colonne test"/>
-
-            </columns>
-        </TableView>
-    </VBox>
-
-    <!-- Actions -->
-    <VBox spacing="15" alignment="TOP_LEFT" prefWidth="250">
-        <Label text="Ajouter une nouvelle matière"
-               style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
-        <HBox spacing="10">
-            <TextField fx:id="libelleField" promptText="Nom de la matière" prefWidth="200"/>
-            <Button fx:id="addMatiereButton" text="Ajouter" onAction="#handleAddMatiere"/>
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <TextField fx:id="libelleField" promptText="Nouvelle matière..." 
+                       style="-fx-background-radius: 6; -fx-padding: 10; -fx-pref-width: 250;"/>
+            <Button fx:id="addMatiereButton" onAction="#handleAddMatiere"
+                    style="-fx-background-color: #82263c; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 6; -fx-cursor: hand;"
+                    text="+ Ajouter">
+                <font>
+                    <Font name="System Bold" size="14"/>
+                </font>
+            </Button>
         </HBox>
-        <HBox spacing="10">
-            <Button text="Supprimer" onAction="#handleDeleteMatiere"/>
-        </HBox>
-        <Label fx:id="statusLabel" textFill="green"/>
-    </VBox>
-</HBox>
+    </HBox>
+
+    <!-- TableView pour afficher les matières -->
+    <TableView fx:id="matieresTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="libelleColumn" text="Libellé de la matière" prefWidth="300"/>
+            
+            <TableColumn fx:id="statsColumn" text="Statistiques Globales" prefWidth="450">
+                <columns>
+                    <TableColumn fx:id="moyenneColumn" text="Moyenne" prefWidth="150"/>
+                    <TableColumn fx:id="minColumn" text="Min" prefWidth="150"/>
+                    <TableColumn fx:id="maxColumn" text="Max" prefWidth="150"/>
+                </columns>
+            </TableColumn>
+
+            <TableColumn fx:id="actionsColumn" prefWidth="150" sortable="false" text="Actions"/>
+        </columns>
+        <columnResizePolicy>
+            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+        </columnResizePolicy>
+    </TableView>
+
+    <Label fx:id="statusLabel" textFill="green"/>
+
+</VBox>
