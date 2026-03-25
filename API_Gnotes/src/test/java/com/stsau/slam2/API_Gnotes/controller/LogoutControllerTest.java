@@ -11,44 +11,44 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class LogoutControllerTest {
 
-    private LogoutController logoutController;
-    private boolean tokenBlacklisted = false;
+	private LogoutController logoutController;
+	private boolean tokenBlacklisted = false;
 
-    @BeforeEach
-    void setUp() {
-        TokenBlacklistService fakeBlacklistService = new TokenBlacklistService(new JwtService()) {
-            @Override
-            public void blacklistToken(String token) {
-                if ("valid.jwt.token".equals(token)) {
-                    tokenBlacklisted = true;
-                }
-            }
-        };
+	@BeforeEach
+	void setUp() {
+		TokenBlacklistService fakeBlacklistService = new TokenBlacklistService(new JwtService()) {
+			@Override
+			public void blacklistToken(String token) {
+				if ("valid.jwt.token".equals(token)) {
+					tokenBlacklisted = true;
+				}
+			}
+		};
 
-        logoutController = new LogoutController(fakeBlacklistService);
-        tokenBlacklisted = false;
-    }
+		logoutController = new LogoutController(fakeBlacklistService);
+		tokenBlacklisted = false;
+	}
 
-    @Test
-    void testLogoutSuccess() {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("Authorization", "Bearer valid.jwt.token");
+	@Test
+	void testLogoutSuccess() {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.addHeader("Authorization", "Bearer valid.jwt.token");
 
-        ResponseEntity<String> response = logoutController.logout(request);
+		ResponseEntity<String> response = logoutController.logout(request);
 
-        assertEquals(200, response.getStatusCode().value());
-        assertEquals("Token invalidé avec succès.", response.getBody());
-        assertEquals(true, tokenBlacklisted);
-    }
+		assertEquals(200, response.getStatusCode().value());
+		assertEquals("Token invalidé avec succès.", response.getBody());
+		assertEquals(true, tokenBlacklisted);
+	}
 
-    @Test
-    void testLogoutNoToken() {
-        MockHttpServletRequest request = new MockHttpServletRequest();
+	@Test
+	void testLogoutNoToken() {
+		MockHttpServletRequest request = new MockHttpServletRequest();
 
-        ResponseEntity<String> response = logoutController.logout(request);
+		ResponseEntity<String> response = logoutController.logout(request);
 
-        assertEquals(400, response.getStatusCode().value());
-        assertEquals("Pas de token fourni", response.getBody());
-        assertEquals(false, tokenBlacklisted);
-    }
+		assertEquals(400, response.getStatusCode().value());
+		assertEquals("Pas de token fourni", response.getBody());
+		assertEquals(false, tokenBlacklisted);
+	}
 }

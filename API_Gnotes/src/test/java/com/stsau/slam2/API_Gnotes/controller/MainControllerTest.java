@@ -11,20 +11,20 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class MainControllerTest {
 
-    private MainController mainController;
+	private MainController mainController;
 
-    @BeforeEach
-    void setUp() {
-        mainController = new MainController();
-    }
+	@BeforeEach
+	void setUp() {
+		mainController = new MainController();
+	}
 
-    @Test
-    void testCheckHealth() {
-        ResponseEntity<Map<String, String>> response = mainController.checkHealth();
-        
-        assertEquals(200, response.getStatusCode().value());
-        assertNotNull(response.getBody());
-        assertEquals("OK", response.getBody().get("status"));
-        assertEquals("L'API est fonctionnelle !", response.getBody().get("message"));
-    }
+	@Test
+	void testCheckHealth() {
+		ResponseEntity<Map<String, String>> response = mainController.checkHealth();
+
+		assertEquals(200, response.getStatusCode().value());
+		assertNotNull(response.getBody());
+		assertEquals("OK", response.getBody().get("status"));
+		assertEquals("L'API est fonctionnelle !", response.getBody().get("message"));
+	}
 }

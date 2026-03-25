@@ -2,11 +2,8 @@ package com.stsau.slam2.API_Gnotes.controller;
 
 import com.stsau.slam2.API_Gnotes.exception.EvaluationNotFoundException;
 import com.stsau.slam2.API_Gnotes.model.Evaluation;
-import com.stsau.slam2.API_Gnotes.model.Evaluation;
 import com.stsau.slam2.API_Gnotes.model.Note;
 import com.stsau.slam2.API_Gnotes.model.assembler.EvaluationModelAssembler;
-import com.stsau.slam2.API_Gnotes.model.assembler.EvaluationModelAssembler;
-import com.stsau.slam2.API_Gnotes.repository.EvaluationRepository;
 import com.stsau.slam2.API_Gnotes.repository.EvaluationRepository;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;

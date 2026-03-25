@@ -7,23 +7,23 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TokenBlacklistServiceTest {
 
-    private TokenBlacklistService blacklistService;
-    private JwtService jwtService;
+	private TokenBlacklistService blacklistService;
+	private JwtService jwtService;
 
-    @BeforeEach
-    void setUp() {
-        jwtService = new JwtService();
-        blacklistService = new TokenBlacklistService(jwtService);
-    }
+	@BeforeEach
+	void setUp() {
+		jwtService = new JwtService();
+		blacklistService = new TokenBlacklistService(jwtService);
+	}
 
-    @Test
-    void testBlacklistAndCheck() {
-        String token = "dummy.jwt.token";
-        
-        assertFalse(blacklistService.isBlacklisted(token));
-        
-        blacklistService.blacklistToken(token);
-        
-        assertTrue(blacklistService.isBlacklisted(token));
-    }
+	@Test
+	void testBlacklistAndCheck() {
+		String token = "dummy.jwt.token";
+
+		assertFalse(blacklistService.isBlacklisted(token));
+
+		blacklistService.blacklistToken(token);
+
+		assertTrue(blacklistService.isBlacklisted(token));
+	}
 }
