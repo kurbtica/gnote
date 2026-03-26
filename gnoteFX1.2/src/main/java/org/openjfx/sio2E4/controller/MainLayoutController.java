@@ -171,7 +171,10 @@ public class MainLayoutController {
             Platform.runLater(() -> {
                 if (user != null && user.getRole() != null && "ENSEIGNANT".equalsIgnoreCase(user.getRole().getLibelle())) {
                     loadViewWithController("/org/openjfx/sio2E4/view/TeacherCardView.fxml",
-                            (TeacherCardController c) -> c.loadUser(userId));
+                            (TeacherCardController c) -> {
+                                c.setMainLayoutController(this);
+                                c.loadUser(userId);
+                            });
                 } else {
                     loadViewWithController("/org/openjfx/sio2E4/view/UserCardView.fxml",
                             (UserCardController c) -> c.loadUser(userId));
@@ -188,23 +191,23 @@ public class MainLayoutController {
 
     //----------------------- Etudiants -----------------------
 
-	@FXML
-	private void showEtudiants() {
-		loadViewWithController("/org/openjfx/sio2E4/view/EtudiantsView.fxml",
-				(EtudiantsController c) -> {
-					c.setMainLayoutController(this);
-				});
-	}
+    @FXML
+    private void showEtudiants() {
+        loadViewWithController("/org/openjfx/sio2E4/view/EtudiantsView.fxml",
+                (EtudiantsController c) -> {
+                    c.setMainLayoutController(this);
+                });
+    }
 
     public void showEtudiantCard(int etudiantId) {
-		loadViewWithController("/org/openjfx/sio2E4/view/EtudiantCardView.fxml",
-				(EtudiantCardController c) -> {
-					c.loadUser(etudiantId);
-				});
+        loadViewWithController("/org/openjfx/sio2E4/view/EtudiantCardView.fxml",
+                (EtudiantCardController c) -> {
+                    c.loadUser(etudiantId);
+                });
     }
 
 
-	//----------------------- Loaders -----------------------
+    //----------------------- Loaders -----------------------
 
     private void loadView(String fxmlPath) {
         try {
