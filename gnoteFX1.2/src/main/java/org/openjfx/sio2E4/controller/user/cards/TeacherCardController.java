@@ -14,7 +14,8 @@ import org.openjfx.sio2E4.model.Evaluation;
 import org.openjfx.sio2E4.model.Note;
 import org.openjfx.sio2E4.repository.EvaluationRepository;
 import org.openjfx.sio2E4.repository.UserRepository;
-import org.openjfx.sio2E4.util.AlertHelper;
+
+import org.openjfx.sio2E4.controller.MainLayoutController;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,9 +40,14 @@ public class TeacherCardController {
 
     private final EvaluationRepository evaluationRepository = new EvaluationRepository();
     private final UserRepository userRepository = new UserRepository();
+    private MainLayoutController mainLayoutController;
+
+    public void setMainLayoutController(MainLayoutController mainLayoutController) {
+        this.mainLayoutController = mainLayoutController;
+    }
 
     // we keep currentTeacherId for potential future use
-    private int currentTeacherId = -1;
+    // private int currentTeacherId = -1;
 
     @FXML
     private void initialize() {
@@ -50,7 +56,7 @@ public class TeacherCardController {
         dateColumn.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getDate()));
 
         moyenneColumn.setCellValueFactory(d -> new SimpleStringProperty(String.valueOf(
-            org.openjfx.sio2E4.service.NoteService.calculateMoyenne(d.getValue().getNotes())
+                org.openjfx.sio2E4.service.NoteService.calculateMoyenne(d.getValue().getNotes())
         )));
 
         moyenneMinColumn.setCellValueFactory(d -> new SimpleStringProperty(String.valueOf(
@@ -65,7 +71,11 @@ public class TeacherCardController {
             private final Button viewButton = new Button("Voir");
             private final HBox box = new HBox(6);
 
-            { box.setAlignment(Pos.CENTER_RIGHT); box.setPadding(new Insets(0,6,0,0)); viewButton.setStyle(StyleConstants.ButtonActionsColumn.VIEW_BUTTON); }
+            {
+                box.setAlignment(Pos.CENTER_RIGHT);
+                box.setPadding(new Insets(0, 6, 0, 0));
+                viewButton.setStyle(StyleConstants.ButtonActionsColumn.VIEW_BUTTON);
+            }
 
             @Override
             protected void updateItem(Void item, boolean empty) {
@@ -84,7 +94,7 @@ public class TeacherCardController {
     }
 
     public void loadUser(int teacherId) {
-        this.currentTeacherId = teacherId;
+        // this.currentTeacherId = teacherId;
 
         // Load teacher info
         userRepository.getUser(teacherId).thenAccept(user -> Platform.runLater(() -> {
@@ -96,23 +106,27 @@ public class TeacherCardController {
                 adresseLabel.setText(user.getAdresse());
                 roleLabel.setText(user.getRole().getLibelle());
             }
-        })).exceptionally(e -> { e.printStackTrace(); return null; });
+        })).exceptionally(e -> {
+            e.printStackTrace();
+            return null;
+        });
 
         // Load evaluations where this user is the enseignant
         evaluationRepository.getEvaluationsList().thenAccept(list -> {
-                List<Evaluation> teacherEvals = list.stream()
+            List<Evaluation> teacherEvals = list.stream()
                     .filter(ev -> ev.getEnseignant() != null && ev.getEnseignant().getId() == teacherId)
                     .collect(Collectors.toList());
 
             ObservableList<Evaluation> data = FXCollections.observableArrayList(teacherEvals);
             Platform.runLater(() -> evaluationTable.setItems(data));
-        }).exceptionally(e -> { e.printStackTrace(); return null; });
+        }).exceptionally(e -> {
+            e.printStackTrace();
+            return null;
+        });
     }
 
     private void showEvaluation(Evaluation evaluation) {
-        if (evaluation == null) return;
-        // Reuse MainLayout to show evaluation view if available
-        // Try to fetch a MainLayoutController from the current scene — simplified approach: open evaluation detail in a dialog
-        AlertHelper.showInformation("Ouvrir la page de l'évaluation (id="+evaluation.getId()+")");
+        if (evaluation == null || mainLayoutController == null) return;
+        mainLayoutController.showViewEvaluationFormPage(evaluation.getId());
     }
 }
